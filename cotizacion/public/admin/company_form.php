@@ -140,9 +140,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <nav class="admin-nav">
-        <a href="<?php echo BASE_URL; ?>/admin/index.php">Admin Home</a>
-        <a href="<?php echo BASE_URL; ?>/admin/companies.php">Manage Companies</a>
-        <a href="<?php echo BASE_URL; ?>/dashboard.php">Main Dashboard</a>
+        <a href="<?php echo BASE_URL; ?>/admin/index.php">Inicio Admin</a>
+        <?php if ($auth->hasRole('System Admin')): ?>
+        <a href="<?php echo BASE_URL; ?>/admin/companies.php">Empresas</a>
+        <?php endif; ?>
+        <?php if ($auth->hasRole(['Company Admin', 'Salesperson', 'System Admin'])): ?>
+             <a href="<?php echo BASE_URL; ?>/admin/customers.php">Clientes</a>
+             <a href="<?php echo BASE_URL; ?>/admin/quotations.php">Cotizaciones</a>
+        <?php endif; ?>
+        <?php if ($auth->hasRole(['Company Admin', 'System Admin'])): ?>
+            <a href="<?php echo BASE_URL; ?>/admin/products.php">Productos</a>
+            <a href="<?php echo BASE_URL; ?>/admin/product_import.php">Importar Productos</a>
+            <a href="<?php echo BASE_URL; ?>/admin/warehouses.php">Almacenes</a>
+            <a href="<?php echo BASE_URL; ?>/admin/stock_management.php">Stock</a>
+        <?php endif; ?>
+        <a href="<?php echo BASE_URL; ?>/dashboard.php">Dashboard Principal</a>
     </nav>
 
     <div class="admin-container">

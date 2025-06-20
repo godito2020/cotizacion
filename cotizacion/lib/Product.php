@@ -200,5 +200,29 @@ class Product {
             return false;
         }
     }
+
+    /**
+     * Finds a product by its SKU within a specific company.
+     *
+     * @param string $sku The SKU of the product.
+     * @param int $company_id The ID of the company.
+     * @return array|false Product record (including id) if found, false otherwise.
+     */
+    public function findBySku(string $sku, int $company_id): array|false {
+        if (empty($sku)) {
+            return false;
+        }
+        try {
+            $sql = "SELECT * FROM products WHERE sku = :sku AND company_id = :company_id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':sku', $sku);
+            $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Product::findBySku Error: " . $e->getMessage());
+            return false;
+        }
+    }
 }
 ?>

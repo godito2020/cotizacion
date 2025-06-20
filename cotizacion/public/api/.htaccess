@@ -1,0 +1,12 @@
+RewriteEngine On
+# Determine RewriteBase dynamically IF this .htaccess was itself PHP-generated,
+# but it's a static file. So, it needs a static path.
+# Assuming BASE_URL is 'http://localhost/cotizacion/public'
+# The path from document root to this .htaccess file is /cotizacion/public/api/
+RewriteBase /cotizacion/public/api/
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [L,QSA]
+# If index.php were to use $_GET['path']:
+# RewriteRule ^(.*)$ index.php?path=$1 [L,QSA]

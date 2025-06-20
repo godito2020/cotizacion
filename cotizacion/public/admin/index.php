@@ -1,88 +1,104 @@
 <?php
 // cotizacion/public/admin/index.php
-require_once __DIR__ . '/../../includes/init.php'; // Path to init.php from admin subdirectory
+require_once __DIR__ . '/../../includes/init.php';
 
 $auth = new Auth();
 
-// Protect this page: Check if the user is logged in AND has the 'System Admin' role.
-// Role name 'System Admin' should match what's in the database.sql and roles table.
 if (!$auth->isLoggedIn()) {
-    $auth->redirect(BASE_URL . '/login.php?redirect_to=' . urlencode($_SERVER['REQUEST_URI']));
+    $redirect_url = $_SERVER['REQUEST_URI'];
+    $auth->redirect(BASE_URL . '/login.php?redirect_to=' . urlencode($redirect_url));
 }
-if (!$auth->hasRole('System Admin')) {
-    // User is logged in but not a System Admin.
-    // You can redirect to a generic "unauthorized" page or back to the dashboard.
-    // For now, redirect to main dashboard with an error message (not implemented yet, just an idea)
-    // $_SESSION['error_message'] = "You are not authorized to access the admin area.";
-    $auth->redirect(BASE_URL . '/dashboard.php?unauthorized=true');
+// This page is a generic admin dashboard, specific role checks for content sections
+// For the page itself, let's require at least one of the admin-level roles.
+if (!$auth->hasRole(['System Admin', 'Company Admin', 'Salesperson'])) {
+    $_SESSION['error_message'] = "No tiene autorización para acceder al panel de administración.";
+    $auth->redirect(BASE_URL . '/dashboard.php');
 }
 
-$user = $auth->getUser();
+$loggedInUser = $auth->getUser(); // Renamed from $user to avoid conflict with $userRepo
+$userRepo = new User();
 
+$page_title = "Panel de Administración - " . APP_NAME;
+require_once TEMPLATES_PATH . '/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Cotizacion App</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; background-color: #f4f7f6; }
-        .admin-header { background-color: #333; color: white; padding: 15px 20px; text-align: center; }
-        .admin-header h1 { margin: 0; }
-        .admin-nav { background-color: #444; padding: 10px; text-align: center; }
-        .admin-nav a { color: white; margin: 0 15px; text-decoration: none; font-size: 16px; }
-        .admin-nav a:hover { text-decoration: underline; }
-        .admin-container { padding: 20px; }
-        .admin-content { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .admin-content h2 { margin-top: 0; }
-        .user-info { text-align: right; padding: 10px 20px; background-color: #555; color: white; }
-        .user-info a { color: #ffc107; }
-    </style>
-</head>
-<body>
 
-    <header class="admin-header">
-        <h1>Admin Panel</h1>
+<nav aria-label="breadcrumb">
+  <ul>
+    <li><a href="<?php echo BASE_URL; ?>/dashboard.php">Dashboard</a></li>
+    <li>Panel de Administración</li>
+  </ul>
+</nav>
+
+<hgroup>
+    <h1>Panel de Administración</h1>
+    <p>Bienvenido, <?php echo htmlspecialchars($loggedInUser['first_name'] ?: $loggedInUser['username']); ?>!</p>
+</hgroup>
+
+<!-- Admin specific navigation can go here as a secondary nav if needed -->
+<nav class="admin-secondary-nav">
+  <ul>
+    <?php if ($auth->hasRole('System Admin')): ?>
+        <li><a href="<?php echo BASE_URL; ?>/admin/companies.php" role="button" class="outline">Empresas</a></li>
+        <li><a href="<?php echo BASE_URL; ?>/admin/system_settings.php" role="button" class="outline">Conf. Sistema</a></li>
+    <?php endif; ?>
+    <?php if ($auth->hasRole(['Company Admin', 'Salesperson'])): ?>
+         <li><a href="<?php echo BASE_URL; ?>/admin/customers.php" role="button" class="outline">Clientes</a></li>
+         <li><a href="<?php echo BASE_URL; ?>/admin/quotations.php" role="button" class="outline">Cotizaciones</a></li>
+    <?php endif; ?>
+    <?php if ($auth->hasRole('Company Admin')): // Company Admin specific links can be grouped ?>
+        <li><a href="<?php echo BASE_URL; ?>/admin/products.php" role="button" class="outline">Productos</a></li>
+        <li><a href="<?php echo BASE_URL; ?>/admin/product_import.php" role="button" class="outline">Importar Productos</a></li>
+        <li><a href="<?php echo BASE_URL; ?>/admin/warehouses.php" role="button" class="outline">Almacenes</a></li>
+        <li><a href="<?php echo BASE_URL; ?>/admin/warehouse_import.php" role="button" class="outline">Importar Almacenes</a></li>
+        <li><a href="<?php echo BASE_URL; ?>/admin/stock_management.php" role="button" class="outline">Stock</a></li>
+        <li><a href="<?php echo BASE_URL; ?>/admin/stock_import.php" role="button" class="outline">Importar Stock</a></li>
+        <li><a href="<?php echo BASE_URL; ?>/admin/company_profile.php" role="button" class="outline">Perfil Empresa</a></li>
+        <li><a href="<?php echo BASE_URL; ?>/admin/company_settings_specific.php" role="button" class="outline">Conf. Empresa</a></li>
+        <li><a href="<?php echo BASE_URL; ?>/admin/reports.php" role="button" class="outline">Reportes</a></li>
+    <?php endif; ?>
+  </ul>
+</nav>
+<br>
+
+
+<article>
+    <header>
+        <h2>Accesos Rápidos</h2>
     </header>
+    <div class="grid">
+        <?php if ($auth->hasRole('System Admin')): ?>
+            <div><a href="<?php echo BASE_URL; ?>/admin/companies.php">Gestionar Empresas</a></div>
+            <div><a href="<?php echo BASE_URL; ?>/admin/system_settings.php">Configuraciones del Sistema</a></div>
+        <?php endif; ?>
 
-    <div class="user-info">
-        Logged in as: <?php echo htmlspecialchars($user['username'] ?? 'User'); ?> (<?php echo htmlspecialchars(implode(', ', array_column($userRepo->getRoles($user['id']), 'role_name'))); ?>) |
-        <a href="<?php echo BASE_URL; ?>/logout.php">Logout</a>
+        <?php if ($auth->hasRole(['Company Admin', 'Salesperson'])): ?>
+            <div><a href="<?php echo BASE_URL; ?>/admin/customers.php">Gestionar Clientes</a> (para su compañía)</div>
+            <div><a href="<?php echo BASE_URL; ?>/admin/quotations.php">Gestionar Cotizaciones</a> (para su compañía)</div>
+        <?php endif; ?>
+
+        <?php if ($auth->hasRole('Company Admin')): ?>
+            <div><a href="<?php echo BASE_URL; ?>/admin/products.php">Gestionar Productos</a> (para su compañía)</div>
+            <div><a href="<?php echo BASE_URL; ?>/admin/product_import.php">Importar Productos</a> (CSV)</div>
+            <div><a href="<?php echo BASE_URL; ?>/admin/warehouses.php">Gestionar Almacenes</a> (para su compañía)</div>
+            <div><a href="<?php echo BASE_URL; ?>/admin/warehouse_import.php">Importar Almacenes</a> (CSV)</div>
+            <div><a href="<?php echo BASE_URL; ?>/admin/stock_management.php">Gestionar Stock</a> (para su compañía)</div>
+            <div><a href="<?php echo BASE_URL; ?>/admin/stock_import.php">Importar Stock</a> (CSV)</div>
+            <div><a href="<?php echo BASE_URL; ?>/admin/company_profile.php">Perfil de Empresa</a></div>
+            <div><a href="<?php echo BASE_URL; ?>/admin/company_settings_specific.php">Configuraciones de Empresa</a></div>
+            <a href="<?php echo BASE_URL; ?>/admin/reports.php">Reportes</a>
+        <?php endif; ?>
+
+        <?php if ($auth->hasRole(['System Admin', 'Company Admin'])): ?>
+             <!-- Example: Link to User Management if it existed -->
+             <!-- <li><a href="<?php echo BASE_URL; ?>/admin/users.php">Gestionar Usuarios</a></li> -->
+        <?php endif; ?>
     </div>
+    <footer>
+        <p>Utilice los enlaces de navegación o los accesos rápidos para gestionar la aplicación.</p>
+    </footer>
+</article>
 
-    <nav class="admin-nav">
-        <a href="<?php echo BASE_URL; ?>/admin/index.php">Admin Home</a>
-        <a href="<?php echo BASE_URL; ?>/admin/companies.php">Manage Companies</a>
-        <!-- Add links to other admin sections here: Users, Settings, etc. -->
-        <a href="<?php echo BASE_URL; ?>/dashboard.php">Main Dashboard</a>
-    </nav>
 
-    <div class="admin-container">
-        <div class="admin-content">
-            <h2>Welcome to the Admin Dashboard</h2>
-            <p>This is the central administration area for the Cotizacion Application.</p>
-            <p>From here, you can manage companies, users, system settings, and more.</p>
-
-            <h3>Quick Links:</h3>
-            <ul>
-                <?php if ($auth->hasRole('System Admin')): ?>
-                    <li><a href="<?php echo BASE_URL; ?>/admin/companies.php">Manage Companies</a></li>
-                <?php endif; ?>
-                <?php if ($auth->hasRole(['Company Admin', 'Salesperson', 'System Admin'])): ?>
-                    <li><a href="<?php echo BASE_URL; ?>/admin/customers.php">Manage Customers</a> (for your company)</li>
-                    <li><a href="<?php echo BASE_URL; ?>/admin/quotations.php">Manage Quotations</a> (for your company)</li>
-                <?php endif; ?>
-                <?php if ($auth->hasRole(['Company Admin', 'System Admin'])): ?>
-                    <li><a href="<?php echo BASE_URL; ?>/admin/products.php">Manage Products</a> (for your company)</li>
-                    <li><a href="<?php echo BASE_URL; ?>/admin/warehouses.php">Manage Warehouses</a> (for your company)</li>
-                    <li><a href="<?php echo BASE_URL; ?>/admin/stock_management.php">Manage Stock</a> (for your company)</li>
-                <?php endif; ?>
-                <!-- <li><a href="<?php echo BASE_URL; ?>/admin/users.php">Manage Users</a></li> -->
-                <!-- <li><a href="<?php echo BASE_URL; ?>/admin/settings.php">System Settings</a></li> -->
-            </ul>
-        </div>
-    </div>
-
-</body>
-</html>
+<?php
+require_once TEMPLATES_PATH . '/footer.php';
+?>

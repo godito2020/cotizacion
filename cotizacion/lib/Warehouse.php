@@ -153,5 +153,29 @@ class Warehouse {
             return false;
         }
     }
+
+    /**
+     * Finds a warehouse by its name within a specific company.
+     *
+     * @param string $name The name of the warehouse.
+     * @param int $company_id The ID of the company.
+     * @return array|false Warehouse record if found, false otherwise.
+     */
+    public function findByName(string $name, int $company_id): array|false {
+        if (empty($name)) {
+            return false;
+        }
+        try {
+            $sql = "SELECT * FROM warehouses WHERE name = :name AND company_id = :company_id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':name', $name);
+            $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Warehouse::findByName Error: " . $e->getMessage());
+            return false;
+        }
+    }
 }
 ?>

@@ -279,9 +279,250 @@ class Quotation {
         }
     }
 
-    // update, delete, updateStatus methods would follow a similar pattern,
-    // ensuring company_id checks and transactions where necessary.
-    // These will be implemented as per subtask progression.
+    /**
+     * Updates an existing quotation.
+     *
+     * @param int $quotation_id
+     * @param int $company_id
+     * @param int $customer_id
+     * @param int $user_id (modifier, could be different from creator)
+     * @param string $quotation_date (YYYY-MM-DD)
+     * @param string|null $valid_until (YYYY-MM-DD)
+     * @param array $itemsData Each item: ['product_id' => int|null, 'description' => string, 'quantity' => int, 'unit_price' => float, 'discount_percentage' => float (0-100)]
+     * @param float|null $global_discount_percentage (0-100)
+     * @param string|null $notes
+     * @param string|null $terms
+     * @param string $status
+     * @return bool True on success, false on failure.
+     */
+    public function update(
+        int $quotation_id,
+        int $company_id,
+        int $customer_id,
+        int $user_id, // User performing the update
+        string $quotation_date,
+        ?string $valid_until,
+        array $itemsData,
+        ?float $global_discount_percentage = 0.0,
+        ?string $notes = null,
+        ?string $terms = null,
+        string $status = 'Draft'
+    ): bool {
+        if (empty($itemsData)) {
+            error_log("Quotation::update - No items provided for quotation ID {$quotation_id}.");
+            return false;
+        }
 
+        // Verify quotation belongs to company
+        $existingQuotation = $this->getById($quotation_id, $company_id);
+        if (!$existingQuotation) {
+            error_log("Quotation::update - Quotation ID {$quotation_id} not found or does not belong to company ID {$company_id}.");
+            return false;
+        }
+
+        // --- Input Validation (basic) ---
+        $customerRepo = new Customer();
+        if (!$customerRepo->getById($customer_id, $company_id)) {
+            error_log("Quotation::update - Invalid customer_id {$customer_id} for company_id {$company_id}.");
+            return false;
+        }
+        $userRepo = new User(); // User performing the update
+        $updaterUser = $userRepo->findById($user_id);
+        if (!$updaterUser || $updaterUser['company_id'] != $company_id) {
+             error_log("Quotation::update - Invalid updater user_id {$user_id} or user does not belong to company_id {$company_id}.");
+            return false;
+        }
+
+        // --- Calculations (similar to create) ---
+        $calculated_subtotal = 0;
+        $processed_items = [];
+        foreach ($itemsData as $item) {
+            $item_quantity = (int)($item['quantity'] ?? 0);
+            $item_unit_price = (float)($item['unit_price'] ?? 0.0);
+            $item_discount_percentage = (float)($item['discount_percentage'] ?? 0.0);
+
+            if ($item_quantity <= 0 || $item_unit_price < 0) {
+                error_log("Quotation::update - Invalid quantity or price for an item in quotation ID {$quotation_id}.");
+                return false;
+            }
+
+            $item_line_subtotal = $item_quantity * $item_unit_price;
+            $item_discount_amount = ($item_line_subtotal * $item_discount_percentage) / 100.0;
+            $item_line_total = $item_line_subtotal - $item_discount_amount;
+            $calculated_subtotal += $item_line_total;
+
+            $processed_items[] = [
+                'product_id' => isset($item['product_id']) && $item['product_id'] ? (int)$item['product_id'] : null,
+                'description' => $item['description'] ?? '',
+                'quantity' => $item_quantity,
+                'unit_price' => $item_unit_price,
+                'discount_percentage' => $item_discount_percentage,
+                'discount_amount' => round($item_discount_amount, 2),
+                'line_total' => round($item_line_total, 2),
+            ];
+        }
+
+        $global_discount_percentage_val = $global_discount_percentage ?? 0.0;
+        $calculated_global_discount_amount = ($calculated_subtotal * $global_discount_percentage_val) / 100.0;
+        $calculated_total = $calculated_subtotal - $calculated_global_discount_amount;
+
+        $this->db->beginTransaction();
+        try {
+            // Update quotation header
+            // Note: quotation_number is typically not changed on update. user_id might be updated to the modifier.
+            $sql_update_quotation = "UPDATE quotations SET
+                customer_id = :customer_id, user_id = :user_id, quotation_date = :quotation_date, valid_until = :valid_until,
+                subtotal = :subtotal, global_discount_percentage = :global_discount_percentage,
+                global_discount_amount = :global_discount_amount, total = :total, status = :status,
+                notes = :notes, terms_and_conditions = :terms
+                WHERE id = :quotation_id AND company_id = :company_id";
+
+            $stmt_update_quotation = $this->db->prepare($sql_update_quotation);
+            $stmt_update_quotation->bindParam(':quotation_id', $quotation_id, PDO::PARAM_INT);
+            $stmt_update_quotation->bindParam(':company_id', $company_id, PDO::PARAM_INT);
+            $stmt_update_quotation->bindParam(':customer_id', $customer_id, PDO::PARAM_INT);
+            $stmt_update_quotation->bindParam(':user_id', $user_id, PDO::PARAM_INT); // User who last modified
+            $stmt_update_quotation->bindParam(':quotation_date', $quotation_date);
+            $stmt_update_quotation->bindParam(':valid_until', $valid_until);
+            $stmt_update_quotation->bindValue(':subtotal', round($calculated_subtotal, 2));
+            $stmt_update_quotation->bindValue(':global_discount_percentage', round($global_discount_percentage_val, 2));
+            $stmt_update_quotation->bindValue(':global_discount_amount', round($calculated_global_discount_amount, 2));
+            $stmt_update_quotation->bindValue(':total', round($calculated_total, 2));
+            $stmt_update_quotation->bindParam(':status', $status);
+            $stmt_update_quotation->bindParam(':notes', $notes);
+            $stmt_update_quotation->bindParam(':terms', $terms);
+
+            if (!$stmt_update_quotation->execute()) {
+                $this->db->rollBack();
+                error_log("Quotation::update - Failed to update quotation header for ID {$quotation_id}. Error: " . implode(", ", $stmt_update_quotation->errorInfo()));
+                return false;
+            }
+
+            // Delete old items
+            $sql_delete_items = "DELETE FROM quotation_items WHERE quotation_id = :quotation_id";
+            $stmt_delete_items = $this->db->prepare($sql_delete_items);
+            // Note: No company_id check here as quotation_id is primary key and already company-scoped by logic.
+            $stmt_delete_items->bindParam(':quotation_id', $quotation_id, PDO::PARAM_INT);
+            if (!$stmt_delete_items->execute()) {
+                 $this->db->rollBack();
+                 error_log("Quotation::update - Failed to delete old items for quotation ID {$quotation_id}. Error: " . implode(", ", $stmt_delete_items->errorInfo()));
+                 return false;
+            }
+
+            // Insert new items
+            $sql_item = "INSERT INTO quotation_items
+                (quotation_id, product_id, description, quantity, unit_price,
+                discount_percentage, discount_amount, line_total) VALUES
+                (:quotation_id, :product_id, :description, :quantity, :unit_price,
+                :discount_percentage, :discount_amount, :line_total)";
+            $stmt_item = $this->db->prepare($sql_item);
+
+            foreach ($processed_items as $p_item) {
+                $stmt_item->bindParam(':quotation_id', $quotation_id, PDO::PARAM_INT);
+                $stmt_item->bindParam(':product_id', $p_item['product_id']);
+                $stmt_item->bindParam(':description', $p_item['description']);
+                $stmt_item->bindParam(':quantity', $p_item['quantity'], PDO::PARAM_INT);
+                $stmt_item->bindParam(':unit_price', $p_item['unit_price']);
+                $stmt_item->bindParam(':discount_percentage', $p_item['discount_percentage']);
+                $stmt_item->bindParam(':discount_amount', $p_item['discount_amount']);
+                $stmt_item->bindParam(':line_total', $p_item['line_total']);
+
+                if (!$stmt_item->execute()) {
+                    $this->db->rollBack();
+                    error_log("Quotation::update - Failed to insert new quotation item for quotation ID {$quotation_id}. Error: " . implode(", ", $stmt_item->errorInfo()));
+                    return false;
+                }
+            }
+
+            $this->db->commit();
+            return true;
+
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+            error_log("Quotation::update PDOException for quotation ID {$quotation_id}: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Deletes a quotation and its items.
+     *
+     * @param int $quotation_id
+     * @param int $company_id
+     * @return bool True on success, false on failure.
+     */
+    public function delete(int $quotation_id, int $company_id): bool {
+        // Verify quotation belongs to company
+        $existingQuotation = $this->getById($quotation_id, $company_id); // getById already checks company_id for the header
+        if (!$existingQuotation) {
+            error_log("Quotation::delete - Quotation ID {$quotation_id} not found or does not belong to company ID {$company_id}.");
+            return false;
+        }
+
+        $this->db->beginTransaction();
+        try {
+            // quotation_items has ON DELETE CASCADE for quotation_id, so they will be deleted automatically
+            // when the quotation is deleted. If not, delete them manually first:
+            // $sql_delete_items = "DELETE FROM quotation_items WHERE quotation_id = :quotation_id";
+            // $stmt_delete_items = $this->db->prepare($sql_delete_items);
+            // $stmt_delete_items->bindParam(':quotation_id', $quotation_id, PDO::PARAM_INT);
+            // $stmt_delete_items->execute();
+
+            $sql_delete_quotation = "DELETE FROM quotations WHERE id = :quotation_id AND company_id = :company_id";
+            $stmt_delete_quotation = $this->db->prepare($sql_delete_quotation);
+            $stmt_delete_quotation->bindParam(':quotation_id', $quotation_id, PDO::PARAM_INT);
+            $stmt_delete_quotation->bindParam(':company_id', $company_id, PDO::PARAM_INT);
+
+            if ($stmt_delete_quotation->execute()) {
+                $this->db->commit();
+                return true;
+            } else {
+                $this->db->rollBack();
+                error_log("Quotation::delete - Failed to delete quotation ID {$quotation_id}. Error: " . implode(", ", $stmt_delete_quotation->errorInfo()));
+                return false;
+            }
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+            error_log("Quotation::delete PDOException for quotation ID {$quotation_id}: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Updates the status of a quotation.
+     *
+     * @param int $quotation_id
+     * @param int $company_id
+     * @param string $new_status
+     * @return bool True on success, false on failure.
+     */
+    public function updateStatus(int $quotation_id, int $company_id, string $new_status): bool {
+        // Optional: Validate $new_status against a list of allowed statuses
+        $allowed_statuses = ['Draft', 'Sent', 'Accepted', 'Rejected', 'Invoiced', 'Cancelled']; // Example
+        if (!in_array($new_status, $allowed_statuses)) {
+            error_log("Quotation::updateStatus - Invalid status '{$new_status}' for quotation ID {$quotation_id}.");
+            return false;
+        }
+
+        // Verify quotation belongs to company
+        $existingQuotation = $this->getById($quotation_id, $company_id);
+        if (!$existingQuotation) {
+            error_log("Quotation::updateStatus - Quotation ID {$quotation_id} not found or does not belong to company ID {$company_id}.");
+            return false;
+        }
+
+        try {
+            $sql = "UPDATE quotations SET status = :new_status WHERE id = :quotation_id AND company_id = :company_id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':new_status', $new_status);
+            $stmt->bindParam(':quotation_id', $quotation_id, PDO::PARAM_INT);
+            $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
+
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Quotation::updateStatus PDOException for quotation ID {$quotation_id}: " . $e->getMessage());
+            return false;
+        }
+    }
 }
 ?>

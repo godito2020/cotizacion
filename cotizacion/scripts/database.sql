@@ -174,6 +174,22 @@ INSERT INTO `roles` (`role_name`, `description`) VALUES
 ('Company Admin', 'Manages a specific company, users, and settings'),
 ('Salesperson', 'Creates and manages quotations');
 
+-- Table: api_tokens
+-- Stores API tokens for external application access.
+CREATE TABLE `api_tokens` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INT NOT NULL,
+  `token` VARCHAR(128) NOT NULL UNIQUE,
+  `permissions` TEXT, -- e.g., JSON array: ["products:read", "customers:read"]
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `last_used_at` TIMESTAMP NULL DEFAULT NULL,
+  `expires_at` TIMESTAMP NULL DEFAULT NULL, -- Optional: for token expiry
+  `name` VARCHAR(100) NULL, -- User-friendly name for the token
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE INDEX `idx_api_tokens_user_id` ON `api_tokens`(`user_id`);
+
+
 -- Note on SQL Dialect:
 -- This schema uses backticks for table and column names, which is common in MySQL.
 -- For other SQL databases (like PostgreSQL, SQL Server, SQLite), double quotes are standard for identifiers, or no quotes if names are not reserved words and follow case rules.

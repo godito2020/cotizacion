@@ -3,7 +3,6 @@
 require_once __DIR__ . '/../../includes/init.php';
 
 $auth = new Auth();
-$productRepo = new Product(); // Autoloaded
 
 if (!$auth->isLoggedIn()) {
     $auth->redirect(BASE_URL . '/login.php?redirect_to=' . urlencode($_SERVER['REQUEST_URI']));
@@ -11,210 +10,157 @@ if (!$auth->isLoggedIn()) {
 
 $loggedInUser = $auth->getUser();
 if (!$loggedInUser || !isset($loggedInUser['company_id'])) {
-    $_SESSION['error_message'] = "User or company information is missing. Please re-login.";
+    $_SESSION['error_message'] = "Usuario o información de la compañía ausente. Por favor, re-ingrese.";
     $auth->logout();
     $auth->redirect(BASE_URL . '/login.php');
 }
 $company_id = $loggedInUser['company_id'];
 
-if (!$auth->hasRole('Company Admin')) {
-    $_SESSION['error_message'] = "You are not authorized to manage products.";
+if (!$auth->hasRole(['Company Admin', 'System Admin'])) {
+    $_SESSION['error_message'] = "No está autorizado para gestionar productos.";
     $auth->redirect(BASE_URL . '/admin/index.php');
 }
 
-$userRepo = new User(); // For header display of roles
+$productRepo = new Product();
 
-$product_id_get = $_GET['id'] ?? null;
+$product_id_get = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 $is_edit_mode = false;
-$product_data = [
-    'id' => null,
-    'name' => '',
-    'sku' => '',
-    'price' => '',
-    'description' => ''
+$form_values = [ // For sticky form and pre-population
+    'id' => null, 'name' => '', 'sku' => '', 'price' => '', 'description' => ''
 ];
-$page_title = "Add New Product";
-$errors = [];
 
 if ($product_id_get) {
-    $product_data = $productRepo->getById((int)$product_id_get, $company_id);
+    $product_data = $productRepo->getById($product_id_get, $company_id);
     if ($product_data) {
         $is_edit_mode = true;
-        $page_title = "Edit Product: " . htmlspecialchars($product_data['name']);
+        $page_title_action = "Editar Producto: " . htmlspecialchars($product_data['name']);
+        $form_values = $product_data; // Populate with existing data
     } else {
-        $_SESSION['error_message'] = "Product not found or you do not have permission to edit it.";
+        $_SESSION['error_message'] = "Producto no encontrado o no tiene permiso para editarlo.";
         $auth->redirect(BASE_URL . '/admin/products.php');
     }
+} else {
+    $page_title_action = "Añadir Nuevo Producto";
 }
 
+$errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $product_data['name'] = trim($_POST['name'] ?? '');
-    $product_data['sku'] = trim($_POST['sku'] ?? '');
-    $product_data['price'] = trim($_POST['price'] ?? '');
-    $product_data['description'] = trim($_POST['description'] ?? null);
-    $current_product_id = $_POST['product_id'] ?? null; // Hidden field for ID in edit mode
+    $form_values['name'] = trim($_POST['name'] ?? '');
+    $form_values['sku'] = trim($_POST['sku'] ?? '');
+    $form_values['price'] = trim($_POST['price'] ?? '');
+    $form_values['description'] = trim($_POST['description'] ?? null);
+    $current_product_id = $_POST['product_id'] ?? null;
 
-    // Basic Validation
-    if (empty($product_data['name'])) { $errors[] = "Product name is required."; }
-    if (empty($product_data['sku'])) { $errors[] = "SKU is required."; }
-    if (!is_numeric($product_data['price']) || floatval($product_data['price']) < 0) {
-        $errors[] = "Price must be a non-negative number.";
+    if (empty($form_values['name'])) { $errors[] = "El nombre del producto es requerido."; }
+    if (empty($form_values['sku'])) { $errors[] = "El SKU es requerido."; }
+    if (!is_numeric($form_values['price']) || floatval($form_values['price']) < 0) {
+        $errors[] = "El precio debe ser un número no negativo.";
     } else {
-        $product_data['price'] = floatval($product_data['price']); // Ensure it's a float
+        $form_values['price'] = floatval($form_values['price']);
     }
 
-    // SKU Uniqueness Check
-    $excludeProductId = $is_edit_mode ? (int)$current_product_id : null;
-    if (!empty($product_data['sku']) && !$productRepo->isSkuUniqueForCompany($product_data['sku'], $company_id, $excludeProductId)) {
-        $errors[] = "This SKU is already in use by another product in your company.";
+    $excludeProductIdCheck = $is_edit_mode ? (int)$current_product_id : null;
+    if (!empty($form_values['sku']) && !$productRepo->isSkuUniqueForCompany($form_values['sku'], $company_id, $excludeProductIdCheck)) {
+        $errors[] = "Este SKU ya está en uso por otro producto en su compañía.";
     }
 
     if (empty($errors)) {
         if ($is_edit_mode) {
-            if (!$current_product_id) { // Should not happen if form is correct
-                $_SESSION['error_message'] = "Product ID missing for update.";
+            if (!$current_product_id) {
+                $_SESSION['error_message'] = "ID de producto ausente para la actualización.";
                 $auth->redirect(BASE_URL . '/admin/products.php');
             }
             $success = $productRepo->update(
-                (int)$current_product_id,
-                $company_id,
-                $product_data['name'],
-                $product_data['sku'],
-                $product_data['price'],
-                $product_data['description']
+                (int)$current_product_id, $company_id, $form_values['name'],
+                $form_values['sku'], $form_values['price'], $form_values['description']
             );
             if ($success) {
-                $_SESSION['message'] = "Product updated successfully.";
+                $_SESSION['message'] = "Producto actualizado exitosamente.";
             } else {
-                $_SESSION['error_message'] = "Failed to update product. Please try again. Check logs for details.";
+                $_SESSION['error_message'] = "Error al actualizar el producto. Revise los logs.";
             }
         } else {
             $new_id = $productRepo->create(
-                $company_id,
-                $product_data['name'],
-                $product_data['sku'],
-                $product_data['price'],
-                $product_data['description']
+                $company_id, $form_values['name'], $form_values['sku'],
+                $form_values['price'], $form_values['description']
             );
             if ($new_id) {
-                $_SESSION['message'] = "Product created successfully.";
+                $_SESSION['message'] = "Producto creado exitosamente.";
             } else {
-                $_SESSION['error_message'] = "Failed to create product. Please try again. Check logs for details (e.g. SKU uniqueness).";
+                $_SESSION['error_message'] = "Error al crear el producto. Revise los logs (ej. SKU duplicado).";
             }
         }
-        // If there was an error message from the repo operation itself, it might be overwritten here.
-        // Consider merging messages if repo methods return specific error strings.
-        if (isset($_SESSION['message']) || !isset($_SESSION['error_message'])) { // Only redirect if success or no new error
-             $auth->redirect(BASE_URL . '/admin/products.php');
-        }
-        // If error, stay on page to show $errors and potentially $_SESSION['error_message']
-        if(isset($_SESSION['error_message'])) {
-            $errors[] = $_SESSION['error_message']; // Add session error to form errors
-            unset($_SESSION['error_message']);
-        }
-
+        if(isset($_SESSION['message'])) $auth->redirect(BASE_URL . '/admin/products.php');
+        // If error, it will be displayed on the form
     }
 }
 
+$page_title = $page_title_action . " - " . APP_NAME;
+require_once TEMPLATES_PATH . '/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $page_title; ?> - Admin</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; background-color: #f4f7f6; }
-        .admin-header { background-color: #333; color: white; padding: 15px 20px; text-align: center; }
-        .admin-header h1 { margin: 0; }
-        .admin-nav { background-color: #444; padding: 10px; text-align: center; }
-        .admin-nav a { color: white; margin: 0 15px; text-decoration: none; font-size: 16px; }
-        .admin-nav a:hover { text-decoration: underline; }
-        .admin-container { padding: 20px; max-width: 800px; margin: 20px auto; }
-        .admin-content { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .admin-content h2 { margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        .user-info { text-align: right; padding: 10px 20px; background-color: #555; color: white; }
-        .user-info a { color: #ffc107; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
-        .form-group input[type="text"],
-        .form-group input[type="number"],
-        .form-group textarea { width: calc(100% - 22px); padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
-        .form-group textarea { min-height: 80px; }
-        .form-actions button { padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
-        .form-actions button[type="submit"] { background-color: #007bff; color: white; }
-        .form-actions button[type="submit"]:hover { background-color: #0056b3; }
-        .form-actions a { display: inline-block; padding: 10px 15px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px; margin-left: 10px; }
-        .form-actions a:hover { background-color: #5a6268; }
-        .error-messages { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; padding: 10px; border-radius: 4px; margin-bottom: 15px; }
-        .error-messages ul { padding-left: 20px; margin: 0; }
-    </style>
-</head>
-<body>
 
-    <header class="admin-header">
-        <h1>Admin Panel</h1>
+<nav aria-label="breadcrumb">
+  <ul>
+    <li><a href="<?php echo BASE_URL; ?>/admin/index.php">Panel Admin</a></li>
+    <li><a href="<?php echo BASE_URL; ?>/admin/products.php">Gestionar Productos</a></li>
+    <li><?php echo $page_title_action; ?></li>
+  </ul>
+</nav>
+
+<article>
+    <header>
+        <h2><?php echo $page_title_action; ?></h2>
     </header>
 
-     <div class="user-info">
-        Logged in as: <?php echo htmlspecialchars($loggedInUser['username'] ?? 'User'); ?> (<?php echo htmlspecialchars(implode(', ', array_column($userRepo->getRoles($loggedInUser['id']), 'role_name'))); ?>) |
-        Company ID: <?php echo htmlspecialchars($company_id); ?> |
-        <a href="<?php echo BASE_URL; ?>/logout.php">Logout</a>
-    </div>
-
-    <nav class="admin-nav">
-        <a href="<?php echo BASE_URL; ?>/admin/index.php">Admin Home</a>
-        <?php if ($auth->hasRole('System Admin')): ?>
-            <a href="<?php echo BASE_URL; ?>/admin/companies.php">Manage Companies</a>
-        <?php endif; ?>
-        <?php if ($auth->hasRole(['Company Admin', 'System Admin'])): ?>
-            <a href="<?php echo BASE_URL; ?>/admin/products.php">Manage Products</a>
-        <?php endif; ?>
-        <a href="<?php echo BASE_URL; ?>/dashboard.php">Main Dashboard</a>
-    </nav>
-
-    <div class="admin-container">
-        <div class="admin-content">
-            <h2><?php echo $page_title; ?></h2>
-
-            <?php if (!empty($errors)): ?>
-                <div class="error-messages">
-                    <strong>Please correct the following errors:</strong>
-                    <ul>
-                        <?php foreach ($errors as $error): ?>
-                            <li><?php echo htmlspecialchars($error); ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-            <?php endif; ?>
-
-            <form action="product_form.php<?php echo $is_edit_mode ? '?id=' . (int)$product_id_get : ''; ?>" method="POST">
-                <?php if ($is_edit_mode): ?>
-                    <input type="hidden" name="product_id" value="<?php echo htmlspecialchars($product_data['id']); ?>">
-                <?php endif; ?>
-                <div class="form-group">
-                    <label for="name">Product Name <span style="color:red;">*</span>:</label>
-                    <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($product_data['name']); ?>" required>
-                </div>
-                <div class="form-group">
-                    <label for="sku">SKU <span style="color:red;">*</span>:</label>
-                    <input type="text" id="sku" name="sku" value="<?php echo htmlspecialchars($product_data['sku']); ?>" required>
-                </div>
-                <div class="form-group">
-                    <label for="price">Price <span style="color:red;">*</span>:</label>
-                    <input type="number" id="price" name="price" value="<?php echo htmlspecialchars($product_data['price']); ?>" step="0.01" min="0" required>
-                </div>
-                <div class="form-group">
-                    <label for="description">Description:</label>
-                    <textarea id="description" name="description"><?php echo htmlspecialchars($product_data['description'] ?? ''); ?></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="submit"><?php echo $is_edit_mode ? 'Update Product' : 'Create Product'; ?></button>
-                    <a href="products.php">Cancel</a>
-                </div>
-            </form>
+    <?php if (!empty($errors)): ?>
+        <div class="error-messages" role="alert">
+            <strong>Por favor corrija los siguientes errores:</strong>
+            <ul>
+                <?php foreach ($errors as $error): ?>
+                    <li><?php echo htmlspecialchars($error); ?></li>
+                <?php endforeach; ?>
+            </ul>
         </div>
-    </div>
+    <?php endif; ?>
+    <?php /* Display session error if redirected here with one, and not a POST request with its own errors */ ?>
+    <?php if (isset($_SESSION['error_message']) && $_SERVER['REQUEST_METHOD'] !== 'POST'): ?>
+        <p role="alert" class="pico-background-red-200 pico-color-red-800" style="padding:0.5rem;"><?php echo htmlspecialchars($_SESSION['error_message']); unset($_SESSION['error_message']); ?></p>
+    <?php endif; ?>
 
-</body>
-</html>
+
+    <form action="product_form.php<?php echo $is_edit_mode ? '?id=' . (int)$product_id_get : ''; ?>" method="POST">
+        <?php if ($is_edit_mode): ?>
+            <input type="hidden" name="product_id" value="<?php echo htmlspecialchars($form_values['id']); ?>">
+        <?php endif; ?>
+
+        <div class="grid">
+            <label for="name">
+                Nombre del Producto <span style="color:red;">*</span>
+                <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($form_values['name']); ?>" required>
+            </label>
+            <label for="sku">
+                SKU <span style="color:red;">*</span>
+                <input type="text" id="sku" name="sku" value="<?php echo htmlspecialchars($form_values['sku']); ?>" required>
+            </label>
+        </div>
+
+        <label for="price">
+            Precio <span style="color:red;">*</span>
+            <input type="number" id="price" name="price" value="<?php echo htmlspecialchars($form_values['price']); ?>" step="0.01" min="0" required>
+        </label>
+
+        <label for="description">
+            Descripción
+            <textarea id="description" name="description"><?php echo htmlspecialchars($form_values['description'] ?? ''); ?></textarea>
+        </label>
+
+        <footer class="grid">
+            <a href="products.php" role="button" class="secondary">Cancelar</a>
+            <button type="submit"><?php echo $is_edit_mode ? 'Actualizar Producto' : 'Crear Producto'; ?></button>
+        </footer>
+    </form>
+</article>
+
+<?php
+require_once TEMPLATES_PATH . '/footer.php';
+?>

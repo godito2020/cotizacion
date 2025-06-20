@@ -85,9 +85,11 @@ unset($_SESSION['error_message']);
             <a href="<?php echo BASE_URL; ?>/admin/customers.php">Manage Customers</a>
         <?php endif; ?>
         <?php if ($auth->hasRole(['Company Admin', 'System Admin'])): ?>
-            <a href="<?php echo BASE_URL; ?>/admin/products.php">Manage Products</a>
-            <a href="<?php echo BASE_URL; ?>/admin/warehouses.php">Manage Warehouses</a>
-            <a href="<?php echo BASE_URL; ?>/admin/stock_management.php">Manage Stock</a>
+            <a href="<?php echo BASE_URL; ?>/admin/products.php">Productos</a>
+            <a href="<?php echo BASE_URL; ?>/admin/product_import.php">Importar Productos</a>
+            <a href="<?php echo BASE_URL; ?>/admin/warehouses.php">Almacenes</a>
+            <a href="<?php echo BASE_URL; ?>/admin/warehouse_import.php">Importar Almacenes</a>
+            <a href="<?php echo BASE_URL; ?>/admin/stock_management.php">Stock</a>
         <?php endif; ?>
         <a href="<?php echo BASE_URL; ?>/dashboard.php">Main Dashboard</a>
     </nav>

@@ -1,4 +1,7 @@
 <?php
+// Application Name
+define('APP_NAME', 'Sistema de Cotizaciones');
+
 // Database Configuration
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'cotizacion_db'); // A default name, will be configured during installation
@@ -16,7 +19,7 @@ define('CONFIG_PATH', APP_ROOT . '/config');
 define('LIB_PATH', APP_ROOT . '/lib');
 define('INCLUDES_PATH', APP_ROOT . '/includes');
 define('PUBLIC_PATH', APP_ROOT . '/public');
-define('TEMPLATES_PATH', APP_ROOT . '/templates');
+define('TEMPLATES_PATH', APP_ROOT . '/templates'); // Corrected path
 define('SCRIPTS_PATH', APP_ROOT . '/scripts');
 
 // Error reporting - recommended for development

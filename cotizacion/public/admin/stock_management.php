@@ -173,8 +173,12 @@ if($selected_filter_product_id) {
             <div class="message error" style="margin-bottom:20px;"><?php echo htmlspecialchars($error_message); ?></div>
         <?php endif; ?>
 
+        <div style="margin-bottom: 20px;">
+            <a href="stock_import.php" class="add-button" style="background-color: #17a2b8; text-decoration:none; color:white; padding:10px 15px; border-radius:5px;">Importar Stock (CSV)</a>
+        </div>
+
         <div class="admin-content">
-            <h3>Update Stock Quantity</h3>
+            <h3>Actualizar Cantidad de Stock</h3>
             <form action="stock_management.php" method="POST" class="update-form">
                 <div class="form-group">
                     <label for="product_id">Product:</label>
@@ -198,13 +202,13 @@ if($selected_filter_product_id) {
                     <label for="quantity">New Quantity:</label>
                     <input type="number" name="quantity" id="quantity" min="0" required>
                 </div>
-                <button type="submit" name="update_stock">Update Stock</button>
+                <button type="submit" name="update_stock">Actualizar Stock</button>
             </form>
         </div>
 
 
         <div class="admin-content">
-            <h2>Stock Overview (Company: <?php echo htmlspecialchars($company_id); ?>)</h2>
+            <h2>Vista General de Stock (Compañía: <?php echo htmlspecialchars($company_id); ?>)</h2>
 
             <form action="stock_management.php" method="GET" class="filter-form">
                 Filter by:

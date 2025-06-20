@@ -99,7 +99,8 @@ unset($_SESSION['error_message']);
                 <div class="message error"><?php echo htmlspecialchars($error_message); ?></div>
             <?php endif; ?>
 
-            <a href="warehouse_form.php" class="add-button">Add New Warehouse</a>
+            <a href="warehouse_form.php" class="add-button">Añadir Nuevo Almacén</a>
+            <a href="warehouse_import.php" class="add-button" style="background-color: #17a2b8; margin-left:10px;">Importar Almacenes (CSV)</a>
 
             <table>
                 <thead>
