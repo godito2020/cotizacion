@@ -1,0 +1,550 @@
+/* Estilos generales para el panel de administración */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    background-color: #f4f6f8;
+    color: #333;
+    font-size: 14px;
+}
+
+.admin-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    background-color: #2c3e50; /* Azul oscuro/gris */
+    color: #ecf0f1; /* Texto claro */
+    display: flex;
+    flex-direction: column;
+    transition: width 0.3s ease;
+}
+
+.sidebar-header {
+    padding: 20px 15px;
+    text-align: center;
+    border-bottom: 1px solid #34495e; /* Separador sutil */
+}
+
+.sidebar-header h2 {
+    margin: 0;
+    font-size: 1.5em;
+    color: #fff;
+}
+.sidebar-header a {
+    text-decoration: none;
+}
+
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.sidebar-nav li a {
+    display: block;
+    padding: 12px 20px;
+    color: #bdc3c7; /* Color de enlace grisáceo */
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    border-left: 3px solid transparent;
+}
+
+.sidebar-nav li a:hover {
+    background-color: #34495e; /* Azul un poco más claro */
+    color: #fff;
+    border-left-color: #3498db; /* Azul brillante */
+}
+
+.sidebar-nav li a.active {
+    background-color: #2980b9; /* Azul más oscuro para activo */
+    color: #fff;
+    font-weight: bold;
+    border-left-color: #f1c40f; /* Amarillo para destacar activo */
+}
+
+.nav-section-title {
+    padding: 15px 20px 5px;
+    font-size: 0.8em;
+    color: #7f8c8d; /* Gris claro para títulos de sección */
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+
+.sidebar-footer {
+    padding: 15px;
+    text-align: center;
+    font-size: 0.85em;
+    border-top: 1px solid #34495e;
+}
+.sidebar-footer a {
+    color: #bdc3c7;
+    text-decoration: none;
+}
+.sidebar-footer a:hover {
+    color: #fff;
+}
+.sidebar-footer p {
+    margin: 5px 0 0;
+    color: #7f8c8d;
+}
+
+/* Main Content Area */
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-header {
+    background-color: #fff;
+    padding: 15px 30px;
+    border-bottom: 1px solid #e0e0e0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.main-header h1 {
+    margin: 0;
+    font-size: 1.8em;
+    color: #34495e;
+}
+
+.content-area {
+    padding: 30px;
+    flex-grow: 1;
+    background-color: #f9fafb; /* Un poco más claro que el body */
+}
+
+.main-footer {
+    padding: 15px 30px;
+    background-color: #fff;
+    border-top: 1px solid #e0e0e0;
+    text-align: center;
+    font-size: 0.9em;
+    color: #777;
+}
+
+/* Formularios y Elementos Comunes */
+.card {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.card-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #f7f9fa;
+}
+
+.card-header h3 {
+    margin: 0;
+    font-size: 1.2em;
+    color: #34495e;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.form-control,
+textarea.form-control {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1em;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+textarea.form-control {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.form-control:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    outline: none;
+}
+.form-control[type="file"] {
+    padding: 8px 12px;
+}
+
+.form-check {
+    display: flex;
+    align-items: center;
+}
+.form-check-input {
+    margin-right: 8px;
+    width: auto; /* Evitar que ocupe todo el ancho */
+}
+.form-check-label {
+    margin-bottom: 0; /* Reset margin para label en check */
+    font-weight: normal;
+}
+
+
+.btn {
+    padding: 10px 18px;
+    font-size: 1em;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.2s ease;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background-color: #3498db; /* Azul */
+    color: #fff;
+}
+.btn-primary:hover {
+    background-color: #2980b9;
+}
+
+.btn-secondary {
+    background-color: #7f8c8d; /* Gris */
+    color: #fff;
+}
+.btn-secondary:hover {
+    background-color: #6c7a7d;
+}
+
+.btn-success {
+    background-color: #2ecc71; /* Verde */
+    color: #fff;
+}
+.btn-success:hover {
+    background-color: #27ae60;
+}
+
+.btn-danger {
+    background-color: #e74c3c; /* Rojo */
+    color: #fff;
+}
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+.alert-info {
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+}
+.alert-warning {
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+}
+
+/* Tablas */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+.table th, .table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+.table th {
+    background-color: #f1f4f7;
+    font-weight: 600;
+    color: #34495e;
+}
+.table tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) { /* Tablets y móviles grandes */
+    .sidebar {
+        position: fixed;
+        left: -260px; /* Oculto por defecto */
+        height: 100vh;
+        z-index: 1000;
+        transition: left 0.3s ease-in-out;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+    .sidebar.open {
+        left: 0;
+    }
+    .main-content {
+        margin-left: 0; /* Ocupa todo el ancho cuando el sidebar está oculto */
+        transition: margin-left 0.3s ease-in-out;
+    }
+    .main-content.sidebar-open {
+        margin-left: 260px; /* Empujar contenido cuando el sidebar está abierto */
+    }
+
+    .sidebar-toggle { /* Botón para mostrar/ocultar sidebar */
+        display: block; /* Mostrar el botón en pantallas pequeñas */
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        z-index: 1001; /* Encima del sidebar */
+        background-color: #34495e;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1.2em;
+    }
+     .main-header {
+        padding: 15px 20px 15px 60px; /* Más padding izquierdo si el toggle está visible */
+    }
+}
+
+@media (max-width: 768px) { /* Móviles */
+    .main-header h1 {
+        font-size: 1.4em;
+    }
+     .main-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px 15px 10px 55px;
+    }
+    .main-header .user-info {
+        margin-top: 5px;
+        font-size: 0.9em;
+    }
+    .content-area {
+        padding: 15px;
+    }
+    .dashboard-cards {
+        flex-direction: column;
+    }
+    .dashboard-card {
+        min-width: unset;
+        width: 100%;
+    }
+    .row { /* Para que las columnas se apilen en móviles */
+        flex-direction: column;
+    }
+    .col-md-3, .col-md-4, .col-md-6, .col-md-8 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: 15px; /* Espacio entre campos apilados */
+    }
+    .form-group.text-right { /* Alinear botones a la izquierda en móvil */
+        text-align: left;
+    }
+    .form-group.text-right .btn {
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
+    .float-right { /* Evitar float en móvil si causa problemas */
+        float: none !important;
+        display: block;
+        margin-bottom: 10px;
+    }
+    .card-header h3 {
+        display:block;
+        margin-bottom: 5px;
+    }
+}
+
+
+/* Estilos para el toggle button, oculto por defecto en pantallas grandes */
+.sidebar-toggle {
+    display: none;
+}
+
+
+/* Utilidades */
+.text-right {
+    text-align: right;
+}
+.mt-20 {
+    margin-top: 20px;
+}
+.mb-0 {
+    margin-bottom: 0 !important;
+}
+
+/* Dashboard specific (example) */
+.dashboard-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.dashboard-card {
+    flex: 1;
+    min-width: 250px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    border: 1px solid #e0e0e0;
+}
+.dashboard-card h4 {
+    margin-top: 0;
+    color: #3498db;
+}
+.dashboard-card .value {
+    font-size: 2em;
+    font-weight: bold;
+}
+.dashboard-card .description {
+    color: #777;
+    font-size: 0.9em;
+}
+/* Estilos para la página de configuración de empresa */
+.logo-preview-container {
+    margin-top: 15px;
+    padding: 10px;
+    border: 1px dashed #ccc;
+    display: inline-block;
+    min-height: 100px;
+    min-width: 100px;
+    text-align: center;
+}
+
+.logo-preview-container img {
+    max-width: 200px;
+    max-height: 100px;
+    display: block;
+    margin: 0 auto;
+}
+
+.logo-preview-container .placeholder {
+    color: #aaa;
+    font-size: 0.9em;
+    padding-top: 30px;
+}
+
+/* Configuración del sistema */
+.config-group {
+    margin-bottom: 30px;
+}
+.config-group h4 {
+    font-size: 1.1em;
+    color: #2980b9; /* Azul más oscuro para títulos de grupo */
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Estilos para Select2 (si se usa) */
+.select2-container .select2-selection--single {
+    height: calc(1.5em + .75rem + 2px) !important; /* Bootstrap form-control height */
+    padding: .375rem .75rem !important;
+    border: 1px solid #ccc !important;
+    border-radius: .25rem !important;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 1.5 !important;
+    padding-left: 0 !important;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: calc(1.5em + .75rem) !important; /* Ajustar flecha */
+}
+
+/* Input group para Select2 (ejemplo si se necesita) */
+.input-group .select2-container--default {
+    flex: 1 1 auto;
+}
+.input-group > .select2-container--default:not(:last-child) .select2-selection--single {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+.input-group > .select2-container--default:not(:first-child) .select2-selection--single {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+
+/* Para que los iconos dentro de los botones se vean bien */
+.btn i.fas {
+    margin-right: 5px; /* Espacio entre icono y texto */
+}
+.btn-xs i.fas {
+    margin-right: 0; /* Sin margen si es solo icono */
+}
+.btn-primary i.fas, .btn-danger i.fas, .btn-success i.fas, .btn-info i.fas, .btn-warning i.fas {
+    color: white; /* Asegurar que los iconos sean blancos en botones de color */
+}
+.btn-warning i.fas {
+    color: #212529; /* Icono oscuro en botón amarillo */
+}
+
+/* Ajustes para tablas responsivas */
+.table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Para iOS */
+}
+/* Para que las columnas de acciones no se rompan tanto */
+.table td:last-child, .table th:last-child {
+    white-space: nowrap;
+}
+/* Ajustes específicos para la tabla de detalles de cotización en móviles */
+@media (max-width: 768px) {
+    #cotizacionDetallesBody .detalle_descripcion { /* Asumiendo que cotizacion_form.php usa esta clase */
+        min-width: 150px; /* Darle un ancho mínimo a la descripción */
+    }
+    #cotizacionDetallesBody .form-control-sm { /* Y esta clase para los inputs */
+        min-width: 60px; /* Ancho mínimo para inputs numéricos */
+        font-size: 0.8rem; /* Reducir un poco la fuente si es necesario */
+    }
+    #cotizacionDetallesBody th, #cotizacionDetallesBody td {
+        padding: .4rem .3rem; /* Reducir padding en celdas */
+        font-size: 0.85rem;
+    }
+     /* Ocultar columnas menos críticas en móvil si es necesario, o hacer que se puedan scrollear */
+    /* Ejemplo: Ocultar tipo de descuento y valor si es mucho
+    #cotizacionDetallesBody th:nth-child(5), #cotizacionDetallesBody td:nth-child(5),
+    #cotizacionDetallesBody th:nth-child(6), #cotizacionDetallesBody td:nth-child(6) {
+        display: none;
+    }
+    */
+}
+
+
+/* Mejorar visualización de campos readonly en formularios */
+.form-control[readonly] {
+    background-color: #e9ecef;
+    opacity: 1;
+}
