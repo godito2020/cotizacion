@@ -1,5 +1,4 @@
 <?php
-<?php
 // Este archivo manejará la lógica para cargar y guardar los datos de la empresa.
 // Ahora se usará db_helper.php para interactuar con la base de datos.
 

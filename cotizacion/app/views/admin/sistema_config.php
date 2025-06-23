@@ -1,5 +1,4 @@
 <?php
-<?php
 // Lógica para cargar y guardar configuraciones del sistema
 // db_helper.php ya está incluido a través de admin.php
 
