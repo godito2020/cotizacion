@@ -1,0 +1,346 @@
+[21-Jan-2026 12:38:48 America/Lima] === ENVÍO DE CORREO INICIADO ===
+[21-Jan-2026 12:38:48 America/Lima] Quotation ID: 132
+[21-Jan-2026 12:38:48 America/Lima] Company ID: 2
+[21-Jan-2026 12:38:48 America/Lima] Cotización encontrada: C2-2026-0001
+[21-Jan-2026 12:38:48 America/Lima] SMTP Enabled: No
+[21-Jan-2026 12:38:48 America/Lima] SMTP Host: 
+[21-Jan-2026 12:38:48 America/Lima] SMTP User: 
+[21-Jan-2026 12:38:48 America/Lima] SMTP Password length: 0 chars (decrypted)
+[21-Jan-2026 12:38:48 America/Lima] From Email: 
+[21-Jan-2026 12:40:10 America/Lima] === ENVÍO DE CORREO INICIADO ===
+[21-Jan-2026 12:40:10 America/Lima] Quotation ID: 132
+[21-Jan-2026 12:40:10 America/Lima] Company ID: 2
+[21-Jan-2026 12:40:10 America/Lima] Cotización encontrada: C2-2026-0001
+[21-Jan-2026 12:40:10 America/Lima] SMTP Enabled: No
+[21-Jan-2026 12:40:10 America/Lima] SMTP Host: 
+[21-Jan-2026 12:40:10 America/Lima] SMTP User: 
+[21-Jan-2026 12:40:10 America/Lima] SMTP Password length: 0 chars (decrypted)
+[21-Jan-2026 12:40:10 America/Lima] From Email: 
+[21-Jan-2026 12:40:25 America/Lima] === ENVÍO DE CORREO INICIADO ===
+[21-Jan-2026 12:40:25 America/Lima] Quotation ID: 132
+[21-Jan-2026 12:40:25 America/Lima] Company ID: 2
+[21-Jan-2026 12:40:25 America/Lima] Cotización encontrada: C2-2026-0001
+[21-Jan-2026 12:40:25 America/Lima] SMTP Enabled: No
+[21-Jan-2026 12:40:25 America/Lima] SMTP Host: 
+[21-Jan-2026 12:40:25 America/Lima] SMTP User: 
+[21-Jan-2026 12:40:25 America/Lima] SMTP Password length: 0 chars (decrypted)
+[21-Jan-2026 12:40:25 America/Lima] From Email: 
+[21-Jan-2026 14:32:16 America/Lima] === ENVÍO DE CORREO INICIADO ===
+[21-Jan-2026 14:32:16 America/Lima] Quotation ID: 133
+[21-Jan-2026 14:32:16 America/Lima] Company ID: 2
+[21-Jan-2026 14:32:16 America/Lima] Cotización encontrada: C2-2026-0002
+[21-Jan-2026 14:32:16 America/Lima] SMTP Enabled: No
+[21-Jan-2026 14:32:16 America/Lima] SMTP Host: 
+[21-Jan-2026 14:32:16 America/Lima] SMTP User: 
+[21-Jan-2026 14:32:16 America/Lima] SMTP Password length: 0 chars (decrypted)
+[21-Jan-2026 14:32:16 America/Lima] From Email: 
+[23-Jan-2026 15:19:19 America/Lima] === ENVÍO DE CORREO INICIADO ===
+[23-Jan-2026 15:19:19 America/Lima] Quotation ID: 132
+[23-Jan-2026 15:19:19 America/Lima] Company ID: 2
+[23-Jan-2026 15:19:19 America/Lima] Cotización encontrada: C2-2026-0001
+[23-Jan-2026 15:19:19 America/Lima] SMTP Enabled: No
+[23-Jan-2026 15:19:19 America/Lima] SMTP Host: 
+[23-Jan-2026 15:19:19 America/Lima] SMTP User: 
+[23-Jan-2026 15:19:19 America/Lima] SMTP Password length: 0 chars (decrypted)
+[23-Jan-2026 15:19:19 America/Lima] From Email: 
+[23-Jan-2026 15:19:33 America/Lima] === ENVÍO DE CORREO INICIADO ===
+[23-Jan-2026 15:19:33 America/Lima] Quotation ID: 132
+[23-Jan-2026 15:19:33 America/Lima] Company ID: 2
+[23-Jan-2026 15:19:33 America/Lima] Cotización encontrada: C2-2026-0001
+[23-Jan-2026 15:19:33 America/Lima] SMTP Enabled: No
+[23-Jan-2026 15:19:33 America/Lima] SMTP Host: 
+[23-Jan-2026 15:19:33 America/Lima] SMTP User: 
+[23-Jan-2026 15:19:33 America/Lima] SMTP Password length: 0 chars (decrypted)
+[23-Jan-2026 15:19:33 America/Lima] From Email: 
+[06-Mar-2026 11:49:00 America/Lima] === ENVÍO DE CORREO INICIADO ===
+[06-Mar-2026 11:49:00 America/Lima] Quotation ID: 153
+[06-Mar-2026 11:49:00 America/Lima] Company ID: 1
+[06-Mar-2026 11:49:00 America/Lima] Cotización encontrada: C1-2026-0020
+[06-Mar-2026 11:49:00 America/Lima] SMTP Enabled: Yes
+[06-Mar-2026 11:49:00 America/Lima] SMTP Host: mail.gsm.pe
+[06-Mar-2026 11:49:00 America/Lima] SMTP User: admin@gsm.pe
+[06-Mar-2026 11:49:00 America/Lima] SMTP Password length: 16 chars (decrypted)
+[06-Mar-2026 11:49:00 America/Lima] From Email: admin@gsm.pe
+[06-Mar-2026 11:49:00 America/Lima] Email destino: hleiva@maxtire.com.pe
+[06-Mar-2026 11:49:00 America/Lima] Generando PDF...
+[06-Mar-2026 11:49:00 America/Lima] Generando PDF usando pdf.php...
+[06-Mar-2026 11:49:00 America/Lima] PDF Generation - Company ID: 1, Bank Accounts Count: 4
+[06-Mar-2026 11:49:00 America/Lima] PDF Generation - Bank Accounts Data: [{"id":3,"company_id":1,"bank_name":"BBVA - Banco Continental","account_type":"corriente","account_number":"0011-0111-01-00008835","account_holder":"LLANTA SAN MARTIN SRL","currency":"PEN","cci":"01111100010000883529","is_active":1,"is_default":0,"created_at":"2025-09-26 11:13:31","updated_at":"2026-01-22 11:29:12"},{"id":4,"company_id":1,"bank_name":"BBVA - Banco Continental","account_type":"corriente","account_number":"001101110100008827","account_holder":"LLANTA SAN MARTIN SRL","currency":"USD","cci":"01111100010000882726","is_active":1,"is_default":0,"created_at":"2025-09-26 11:14:07","updated_at":"2026-01-22 11:29:16"},{"id":1,"company_id":1,"bank_name":"BCP - Banco de Cr\u00e9dito del Per\u00fa","account_type":"corriente","account_number":"191-1036290-0-75","account_holder":"LLANTA SAN MARTIN SRL","currency":"PEN","cci":"00219100103629007554","is_active":1,"is_default":0,"created_at":"2025-09-26 11:11:02","updated_at":"2026-01-22 11:29:20"},{"id":2,"company_id":1,"bank_name":"BCP - Banco de Cr\u00e9dito del Per\u00fa","account_type":"corriente","account_number":"191-1018488-1-66","account_holder":"LLANTA SAN MARTIN SRL","currency":"USD","cci":"00219100101848816651","is_active":1,"is_default":0,"created_at":"2025-09-26 11:12:47","updated_at":"2026-01-22 11:29:23"}]
+[06-Mar-2026 11:49:03 America/Lima] PDF generado exitosamente, tamaño: 118264 bytes
+[06-Mar-2026 11:49:03 America/Lima] PDF generado exitosamente, tamaño: 118264 bytes
+[06-Mar-2026 11:49:03 America/Lima] Token de aprobación generado: 4de8583535b80cef0fdef958a8be7c048d298c22207252c220613fa96f4c5947
+[06-Mar-2026 11:49:03 America/Lima] Intentando enviar vía SMTP...
+[06-Mar-2026 11:49:03 America/Lima] Conectando a SMTP: mail.gsm.pe:465
+[06-Mar-2026 11:49:03 America/Lima] Greeting line: 220-whm01.mgdhosting.com ESMTP Exim 4.99.1 #2 Fri, 06 Mar 2026 11:49:03 -0500
+[06-Mar-2026 11:49:03 America/Lima] Greeting line: 220-We do not authorize the use of this system to transport unsolicited,
+[06-Mar-2026 11:49:03 America/Lima] Greeting line: 220 and/or bulk e-mail.
+[06-Mar-2026 11:49:03 America/Lima] Server greeting complete: 220-whm01.mgdhosting.com ESMTP Exim 4.99.1 #2 Fri, 06 Mar 2026 11:49:03 -0500 
+220-We do not author
+[06-Mar-2026 11:49:03 America/Lima] EHLO line: 250-whm01.mgdhosting.com Hello localhost [38.187.24.193]
+[06-Mar-2026 11:49:03 America/Lima] EHLO line: 250-SIZE 52428800
+[06-Mar-2026 11:49:03 America/Lima] EHLO line: 250-LIMITS MAILMAX=1000 RCPTMAX=50000
+[06-Mar-2026 11:49:03 America/Lima] EHLO line: 250-8BITMIME
+[06-Mar-2026 11:49:03 America/Lima] EHLO line: 250-PIPELINING
+[06-Mar-2026 11:49:03 America/Lima] EHLO line: 250-PIPECONNECT
+[06-Mar-2026 11:49:03 America/Lima] EHLO line: 250-AUTH PLAIN LOGIN
+[06-Mar-2026 11:49:03 America/Lima] EHLO line: 250 HELP
+[06-Mar-2026 11:49:03 America/Lima] EHLO response complete: 250-whm01.mgdhosting.com Hello localhost [38.187.24.193]
+250-SIZE 52428800
+250-LIMITS MAILMAX=1000
+[06-Mar-2026 11:49:03 America/Lima] AUTH response: 334 VXNlcm5hbWU6
+[06-Mar-2026 11:49:03 America/Lima] Authentication successful
+[06-Mar-2026 11:49:03 America/Lima] Send response: 250 OK id=1vyYMJ-00000002HB0-3Ius
+[06-Mar-2026 11:49:03 America/Lima] Email sent successfully via SMTP
+[06-Mar-2026 11:49:03 America/Lima] Estado de cotización actualizado a 'Sent'
+[06-Mar-2026 11:49:03 America/Lima] Error logging activity: SQLSTATE[HY000]: General error: 1364 Field 'id' doesn't have a default value
+[06-Mar-2026 11:49:03 America/Lima] Correo enviado exitosamente
+[14-Mar-2026 09:17:44 America/Lima] === ENVÍO DE CORREO INICIADO ===
+[14-Mar-2026 09:17:44 America/Lima] Quotation ID: 198
+[14-Mar-2026 09:17:44 America/Lima] Company ID: 1
+[14-Mar-2026 09:17:44 America/Lima] Cotización encontrada: C1-2026-0064
+[14-Mar-2026 09:17:44 America/Lima] SMTP Enabled: Yes
+[14-Mar-2026 09:17:44 America/Lima] SMTP Host: mail.gsm.pe
+[14-Mar-2026 09:17:44 America/Lima] SMTP User: admin@gsm.pe
+[14-Mar-2026 09:17:44 America/Lima] SMTP Password length: 16 chars (decrypted)
+[14-Mar-2026 09:17:44 America/Lima] From Email: admin@gsm.pe
+[14-Mar-2026 09:17:44 America/Lima] ERROR: Cliente sin email
+[14-Mar-2026 09:18:06 America/Lima] === ENVÍO DE CORREO INICIADO ===
+[14-Mar-2026 09:18:06 America/Lima] Quotation ID: 202
+[14-Mar-2026 09:18:06 America/Lima] Company ID: 1
+[14-Mar-2026 09:18:06 America/Lima] Cotización encontrada: C1-2026-0068
+[14-Mar-2026 09:18:06 America/Lima] SMTP Enabled: Yes
+[14-Mar-2026 09:18:06 America/Lima] SMTP Host: mail.gsm.pe
+[14-Mar-2026 09:18:06 America/Lima] SMTP User: admin@gsm.pe
+[14-Mar-2026 09:18:06 America/Lima] SMTP Password length: 16 chars (decrypted)
+[14-Mar-2026 09:18:06 America/Lima] From Email: admin@gsm.pe
+[14-Mar-2026 09:18:06 America/Lima] Email destino: ventas@tullantaonline.pe
+[14-Mar-2026 09:18:06 America/Lima] Generando PDF...
+[14-Mar-2026 09:18:06 America/Lima] Generando PDF usando pdf.php...
+[14-Mar-2026 09:18:08 America/Lima] ERROR: El contenido generado no es un PDF válido
+[14-Mar-2026 09:18:08 America/Lima] Primeros 100 caracteres: 
+[14-Mar-2026 09:18:08 America/Lima] ERROR: No se pudo generar el PDF
+[14-Mar-2026 09:20:37 America/Lima] === ENVÍO DE CORREO INICIADO ===
+[14-Mar-2026 09:20:37 America/Lima] Quotation ID: 202
+[14-Mar-2026 09:20:37 America/Lima] Company ID: 1
+[14-Mar-2026 09:20:37 America/Lima] Cotización encontrada: C1-2026-0068
+[14-Mar-2026 09:20:37 America/Lima] SMTP Enabled: Yes
+[14-Mar-2026 09:20:37 America/Lima] SMTP Host: mail.gsm.pe
+[14-Mar-2026 09:20:37 America/Lima] SMTP User: admin@gsm.pe
+[14-Mar-2026 09:20:37 America/Lima] SMTP Password length: 16 chars (decrypted)
+[14-Mar-2026 09:20:37 America/Lima] From Email: admin@gsm.pe
+[14-Mar-2026 09:20:37 America/Lima] Email destino: ventas@tullantaonline.pe
+[14-Mar-2026 09:20:37 America/Lima] Generando PDF...
+[14-Mar-2026 09:20:37 America/Lima] Generando PDF usando pdf.php...
+[14-Mar-2026 09:20:38 America/Lima] ERROR: El contenido generado no es un PDF válido
+[14-Mar-2026 09:20:38 America/Lima] Primeros 100 caracteres: 
+[14-Mar-2026 09:20:38 America/Lima] ERROR: No se pudo generar el PDF
+[14-Mar-2026 09:30:24 America/Lima] === ENVÍO DE CORREO INICIADO ===
+[14-Mar-2026 09:30:24 America/Lima] Quotation ID: 202
+[14-Mar-2026 09:30:24 America/Lima] Company ID: 1
+[14-Mar-2026 09:30:24 America/Lima] Cotización encontrada: C1-2026-0068
+[14-Mar-2026 09:30:24 America/Lima] SMTP Enabled: Yes
+[14-Mar-2026 09:30:24 America/Lima] SMTP Host: mail.gsm.pe
+[14-Mar-2026 09:30:24 America/Lima] SMTP User: admin@gsm.pe
+[14-Mar-2026 09:30:24 America/Lima] SMTP Password length: 16 chars (decrypted)
+[14-Mar-2026 09:30:24 America/Lima] From Email: admin@gsm.pe
+[14-Mar-2026 09:30:24 America/Lima] Email destino: ventas@tullantaonline.pe
+[14-Mar-2026 09:30:24 America/Lima] Generando PDF...
+[14-Mar-2026 09:30:24 America/Lima] Generando PDF usando pdf.php...
+[14-Mar-2026 09:30:26 America/Lima] PDF generado exitosamente, tamaño: 52575 bytes
+[14-Mar-2026 09:30:26 America/Lima] PDF generado exitosamente, tamaño: 52575 bytes
+[14-Mar-2026 09:30:26 America/Lima] Token de aprobación generado: cbef55b1b79ec614e66957e85cd772f0c0f1a376e28832db8f4deb1cde03ec0f
+[14-Mar-2026 09:30:26 America/Lima] Intentando enviar vía SMTP...
+[14-Mar-2026 09:30:26 America/Lima] Conectando a SMTP: mail.gsm.pe:465
+[14-Mar-2026 09:30:26 America/Lima] Greeting line: 220-whm01.mgdhosting.com ESMTP Exim 4.99.1 #2 Sat, 14 Mar 2026 09:30:26 -0500
+[14-Mar-2026 09:30:26 America/Lima] Greeting line: 220-We do not authorize the use of this system to transport unsolicited,
+[14-Mar-2026 09:30:26 America/Lima] Greeting line: 220 and/or bulk e-mail.
+[14-Mar-2026 09:30:26 America/Lima] Server greeting complete: 220-whm01.mgdhosting.com ESMTP Exim 4.99.1 #2 Sat, 14 Mar 2026 09:30:26 -0500 
+220-We do not author
+[14-Mar-2026 09:30:26 America/Lima] EHLO line: 250-whm01.mgdhosting.com Hello localhost [38.187.24.193]
+[14-Mar-2026 09:30:26 America/Lima] EHLO line: 250-SIZE 52428800
+[14-Mar-2026 09:30:26 America/Lima] EHLO line: 250-LIMITS MAILMAX=1000 RCPTMAX=50000
+[14-Mar-2026 09:30:26 America/Lima] EHLO line: 250-8BITMIME
+[14-Mar-2026 09:30:26 America/Lima] EHLO line: 250-PIPELINING
+[14-Mar-2026 09:30:26 America/Lima] EHLO line: 250-PIPECONNECT
+[14-Mar-2026 09:30:26 America/Lima] EHLO line: 250-AUTH PLAIN LOGIN
+[14-Mar-2026 09:30:26 America/Lima] EHLO line: 250 HELP
+[14-Mar-2026 09:30:26 America/Lima] EHLO response complete: 250-whm01.mgdhosting.com Hello localhost [38.187.24.193]
+250-SIZE 52428800
+250-LIMITS MAILMAX=1000
+[14-Mar-2026 09:30:26 America/Lima] AUTH response: 334 VXNlcm5hbWU6
+[14-Mar-2026 09:30:27 America/Lima] Authentication successful
+[14-Mar-2026 09:30:27 America/Lima] Send response: 250 OK id=1w1Q0Z-0000000HS5n-1Fn3
+[14-Mar-2026 09:30:27 America/Lima] Email sent successfully via SMTP
+[14-Mar-2026 09:30:27 America/Lima] Estado de cotización actualizado a 'Sent'
+[14-Mar-2026 09:30:27 America/Lima] Error logging activity: SQLSTATE[HY000]: General error: 1364 Field 'id' doesn't have a default value
+[14-Mar-2026 09:30:27 America/Lima] Correo enviado exitosamente
+[14-Mar-2026 10:31:02 America/Lima] === ENVÍO DE CORREO INICIADO ===
+[14-Mar-2026 10:31:02 America/Lima] Quotation ID: 202
+[14-Mar-2026 10:31:02 America/Lima] Company ID: 1
+[14-Mar-2026 10:31:03 America/Lima] Cotización encontrada: C1-2026-0068
+[14-Mar-2026 10:31:03 America/Lima] SMTP Enabled: Yes
+[14-Mar-2026 10:31:03 America/Lima] SMTP Host: mail.gsm.pe
+[14-Mar-2026 10:31:03 America/Lima] SMTP User: admin@gsm.pe
+[14-Mar-2026 10:31:03 America/Lima] SMTP Password length: 16 chars (decrypted)
+[14-Mar-2026 10:31:03 America/Lima] From Email: admin@gsm.pe
+[14-Mar-2026 10:31:03 America/Lima] Email destino: ventas@tullantaonline.pe
+[14-Mar-2026 10:31:03 America/Lima] Generando PDF...
+[14-Mar-2026 10:31:03 America/Lima] Generando PDF usando pdf.php...
+[14-Mar-2026 10:31:04 America/Lima] PDF generado exitosamente, tamaño: 52575 bytes
+[14-Mar-2026 10:31:04 America/Lima] PDF generado exitosamente, tamaño: 52575 bytes
+[14-Mar-2026 10:31:04 America/Lima] Token de aprobación generado: 8d71f7ed37be9d4ed4e3c96aaec75824a7212924b87c2638fd04c98936270c7d
+[14-Mar-2026 10:31:04 America/Lima] Intentando enviar vía SMTP...
+[14-Mar-2026 10:31:04 America/Lima] Conectando a SMTP: mail.gsm.pe:465
+[14-Mar-2026 10:31:05 America/Lima] Greeting line: 220-whm01.mgdhosting.com ESMTP Exim 4.99.1 #2 Sat, 14 Mar 2026 10:31:04 -0500
+[14-Mar-2026 10:31:05 America/Lima] Greeting line: 220-We do not authorize the use of this system to transport unsolicited,
+[14-Mar-2026 10:31:05 America/Lima] Greeting line: 220 and/or bulk e-mail.
+[14-Mar-2026 10:31:05 America/Lima] Server greeting complete: 220-whm01.mgdhosting.com ESMTP Exim 4.99.1 #2 Sat, 14 Mar 2026 10:31:04 -0500 
+220-We do not author
+[14-Mar-2026 10:31:05 America/Lima] EHLO line: 250-whm01.mgdhosting.com Hello localhost [38.187.24.193]
+[14-Mar-2026 10:31:05 America/Lima] EHLO line: 250-SIZE 52428800
+[14-Mar-2026 10:31:05 America/Lima] EHLO line: 250-LIMITS MAILMAX=1000 RCPTMAX=50000
+[14-Mar-2026 10:31:05 America/Lima] EHLO line: 250-8BITMIME
+[14-Mar-2026 10:31:05 America/Lima] EHLO line: 250-PIPELINING
+[14-Mar-2026 10:31:05 America/Lima] EHLO line: 250-PIPECONNECT
+[14-Mar-2026 10:31:05 America/Lima] EHLO line: 250-AUTH PLAIN LOGIN
+[14-Mar-2026 10:31:05 America/Lima] EHLO line: 250 HELP
+[14-Mar-2026 10:31:05 America/Lima] EHLO response complete: 250-whm01.mgdhosting.com Hello localhost [38.187.24.193]
+250-SIZE 52428800
+250-LIMITS MAILMAX=1000
+[14-Mar-2026 10:31:05 America/Lima] AUTH response: 334 VXNlcm5hbWU6
+[14-Mar-2026 10:31:05 America/Lima] Authentication successful
+[14-Mar-2026 10:31:05 America/Lima] Send response: 250 OK id=1w1QxF-000000002In-25AU
+[14-Mar-2026 10:31:05 America/Lima] Email sent successfully via SMTP
+[14-Mar-2026 10:31:05 America/Lima] Estado de cotización actualizado a 'Sent'
+[14-Mar-2026 10:31:05 America/Lima] Error logging activity: SQLSTATE[HY000]: General error: 1364 Field 'id' doesn't have a default value
+[14-Mar-2026 10:31:05 America/Lima] Correo enviado exitosamente
+[14-Mar-2026 10:32:32 America/Lima] === ENVÍO DE CORREO INICIADO ===
+[14-Mar-2026 10:32:32 America/Lima] Quotation ID: 202
+[14-Mar-2026 10:32:32 America/Lima] Company ID: 1
+[14-Mar-2026 10:32:32 America/Lima] Cotización encontrada: C1-2026-0068
+[14-Mar-2026 10:32:32 America/Lima] SMTP Enabled: Yes
+[14-Mar-2026 10:32:32 America/Lima] SMTP Host: mail.gsm.pe
+[14-Mar-2026 10:32:32 America/Lima] SMTP User: admin@gsm.pe
+[14-Mar-2026 10:32:32 America/Lima] SMTP Password length: 16 chars (decrypted)
+[14-Mar-2026 10:32:32 America/Lima] From Email: admin@gsm.pe
+[14-Mar-2026 10:32:32 America/Lima] Email destino: ventas@tullantaonline.pe
+[14-Mar-2026 10:32:32 America/Lima] Generando PDF...
+[14-Mar-2026 10:32:32 America/Lima] Generando PDF usando pdf.php...
+[14-Mar-2026 10:32:33 America/Lima] PDF generado exitosamente, tamaño: 52575 bytes
+[14-Mar-2026 10:32:33 America/Lima] PDF generado exitosamente, tamaño: 52575 bytes
+[14-Mar-2026 10:32:34 America/Lima] Token de aprobación generado: e354114aa44ea3c4ced3d9f741025688434301ce09aa970b73ee2ea2da137bfb
+[14-Mar-2026 10:32:34 America/Lima] Intentando enviar vía SMTP...
+[14-Mar-2026 10:32:34 America/Lima] Conectando a SMTP: mail.gsm.pe:465
+[14-Mar-2026 10:32:34 America/Lima] Greeting line: 220-whm01.mgdhosting.com ESMTP Exim 4.99.1 #2 Sat, 14 Mar 2026 10:32:34 -0500
+[14-Mar-2026 10:32:34 America/Lima] Greeting line: 220-We do not authorize the use of this system to transport unsolicited,
+[14-Mar-2026 10:32:34 America/Lima] Greeting line: 220 and/or bulk e-mail.
+[14-Mar-2026 10:32:34 America/Lima] Server greeting complete: 220-whm01.mgdhosting.com ESMTP Exim 4.99.1 #2 Sat, 14 Mar 2026 10:32:34 -0500 
+220-We do not author
+[14-Mar-2026 10:32:34 America/Lima] EHLO line: 250-whm01.mgdhosting.com Hello localhost [38.187.24.193]
+[14-Mar-2026 10:32:34 America/Lima] EHLO line: 250-SIZE 52428800
+[14-Mar-2026 10:32:34 America/Lima] EHLO line: 250-LIMITS MAILMAX=1000 RCPTMAX=50000
+[14-Mar-2026 10:32:34 America/Lima] EHLO line: 250-8BITMIME
+[14-Mar-2026 10:32:34 America/Lima] EHLO line: 250-PIPELINING
+[14-Mar-2026 10:32:34 America/Lima] EHLO line: 250-PIPECONNECT
+[14-Mar-2026 10:32:34 America/Lima] EHLO line: 250-AUTH PLAIN LOGIN
+[14-Mar-2026 10:32:34 America/Lima] EHLO line: 250 HELP
+[14-Mar-2026 10:32:34 America/Lima] EHLO response complete: 250-whm01.mgdhosting.com Hello localhost [38.187.24.193]
+250-SIZE 52428800
+250-LIMITS MAILMAX=1000
+[14-Mar-2026 10:32:34 America/Lima] AUTH response: 334 VXNlcm5hbWU6
+[14-Mar-2026 10:32:34 America/Lima] Authentication successful
+[14-Mar-2026 10:32:34 America/Lima] Send response: 250 OK id=1w1Qyg-000000002YJ-1nZ6
+[14-Mar-2026 10:32:34 America/Lima] Email sent successfully via SMTP
+[14-Mar-2026 10:32:34 America/Lima] Estado de cotización actualizado a 'Sent'
+[14-Mar-2026 10:32:34 America/Lima] Error logging activity: SQLSTATE[HY000]: General error: 1364 Field 'id' doesn't have a default value
+[14-Mar-2026 10:32:34 America/Lima] Correo enviado exitosamente
+[14-Mar-2026 10:53:17 America/Lima] === ENVÍO DE CORREO INICIADO ===
+[14-Mar-2026 10:53:17 America/Lima] Quotation ID: 148
+[14-Mar-2026 10:53:17 America/Lima] Company ID: 1
+[14-Mar-2026 10:53:17 America/Lima] Cotización encontrada: C1-2026-0019
+[14-Mar-2026 10:53:17 America/Lima] SMTP Enabled: Yes
+[14-Mar-2026 10:53:17 America/Lima] SMTP Host: mail.gsm.pe
+[14-Mar-2026 10:53:17 America/Lima] SMTP User: admin@gsm.pe
+[14-Mar-2026 10:53:17 America/Lima] SMTP Password length: 16 chars (decrypted)
+[14-Mar-2026 10:53:17 America/Lima] From Email: admin@gsm.pe
+[14-Mar-2026 10:53:17 America/Lima] Email destino: ventas@tullantaonline.pe
+[14-Mar-2026 10:53:17 America/Lima] Generando PDF...
+[14-Mar-2026 10:53:17 America/Lima] Generando PDF usando pdf.php...
+[14-Mar-2026 10:53:19 America/Lima] PDF generado exitosamente, tamaño: 66597 bytes
+[14-Mar-2026 10:53:19 America/Lima] PDF generado exitosamente, tamaño: 66597 bytes
+[14-Mar-2026 10:53:19 America/Lima] Token de aprobación generado: a21c930384732bef11f9820fc945c8e22fccd31492bd430cb1eb21583d2a0c35
+[14-Mar-2026 10:53:19 America/Lima] Intentando enviar vía SMTP...
+[14-Mar-2026 10:53:19 America/Lima] Conectando a SMTP: mail.gsm.pe:465
+[14-Mar-2026 10:53:19 America/Lima] Greeting line: 220-whm01.mgdhosting.com ESMTP Exim 4.99.1 #2 Sat, 14 Mar 2026 10:53:19 -0500
+[14-Mar-2026 10:53:19 America/Lima] Greeting line: 220-We do not authorize the use of this system to transport unsolicited,
+[14-Mar-2026 10:53:19 America/Lima] Greeting line: 220 and/or bulk e-mail.
+[14-Mar-2026 10:53:19 America/Lima] Server greeting complete: 220-whm01.mgdhosting.com ESMTP Exim 4.99.1 #2 Sat, 14 Mar 2026 10:53:19 -0500 
+220-We do not author
+[14-Mar-2026 10:53:19 America/Lima] EHLO line: 250-whm01.mgdhosting.com Hello localhost [38.187.24.193]
+[14-Mar-2026 10:53:19 America/Lima] EHLO line: 250-SIZE 52428800
+[14-Mar-2026 10:53:19 America/Lima] EHLO line: 250-LIMITS MAILMAX=1000 RCPTMAX=50000
+[14-Mar-2026 10:53:19 America/Lima] EHLO line: 250-8BITMIME
+[14-Mar-2026 10:53:19 America/Lima] EHLO line: 250-PIPELINING
+[14-Mar-2026 10:53:19 America/Lima] EHLO line: 250-PIPECONNECT
+[14-Mar-2026 10:53:19 America/Lima] EHLO line: 250-AUTH PLAIN LOGIN
+[14-Mar-2026 10:53:19 America/Lima] EHLO line: 250 HELP
+[14-Mar-2026 10:53:19 America/Lima] EHLO response complete: 250-whm01.mgdhosting.com Hello localhost [38.187.24.193]
+250-SIZE 52428800
+250-LIMITS MAILMAX=1000
+[14-Mar-2026 10:53:19 America/Lima] AUTH response: 334 VXNlcm5hbWU6
+[14-Mar-2026 10:53:20 America/Lima] Authentication successful
+[14-Mar-2026 10:53:20 America/Lima] Send response: 250 OK id=1w1RIm-000000006Qv-0OD9
+[14-Mar-2026 10:53:20 America/Lima] Email sent successfully via SMTP
+[14-Mar-2026 10:53:20 America/Lima] Estado de cotización actualizado a 'Sent'
+[14-Mar-2026 10:53:20 America/Lima] Error logging activity: SQLSTATE[HY000]: General error: 1364 Field 'id' doesn't have a default value
+[14-Mar-2026 10:53:20 America/Lima] Correo enviado exitosamente
+[21-Mar-2026 10:33:32 America/Lima] === ENVÍO DE CORREO INICIADO ===
+[21-Mar-2026 10:33:32 America/Lima] Quotation ID: 265
+[21-Mar-2026 10:33:32 America/Lima] Company ID: 1
+[21-Mar-2026 10:33:32 America/Lima] Cotización encontrada: C1-2026-0104
+[21-Mar-2026 10:33:32 America/Lima] SMTP Enabled: Yes
+[21-Mar-2026 10:33:32 America/Lima] SMTP Host: mail.gsm.pe
+[21-Mar-2026 10:33:32 America/Lima] SMTP User: admin@gsm.pe
+[21-Mar-2026 10:33:32 America/Lima] SMTP Password length: 16 chars (decrypted)
+[21-Mar-2026 10:33:32 America/Lima] From Email: admin@gsm.pe
+[21-Mar-2026 10:33:32 America/Lima] ERROR: Cliente sin email
+[21-Mar-2026 10:34:23 America/Lima] === ENVÍO DE CORREO INICIADO ===
+[21-Mar-2026 10:34:23 America/Lima] Quotation ID: 266
+[21-Mar-2026 10:34:23 America/Lima] Company ID: 1
+[21-Mar-2026 10:34:23 America/Lima] Cotización encontrada: C1-2026-0105
+[21-Mar-2026 10:34:23 America/Lima] SMTP Enabled: Yes
+[21-Mar-2026 10:34:23 America/Lima] SMTP Host: mail.gsm.pe
+[21-Mar-2026 10:34:23 America/Lima] SMTP User: admin@gsm.pe
+[21-Mar-2026 10:34:23 America/Lima] SMTP Password length: 16 chars (decrypted)
+[21-Mar-2026 10:34:23 America/Lima] From Email: admin@gsm.pe
+[21-Mar-2026 10:34:23 America/Lima] Email destino: ventas@tullantaonline.pe
+[21-Mar-2026 10:34:23 America/Lima] Generando PDF...
+[21-Mar-2026 10:34:23 America/Lima] Generando PDF usando pdf.php...
+[21-Mar-2026 10:34:24 America/Lima] PDF generado exitosamente, tamaño: 51908 bytes
+[21-Mar-2026 10:34:24 America/Lima] PDF generado exitosamente, tamaño: 51908 bytes
+[21-Mar-2026 10:34:25 America/Lima] Token de aprobación generado: 112e66aaf3d2341ebaa83eeb059a662d47a9803dc47c27e74a1044713e532091
+[21-Mar-2026 10:34:25 America/Lima] Intentando enviar vía SMTP...
+[21-Mar-2026 10:34:25 America/Lima] Conectando a SMTP: mail.gsm.pe:465
+[21-Mar-2026 10:34:25 America/Lima] Greeting line: 220-whm01.mgdhosting.com ESMTP Exim 4.99.1 #2 Sat, 21 Mar 2026 10:34:25 -0500
+[21-Mar-2026 10:34:25 America/Lima] Greeting line: 220-We do not authorize the use of this system to transport unsolicited,
+[21-Mar-2026 10:34:25 America/Lima] Greeting line: 220 and/or bulk e-mail.
+[21-Mar-2026 10:34:25 America/Lima] Server greeting complete: 220-whm01.mgdhosting.com ESMTP Exim 4.99.1 #2 Sat, 21 Mar 2026 10:34:25 -0500 
+220-We do not author
+[21-Mar-2026 10:34:25 America/Lima] EHLO line: 250-whm01.mgdhosting.com Hello localhost [38.187.24.193]
+[21-Mar-2026 10:34:25 America/Lima] EHLO line: 250-SIZE 52428800
+[21-Mar-2026 10:34:25 America/Lima] EHLO line: 250-LIMITS MAILMAX=1000 RCPTMAX=50000
+[21-Mar-2026 10:34:25 America/Lima] EHLO line: 250-8BITMIME
+[21-Mar-2026 10:34:25 America/Lima] EHLO line: 250-PIPELINING
+[21-Mar-2026 10:34:25 America/Lima] EHLO line: 250-PIPECONNECT
+[21-Mar-2026 10:34:25 America/Lima] EHLO line: 250-AUTH PLAIN LOGIN
+[21-Mar-2026 10:34:25 America/Lima] EHLO line: 250 HELP
+[21-Mar-2026 10:34:25 America/Lima] EHLO response complete: 250-whm01.mgdhosting.com Hello localhost [38.187.24.193]
+250-SIZE 52428800
+250-LIMITS MAILMAX=1000
+[21-Mar-2026 10:34:25 America/Lima] AUTH response: 334 VXNlcm5hbWU6
+[21-Mar-2026 10:34:25 America/Lima] Authentication successful
+[21-Mar-2026 10:34:26 America/Lima] Send response: 250 OK id=1w3yLK-0000000B1JQ-0S67
+[21-Mar-2026 10:34:26 America/Lima] Email sent successfully via SMTP
+[21-Mar-2026 10:34:26 America/Lima] Estado de cotización actualizado a 'Sent'
+[21-Mar-2026 10:34:26 America/Lima] Error logging activity: SQLSTATE[HY000]: General error: 1364 Field 'id' doesn't have a default value
+[21-Mar-2026 10:34:26 America/Lima] Correo enviado exitosamente
