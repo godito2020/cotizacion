@@ -8472,3 +8472,102 @@ Stack trace:
 [27-Mar-2026 11:01:44 America/Lima] API Lookup Result - Success: YES, Message: N/A
 [27-Mar-2026 11:02:02 America/Lima] API Lookup Request - Action: ruc, Document: 20614056101, Company: 1
 [27-Mar-2026 11:02:02 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[27-Mar-2026 12:28:50 America/Lima] API Lookup Request - Action: ruc, Document: 20571143047, Company: 1
+[27-Mar-2026 12:28:51 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[27-Mar-2026 12:29:02 America/Lima] API Lookup Request - Action: ruc, Document: 20571143047, Company: 1
+[27-Mar-2026 12:29:03 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[27-Mar-2026 12:29:22 America/Lima] API Lookup Request - Action: ruc, Document: 20571143047, Company: 1
+[27-Mar-2026 12:29:23 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[27-Mar-2026 12:41:44 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 230
+    [quotation_date] => 2026-03-27
+    [valid_until] => 2026-04-03
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => cash
+    [credit_days] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [product_id] => GI241202
+                    [description] => 1200R24 20PR GITI GAO822 P,O OFF ROAD
+                    [quantity] => 8
+                    [unit_price] => 704.35
+                    [discount_percentage] => 25
+                    [line_total] => 4226.10
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/GI241202-GITI-TIRE-GAO822-1.jpg
+                )
+
+            [1] => Array
+                (
+                    [product_id] => HO120007
+                    [description] => 1200R24 20PR KINGHUNTER KH168 MIX
+                    [quantity] => 8
+                    [unit_price] => 302.00
+                    [discount_percentage] => 25
+                    [line_total] => 1812.00
+                    [image_url] => 
+                )
+
+            [2] => Array
+                (
+                    [product_id] => FE241200
+                    [description] => 1200R24 24PR 32MM FUERTE90 POS FENIXWAY ON
+                    [quantity] => 8
+                    [unit_price] => 651.37
+                    [discount_percentage] => 25
+                    [line_total] => 3908.22
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/FE241200-FENIXWAY-TIRE-FUERTE90-1.jpg
+                )
+
+            [3] => Array
+                (
+                    [product_id] => HO120006
+                    [description] => 1200R24 20PR NORMAKS NU568 MIX
+                    [quantity] => 8
+                    [unit_price] => 302.00
+                    [discount_percentage] => 25
+                    [line_total] => 1812.00
+                    [image_url] => 
+                )
+
+        )
+
+    [notes] => 
+    [terms_and_conditions] => 
+    [global_discount_percentage] => 0
+)
+
+[27-Mar-2026 12:41:44 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[GI241202] 1200R24 20PR GITI GAO822 P,O OFF ROAD","quantity":8,"unit_price":704.35,"discount_percentage":25,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/GI241202-GITI-TIRE-GAO822-1.jpg"},{"product_id":null,"description":"[HO120007] 1200R24 20PR KINGHUNTER KH168 MIX","quantity":8,"unit_price":302,"discount_percentage":25,"image_url":""},{"product_id":null,"description":"[FE241200] 1200R24 24PR 32MM FUERTE90 POS FENIXWAY ON","quantity":8,"unit_price":651.37,"discount_percentage":25,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/FE241200-FENIXWAY-TIRE-FUERTE90-1.jpg"},{"product_id":null,"description":"[HO120006] 1200R24 20PR NORMAKS NU568 MIX","quantity":8,"unit_price":302,"discount_percentage":25,"image_url":""}]
+[27-Mar-2026 12:41:44 America/Lima] Calling quotationRepo->create with companyId=1, customerId=230, currency=USD
+[27-Mar-2026 12:41:45 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[27-Mar-2026 16:01:51 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 189
+    [quotation_date] => 2026-03-27
+    [valid_until] => 2026-04-03
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => credit
+    [credit_days] => 60
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => 235/65R17 104H GITI GITI4X4 HT152 BSW
+                    [quantity] => 8
+                    [unit_price] => 72
+                    [discount_percentage] => 0
+                    [product_id] => GI172354
+                )
+
+        )
+
+)
+
+[27-Mar-2026 16:01:51 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[GI172354] 235\/65R17 104H GITI GITI4X4 HT152 BSW","quantity":8,"unit_price":72,"discount_percentage":0,"image_url":null}]
+[27-Mar-2026 16:01:51 America/Lima] Calling quotationRepo->create with companyId=2, customerId=189, currency=USD
