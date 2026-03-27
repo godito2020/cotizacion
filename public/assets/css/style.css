@@ -1,0 +1,1548 @@
+/* Custom Styles for Cotizacion System */
+
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #0dcaf0;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+
+    /* Light theme variables (default) */
+    --bg-color: #ffffff;
+    --text-color: #212529;
+    --card-bg: #ffffff;
+    --border-color: #dee2e6;
+    --table-bg: #ffffff;
+    --table-hover: #f5f5f5;
+    --input-bg: #ffffff;
+    --sidebar-bg: #f8f9fa;
+    --navbar-bg: #0d6efd;
+    --navbar-text: #ffffff;
+    --shadow: rgba(0, 0, 0, 0.1);
+    --modal-bg: #ffffff;
+    --modal-text: #212529;
+}
+
+html[data-theme="dark"] {
+    /* Dark theme variables */
+    --bg-color: #121212;
+    --text-color: #e0e0e0;
+    --card-bg: #1e1e1e;
+    --border-color: #404040;
+    --table-bg: #1e1e1e;
+    --table-hover: #2a2a2a;
+    --input-bg: #2d2d2d;
+    --sidebar-bg: #1a1a1a;
+    --navbar-bg: #1a1a1a;
+    --navbar-text: #e0e0e0;
+    --shadow: rgba(0, 0, 0, 0.3);
+    --modal-bg: #1e1e1e;
+    --modal-text: #e0e0e0;
+
+    /* Override Bootstrap dark colors */
+    --bs-body-bg: #121212;
+    --bs-body-color: #e0e0e0;
+    --bs-border-color: #404040;
+}
+
+html[data-theme="dark"] body {
+    background-color: var(--bg-color) !important;
+    color: var(--text-color) !important;
+}
+
+
+/* General Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color) !important;
+    color: var(--text-color) !important;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* GLOBAL LIGHT THEME ENFORCEMENT - Force light theme across entire website */
+/* Override any dark styles unless explicitly in dark mode */
+
+/* Force body styles to override any inherited dark styles */
+body:not([data-theme="dark"]) {
+    background-color: #ffffff !important;
+    color: #212529 !important;
+}
+
+/* Force all major components to light theme by default */
+body:not([data-theme="dark"]) .card,
+body:not([data-theme="dark"]) .modal-content,
+body:not([data-theme="dark"]) .modal-body,
+body:not([data-theme="dark"]) .modal-footer,
+body:not([data-theme="dark"]) .modal-header {
+    background-color: #ffffff !important;
+    color: #212529 !important;
+    border-color: #dee2e6 !important;
+}
+
+/* Force form elements to light theme */
+body:not([data-theme="dark"]) .form-control,
+body:not([data-theme="dark"]) .form-select,
+body:not([data-theme="dark"]) textarea.form-control {
+    background-color: #ffffff !important;
+    color: #212529 !important;
+    border-color: #dee2e6 !important;
+}
+
+/* Checkboxes - solo aplicar fondo blanco cuando NO está marcado */
+body:not([data-theme="dark"]) .form-check-input:not(:checked) {
+    background-color: #ffffff !important;
+    border-color: #dee2e6 !important;
+}
+
+body:not([data-theme="dark"]) .form-control:focus,
+body:not([data-theme="dark"]) .form-select:focus {
+    background-color: #ffffff !important;
+    color: #212529 !important;
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25) !important;
+}
+
+/* Force table elements to light theme */
+body:not([data-theme="dark"]) .table,
+body:not([data-theme="dark"]) .table td,
+body:not([data-theme="dark"]) .table th,
+body:not([data-theme="dark"]) .table-responsive {
+    background-color: #ffffff !important;
+    color: #212529 !important;
+    border-color: #dee2e6 !important;
+}
+
+body:not([data-theme="dark"]) .table-hover tbody tr:hover td {
+    background-color: #f5f5f5 !important;
+}
+
+body:not([data-theme="dark"]) .table thead th {
+    background-color: #f8f9fa !important;
+    color: #212529 !important;
+    border-color: #dee2e6 !important;
+}
+
+/* Force dropdown menus to light theme */
+body:not([data-theme="dark"]) .dropdown-menu {
+    background-color: #ffffff !important;
+    border-color: #dee2e6 !important;
+}
+
+body:not([data-theme="dark"]) .dropdown-item {
+    color: #212529 !important;
+}
+
+body:not([data-theme="dark"]) .dropdown-item:hover,
+body:not([data-theme="dark"]) .dropdown-item:focus {
+    background-color: #f8f9fa !important;
+    color: #212529 !important;
+}
+
+/* Force list group to light theme */
+body:not([data-theme="dark"]) .list-group-item {
+    background-color: #ffffff !important;
+    color: #212529 !important;
+    border-color: #dee2e6 !important;
+}
+
+/* Force pagination to light theme */
+body:not([data-theme="dark"]) .page-link {
+    background-color: #ffffff !important;
+    color: #0d6efd !important;
+    border-color: #dee2e6 !important;
+}
+
+body:not([data-theme="dark"]) .page-item.active .page-link {
+    background-color: #0d6efd !important;
+    color: #ffffff !important;
+    border-color: #0d6efd !important;
+}
+
+/* Force breadcrumb to light theme */
+body:not([data-theme="dark"]) .breadcrumb {
+    background-color: #f8f9fa !important;
+}
+
+body:not([data-theme="dark"]) .breadcrumb-item a {
+    color: #0d6efd !important;
+}
+
+/* Force accordion to light theme */
+body:not([data-theme="dark"]) .accordion-item {
+    background-color: #ffffff !important;
+    border-color: #dee2e6 !important;
+}
+
+body:not([data-theme="dark"]) .accordion-button {
+    background-color: #ffffff !important;
+    color: #212529 !important;
+}
+
+body:not([data-theme="dark"]) .accordion-button:focus {
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25) !important;
+}
+
+/* Force offcanvas to light theme */
+body:not([data-theme="dark"]) .offcanvas {
+    background-color: #ffffff !important;
+    color: #212529 !important;
+}
+
+/* Force toast to light theme */
+body:not([data-theme="dark"]) .toast {
+    background-color: #ffffff !important;
+    color: #212529 !important;
+    border-color: #dee2e6 !important;
+}
+
+/* Force input group text to light theme */
+body:not([data-theme="dark"]) .input-group-text {
+    background-color: #f8f9fa !important;
+    color: #212529 !important;
+    border-color: #dee2e6 !important;
+}
+
+/* Global theme styles */
+.card {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    box-shadow: 0 2px 4px var(--shadow);
+}
+
+.table {
+    background-color: var(--table-bg);
+    color: var(--text-color);
+}
+
+.table td, .table th {
+    background-color: var(--table-bg);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.table-hover tbody tr:hover td {
+    background-color: var(--table-hover);
+}
+
+.form-control, .form-select {
+    background-color: var(--input-bg);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: var(--input-bg);
+    border-color: var(--primary-color);
+    color: var(--text-color);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.navbar {
+    background-color: var(--navbar-bg) !important;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* GLOBAL NAVBAR ENFORCEMENT - Force consistent navbar across all pages */
+/* Override navbar-dark and any other navbar variations */
+
+.navbar,
+.navbar-dark,
+.navbar-light {
+    background-color: var(--navbar-bg) !important;
+}
+
+/* Force navbar text color regardless of navbar class */
+.navbar .navbar-nav .nav-link,
+.navbar-dark .navbar-nav .nav-link,
+.navbar-light .navbar-nav .nav-link {
+    color: var(--navbar-text) !important;
+}
+
+.navbar .navbar-brand,
+.navbar-dark .navbar-brand,
+.navbar-light .navbar-brand {
+    color: var(--navbar-text) !important;
+}
+
+/* Force navbar toggler color */
+.navbar-toggler,
+.navbar-dark .navbar-toggler,
+.navbar-light .navbar-toggler {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.navbar-toggler-icon,
+.navbar-dark .navbar-toggler-icon,
+.navbar-light .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
+
+/* Force navbar dropdown styles */
+.navbar .dropdown-menu,
+.navbar-dark .dropdown-menu,
+.navbar-light .dropdown-menu {
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
+}
+
+.navbar .dropdown-item,
+.navbar-dark .dropdown-item,
+.navbar-light .dropdown-item {
+    color: var(--text-color) !important;
+}
+
+.navbar .dropdown-item:hover,
+.navbar-dark .dropdown-item:hover,
+.navbar-light .dropdown-item:hover {
+    background-color: var(--table-hover) !important;
+    color: var(--text-color) !important;
+}
+
+.navbar .dropdown-menu {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+.navbar .dropdown-item {
+    color: var(--text-color);
+}
+
+.navbar .dropdown-item:hover {
+    background-color: var(--table-hover);
+    color: var(--text-color);
+}
+
+.btn-outline-secondary {
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--table-hover);
+    border-color: var(--border-color);
+}
+
+/* Theme toggle button */
+.theme-toggle {
+    background: none;
+    border: none;
+    color: var(--navbar-text);
+    font-size: 1.2rem;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--navbar-text);
+}
+
+/* Navigation Styles */
+.navbar-brand img {
+    transition: transform 0.3s ease;
+}
+
+.navbar-brand:hover img {
+    transform: scale(1.1);
+}
+
+/* Card Styles */
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.card-header {
+    background-color: var(--primary-color);
+    color: white;
+    border-bottom: none;
+}
+
+/* Stats Cards */
+.stats-card {
+    background: linear-gradient(135deg, var(--primary-color), var(--info-color));
+    color: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.stats-card .stats-number {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.stats-card .stats-label {
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+/* Form Styles */
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    border-color: var(--primary-color);
+}
+
+.input-group {
+    margin-bottom: 1rem;
+}
+
+/* Button Styles */
+.btn {
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, var(--primary-color), #4dabf7);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(45deg, #0b5ed7, var(--primary-color));
+    transform: translateY(-1px);
+}
+
+.btn-success {
+    background: linear-gradient(45deg, var(--success-color), #51cf66);
+    border: none;
+}
+
+.btn-danger {
+    background: linear-gradient(45deg, var(--danger-color), #ff6b6b);
+    border: none;
+}
+
+.btn-warning {
+    background: linear-gradient(45deg, var(--warning-color), #ffd43b);
+    border: none;
+    color: var(--dark-color);
+}
+
+/* Table Styles */
+.table {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table thead th {
+    border-top: none;
+    background-color: var(--light-color);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 0.5px;
+}
+
+.table tbody tr {
+    transition: background-color 0.3s ease;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+/* Alert Styles */
+.alert {
+    border-radius: 8px;
+    border: none;
+    padding: 1rem 1.25rem;
+}
+
+.alert-success {
+    background-color: #d1edff;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.alert-info {
+    background-color: #e7f3ff;
+    color: #0c5460;
+    border: 1px solid #b3d4fc;
+}
+
+/* Dark theme alert overrides */
+html[data-theme="dark"] .alert-success {
+    background-color: #1c4532;
+    color: #a3cfbb;
+    border-color: #2d5a3d;
+}
+
+html[data-theme="dark"] .alert-danger {
+    background-color: #4a1e24;
+    color: #f1aeb5;
+    border-color: #5a2d32;
+}
+
+html[data-theme="dark"] .alert-warning {
+    background-color: #4a3728;
+    color: #f7dc6f;
+    border-color: #5a4533;
+}
+
+html[data-theme="dark"] .alert-info {
+    background-color: #1a3a4a;
+    color: #a3cdf1;
+    border-color: #2d4a5a;
+}
+
+/* Pagination */
+.pagination {
+    --bs-pagination-border-radius: 8px;
+}
+
+.page-link {
+    border-radius: 8px;
+    margin: 0 2px;
+    border: 1px solid #dee2e6;
+    transition: all 0.3s ease;
+}
+
+.page-link:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+/* Loading Spinner */
+.spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+}
+
+/* Modal Styles */
+.modal-header {
+    background-color: var(--primary-color);
+    color: white;
+    border-bottom: none;
+    border-radius: 12px 12px 0 0;
+}
+
+.modal-content {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+    background-color: var(--modal-bg);
+    color: var(--modal-text);
+}
+
+.modal-body {
+    background-color: var(--modal-bg);
+    color: var(--modal-text);
+}
+
+.modal-footer {
+    background-color: var(--modal-bg);
+    color: var(--modal-text);
+    border-top: 1px solid var(--border-color);
+    border-radius: 0 0 12px 12px;
+}
+
+/* Progress Bar */
+.progress {
+    height: 8px;
+    border-radius: 10px;
+}
+
+.progress-bar {
+    border-radius: 10px;
+}
+
+/* Search Box */
+.search-box {
+    position: relative;
+}
+
+.search-box .form-control {
+    padding-left: 2.5rem;
+}
+
+.search-box .search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--secondary-color);
+    z-index: 3;
+}
+
+/* Status Badges */
+.status-draft { background-color: var(--secondary-color); }
+.status-sent { background-color: var(--info-color); }
+.status-accepted { background-color: var(--success-color); }
+.status-rejected { background-color: var(--danger-color); }
+.status-invoiced { background-color: #6f42c1; }
+
+/* Product Grid */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.product-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.product-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.product-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+/* Quotation Builder */
+.quotation-builder {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px var(--shadow);
+    color: var(--text-color);
+}
+
+.item-row {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background-color: var(--table-hover);
+    color: var(--text-color);
+}
+
+.totals-section {
+    background-color: var(--sidebar-bg);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    color: var(--text-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .stats-card {
+        margin-bottom: 1rem;
+    }
+
+    .table-responsive {
+        border-radius: 8px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .btn {
+        margin-bottom: 0.5rem;
+        min-height: 44px;
+        font-size: 16px;
+        padding: 12px 16px;
+        touch-action: manipulation;
+    }
+
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+
+    /* Mejorar tipografía en mobile */
+    body {
+        font-size: 16px;
+        line-height: 1.5;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    h2 {
+        font-size: 22px;
+    }
+
+    h3 {
+        font-size: 20px;
+    }
+
+    h4 {
+        font-size: 18px;
+    }
+
+    h5 {
+        font-size: 16px;
+    }
+
+    /* Mejorar formularios en mobile */
+    .form-control,
+    .form-select {
+        min-height: 44px;
+        font-size: 16px;
+        padding: 12px 16px;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+    .form-label {
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+
+    /* Mejorar inputs de búsqueda */
+    .search-box .form-control {
+        min-height: 44px;
+        font-size: 16px;
+    }
+
+    /* Mejorar cards en mobile */
+    .card {
+        margin-bottom: 16px;
+        border-radius: 12px;
+    }
+
+    .card-header {
+        padding: 12px 16px;
+        font-size: 16px;
+    }
+
+    .card-body {
+        padding: 16px;
+    }
+
+    /* Mejorar modales en mobile */
+    .modal-dialog {
+        margin: 8px;
+        max-width: calc(100% - 16px);
+    }
+
+    .modal-header {
+        padding: 16px;
+    }
+
+    .modal-body {
+        padding: 16px;
+    }
+
+    .modal-footer {
+        padding: 12px 16px;
+    }
+
+    /* Mejorar tablas en mobile */
+    .table {
+        font-size: 14px;
+    }
+
+    .table td,
+    .table th {
+        padding: 10px 8px;
+    }
+
+    /* Mejorar navegación en mobile */
+    .navbar {
+        padding: 8px 12px;
+    }
+
+    .navbar-brand {
+        font-size: 18px;
+    }
+
+    .navbar-nav .nav-link {
+        padding: 12px 16px;
+        font-size: 16px;
+    }
+
+    /* Mejorar badges y status */
+    .badge {
+        font-size: 13px;
+        padding: 6px 10px;
+    }
+
+    /* Espaciado general mejorado */
+    .mb-3 {
+        margin-bottom: 16px !important;
+    }
+
+    .mb-4 {
+        margin-bottom: 20px !important;
+    }
+
+    .mt-3 {
+        margin-top: 16px !important;
+    }
+
+    .mt-4 {
+        margin-top: 20px !important;
+    }
+}
+
+/* Estilos específicos para pantallas muy pequeñas */
+@media (max-width: 480px) {
+    .container-fluid {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    h1 {
+        font-size: 22px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    .card-body {
+        padding: 12px;
+    }
+
+    .btn-sm {
+        font-size: 14px;
+        padding: 8px 12px;
+        min-height: 38px;
+    }
+
+    .table {
+        font-size: 13px;
+    }
+
+    .table td,
+    .table th {
+        padding: 8px 6px;
+    }
+
+    /* Ocultar columnas menos importantes en móviles muy pequeños */
+    .table .d-none-xs {
+        display: none !important;
+    }
+}
+
+/* Estilos para navegación inferior mobile (bottom nav) */
+.mobile-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #ffffff;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    padding: 8px 0;
+    z-index: 1000;
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .mobile-bottom-nav {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+
+    .mobile-bottom-nav .nav-item {
+        flex: 1;
+        text-align: center;
+    }
+
+    .mobile-bottom-nav .nav-link {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 6px 4px;
+        color: #6c757d;
+        text-decoration: none;
+        font-size: 11px;
+        transition: color 0.2s;
+    }
+
+    .mobile-bottom-nav .nav-link i {
+        font-size: 20px;
+        margin-bottom: 4px;
+    }
+
+    .mobile-bottom-nav .nav-link.active {
+        color: var(--primary-color);
+    }
+
+    .mobile-bottom-nav .nav-link:active {
+        background-color: rgba(13, 110, 253, 0.1);
+        border-radius: 8px;
+    }
+}
+
+/* Botón flotante de acción (FAB) para mobile */
+.fab-button {
+    position: fixed;
+    bottom: 80px;
+    right: 16px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color) 0%, #0a58ca 100%);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 999;
+    touch-action: manipulation;
+}
+
+.fab-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.fab-button:active {
+    transform: scale(0.95);
+}
+
+@media (min-width: 769px) {
+    .fab-button {
+        display: none;
+    }
+}
+
+/* Mejorar áreas de toque para elementos interactivos en mobile */
+@media (max-width: 768px) {
+    a, button, .btn, input[type="checkbox"], input[type="radio"], select {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    /* Asegurar que los links tengan buen tamaño de toque */
+    .table td a,
+    .table th a,
+    .dropdown-item,
+    .list-group-item {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+
+    /* Mejorar checkboxes y radios en mobile */
+    .form-check-input {
+        width: 24px;
+        height: 24px;
+        margin-top: 0;
+    }
+
+    .form-check-label {
+        padding-left: 8px;
+        font-size: 16px;
+    }
+
+    /* Mejorar dropdowns en mobile */
+    .dropdown-menu {
+        font-size: 16px;
+    }
+
+    .dropdown-item {
+        padding: 12px 16px;
+    }
+}
+
+/* Optimización para scroll horizontal en tablas mobile */
+@media (max-width: 768px) {
+    .table-responsive {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: var(--primary-color) #f1f1f1;
+    }
+
+    .table-responsive::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: var(--primary-color);
+        border-radius: 10px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: #0a58ca;
+    }
+
+    /* Añadir indicador visual de scroll */
+    .table-responsive::after {
+        content: '→';
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        background: linear-gradient(to left, rgba(255,255,255,0.9), transparent);
+        padding: 8px 12px;
+        pointer-events: none;
+        font-size: 20px;
+        color: var(--primary-color);
+        animation: slideHorizontal 1.5s ease-in-out infinite;
+    }
+
+    @keyframes slideHorizontal {
+        0%, 100% { opacity: 0.3; transform: translateY(-50%) translateX(0); }
+        50% { opacity: 1; transform: translateY(-50%) translateX(-5px); }
+    }
+}
+
+/* Mejorar accesibilidad táctil para iconos de acción */
+@media (max-width: 768px) {
+    .btn-group-sm > .btn,
+    .btn-sm {
+        padding: 10px 14px;
+        font-size: 15px;
+    }
+
+    /* Espaciado entre botones de acción en tablas */
+    .table .btn + .btn {
+        margin-left: 8px;
+    }
+
+    /* Mejorar botones de acción en cards */
+    .card .btn-group {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .card .btn-group .btn {
+        flex: 1;
+        min-width: 120px;
+    }
+}
+
+/* Transformar tablas a cards en mobile (opcional con clase .table-mobile-cards) */
+@media (max-width: 768px) {
+    .table-mobile-cards {
+        display: block;
+        border: none;
+    }
+
+    .table-mobile-cards thead {
+        display: none;
+    }
+
+    .table-mobile-cards tbody {
+        display: block;
+    }
+
+    .table-mobile-cards tr {
+        display: block;
+        margin-bottom: 16px;
+        background: white;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--border-color);
+    }
+
+    .table-mobile-cards td {
+        display: block;
+        text-align: left;
+        padding: 8px 0;
+        border: none;
+        position: relative;
+        padding-left: 50%;
+    }
+
+    .table-mobile-cards td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 45%;
+        padding-right: 10px;
+        font-weight: 600;
+        color: #666;
+        text-align: left;
+    }
+
+    .table-mobile-cards td:last-child {
+        border-bottom: none;
+    }
+}
+
+/* Estilos para paginación mejorada en mobile */
+@media (max-width: 768px) {
+    .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 4px;
+    }
+
+    .pagination .page-item {
+        margin: 2px;
+    }
+
+    .pagination .page-link {
+        min-width: 44px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 12px;
+        font-size: 16px;
+    }
+
+    /* Ocultar algunos números de página en móviles muy pequeños */
+    .pagination .page-item:not(.active):not(.disabled):not(:first-child):not(:last-child):not(:nth-child(2)):not(:nth-last-child(2)) {
+        display: none;
+    }
+}
+
+/* Mejorar alerts y notificaciones en mobile */
+@media (max-width: 768px) {
+    .alert {
+        font-size: 15px;
+        padding: 14px 16px;
+        border-radius: 10px;
+        margin-bottom: 16px;
+    }
+
+    .alert-dismissible .btn-close {
+        padding: 16px;
+        min-width: 44px;
+        min-height: 44px;
+    }
+}
+
+/* Estilos para barra de búsqueda sticky en mobile */
+@media (max-width: 768px) {
+    .mobile-search-bar {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: white;
+        padding: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin: -12px -12px 16px -12px;
+    }
+
+    .mobile-search-bar .form-control {
+        min-height: 44px;
+        font-size: 16px;
+        border-radius: 24px;
+        padding: 12px 20px 12px 44px;
+    }
+
+    .mobile-search-bar .search-icon {
+        position: absolute;
+        left: 28px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 18px;
+        color: #6c757d;
+    }
+}
+
+/* Mejorar breadcrumbs en mobile */
+@media (max-width: 768px) {
+    .breadcrumb {
+        font-size: 14px;
+        padding: 8px 12px;
+        margin-bottom: 12px;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .breadcrumb-item {
+        display: inline-block;
+    }
+
+    .breadcrumb-item + .breadcrumb-item {
+        padding-left: 8px;
+    }
+}
+
+/* Loading spinner optimizado para mobile */
+@media (max-width: 768px) {
+    .spinner-container {
+        min-height: 200px;
+    }
+
+    .spinner-border {
+        width: 3rem;
+        height: 3rem;
+    }
+}
+
+/* Tooltips y popovers en mobile */
+@media (max-width: 768px) {
+    .tooltip {
+        font-size: 14px;
+    }
+
+    .popover {
+        max-width: calc(100vw - 32px);
+        font-size: 15px;
+    }
+
+    .popover-header {
+        padding: 12px 16px;
+        font-size: 16px;
+    }
+
+    .popover-body {
+        padding: 14px 16px;
+    }
+}
+
+/* Mejoras para menú hamburguesa y navegación móvil */
+@media (max-width: 768px) {
+    /* Mejorar toggler button */
+    .navbar-toggler {
+        padding: 8px 12px;
+        font-size: 24px;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        min-width: 48px;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .navbar-toggler:focus {
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+        outline: none;
+    }
+
+    .navbar-toggler-icon {
+        width: 24px;
+        height: 24px;
+    }
+
+    /* Mejorar offcanvas/collapse menu */
+    .navbar-collapse {
+        background-color: var(--navbar-bg);
+    }
+
+    .navbar-nav {
+        padding: 12px 0;
+    }
+
+    .navbar-nav .nav-link {
+        padding: 16px 20px;
+        font-size: 17px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        transition: background-color 0.2s;
+        min-height: 56px;
+        display: flex;
+        align-items: center;
+    }
+
+    .navbar-nav .nav-link:active {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .navbar-nav .nav-link i {
+        margin-right: 12px;
+        font-size: 20px;
+        width: 24px;
+        text-align: center;
+    }
+
+    /* Dropdown dentro del navbar mobile */
+    .navbar-nav .dropdown-menu {
+        background-color: rgba(0, 0, 0, 0.1);
+        border: none;
+        box-shadow: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .navbar-nav .dropdown-item {
+        color: var(--navbar-text) !important;
+        padding: 14px 20px 14px 56px;
+        font-size: 16px;
+        min-height: 52px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .navbar-nav .dropdown-item:hover,
+    .navbar-nav .dropdown-item:active {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .navbar-nav .dropdown-toggle::after {
+        margin-left: auto;
+    }
+
+    /* Usuario info en navbar mobile */
+    .navbar-nav .nav-link.user-menu {
+        font-weight: 600;
+        background-color: rgba(255, 255, 255, 0.05);
+        margin: 8px 12px;
+        border-radius: 12px;
+        border-bottom: none;
+    }
+
+    .navbar-nav .nav-link.user-menu img {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        margin-right: 12px;
+    }
+}
+
+/* Offcanvas mejorado para menú lateral */
+@media (max-width: 768px) {
+    .offcanvas,
+    .offcanvas-start,
+    .offcanvas-end {
+        max-width: 85vw;
+        width: 300px;
+    }
+
+    .offcanvas-header {
+        padding: 20px;
+        background: linear-gradient(135deg, var(--primary-color) 0%, #0a58ca 100%);
+        color: white;
+    }
+
+    .offcanvas-title {
+        font-size: 20px;
+        font-weight: 600;
+    }
+
+    .offcanvas-body {
+        padding: 0;
+    }
+
+    .offcanvas .nav {
+        width: 100%;
+    }
+
+    .offcanvas .nav-link {
+        padding: 16px 20px;
+        font-size: 17px;
+        color: var(--text-color);
+        border-bottom: 1px solid var(--border-color);
+        transition: background-color 0.2s;
+        display: flex;
+        align-items: center;
+        min-height: 56px;
+    }
+
+    .offcanvas .nav-link:hover,
+    .offcanvas .nav-link:active {
+        background-color: var(--table-hover);
+    }
+
+    .offcanvas .nav-link i {
+        margin-right: 12px;
+        font-size: 20px;
+        width: 24px;
+        text-align: center;
+        color: var(--primary-color);
+    }
+
+    .offcanvas .nav-link.active {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .offcanvas .nav-link.active i {
+        color: white;
+    }
+
+    /* Botón de cerrar offcanvas */
+    .btn-close {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 12px;
+        opacity: 1;
+    }
+
+    .offcanvas-header .btn-close {
+        filter: brightness(0) invert(1);
+    }
+}
+
+/* Menú de contexto mejorado (action sheets) */
+@media (max-width: 768px) {
+    .action-sheet {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        border-radius: 20px 20px 0 0;
+        padding: 20px;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+        z-index: 1050;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    .action-sheet.show {
+        transform: translateY(0);
+    }
+
+    .action-sheet-handle {
+        width: 40px;
+        height: 4px;
+        background: #ccc;
+        border-radius: 2px;
+        margin: 0 auto 16px;
+    }
+
+    .action-sheet .list-group-item {
+        min-height: 56px;
+        padding: 16px 20px;
+        font-size: 17px;
+        border: none;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+    }
+
+    .action-sheet .list-group-item i {
+        margin-right: 12px;
+        font-size: 20px;
+        width: 24px;
+        text-align: center;
+    }
+
+    .action-sheet .list-group-item:active {
+        background-color: var(--table-hover);
+    }
+}
+
+/* Backdrop para modales y offcanvas */
+@media (max-width: 768px) {
+    .modal-backdrop,
+    .offcanvas-backdrop {
+        background-color: rgba(0, 0, 0, 0.6);
+    }
+
+    .modal-backdrop.show,
+    .offcanvas-backdrop.show {
+        opacity: 0.6;
+    }
+}
+
+/* Dark mode support - disabled to force light mode by default */
+/*
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+    }
+
+    .card {
+        background-color: #2d2d2d;
+        color: #e0e0e0;
+    }
+
+    .table {
+        --bs-table-bg: #2d2d2d;
+        --bs-table-color: #e0e0e0;
+    }
+
+    .form-control, .form-select {
+        background-color: #3d3d3d;
+        border-color: #555;
+        color: #e0e0e0;
+    }
+
+    .modal-content {
+        background-color: #2d2d2d;
+        color: #e0e0e0;
+    }
+}
+*/
+
+/* Animation classes */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+.slide-up {
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+
+/* Print styles */
+@media print {
+    .navbar, .btn, .pagination, footer {
+        display: none !important;
+    }
+
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+
+    body {
+        background: white !important;
+    }
+}

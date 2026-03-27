@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir /s \"v:\\coti\" /b)",
+      "Bash(find:*)",
+      "Bash(curl:*)",
+      "Bash(del \"v:\\coti\\public\\api\\test_search.php\")",
+      "Bash(php -l:*)",
+      "Bash(grep:*)",
+      "Bash(cd:*)",
+      "Bash(php -r:*)",
+      "Bash(php:*)",
+      "Bash(if not exist \"v:\\coti\\storage\\progress\" mkdir \"v:\\coti\\storage\\progress\")",
+      "Bash(del \"v:\\coti\\public\\api\\test_import.php\")",
+      "Bash(dir:*)",
+      "Bash(if not exist \"v:\\\\coti\\\\public\\\\credits\" mkdir \"v:\\\\coti\\\\public\\\\credits\")",
+      "Bash(del \"v:\\\\coti\\\\public\\\\credits\\\\debug_credit.php\")",
+      "Bash(mysql:*)",
+      "Bash(python3:*)",
+      "Bash(ls:*)",
+      "Bash(xargs -I {} basename {})",
+      "Bash(wc -l /v/coti/lib/*.php)",
+      "Bash(sort -k6,7)",
+      "Bash(icacls \"C:\\\\inetpub\\\\wwwroot\\\\coti\\\\public\\\\uploads\\\\fichas_tecnicas\" /grant \"IUSR:\\(OI\\)\\(CI\\)R\" /grant \"IIS_IUSRS:\\(OI\\)\\(CI\\)R\")",
+      "Bash(cmd.exe /c 'icacls \"\"C:\\\\inetpub\\\\wwwroot\\\\coti\\\\public\\\\uploads\\\\fichas_tecnicas\"\" /grant \"\"IUSR:\\(OI\\)\\(CI\\)R\"\" /grant \"\"IIS_IUSRS:\\(OI\\)\\(CI\\)R\"\"')",
+      "Bash(cmd.exe /c 'icacls \"\"C:\\\\inetpub\\\\wwwroot\\\\coti\\\\public\\\\uploads\\\\fichas_tecnicas\"\"')",
+      "Bash(php -r \":*)"
+    ]
+  }
+}
