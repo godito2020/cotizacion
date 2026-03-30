@@ -1,1 +1,0 @@
-user_id|i:7;username|s:6:"CESARH";company_id|i:1;logged_in_timestamp|i:1774560304;user_data|a:7:{s:2:"id";i:7;s:10:"company_id";i:1;s:8:"username";s:6:"CESARH";s:5:"email";s:19:"cesarhmelgar@gsm.pe";s:10:"first_name";s:5:"CESAR";s:9:"last_name";s:17:"HOROSTEGUI MELGAR";s:9:"is_active";i:1;}user_roles|a:2:{i:0;s:8:"Vendedor";i:1;s:18:"Usuario Inventario";}

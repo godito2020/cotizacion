@@ -8571,3 +8571,565 @@ Stack trace:
 
 [27-Mar-2026 16:01:51 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[GI172354] 235\/65R17 104H GITI GITI4X4 HT152 BSW","quantity":8,"unit_price":72,"discount_percentage":0,"image_url":null}]
 [27-Mar-2026 16:01:51 America/Lima] Calling quotationRepo->create with companyId=2, customerId=189, currency=USD
+[27-Mar-2026 18:19:07 America/Lima] API Lookup Request - Action: dni, Document: 20609180, Company: 1
+[27-Mar-2026 18:19:08 America/Lima] API Lookup Request - Action: ruc, Document: 20609180235, Company: 1
+[27-Mar-2026 18:19:09 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[27-Mar-2026 18:19:09 America/Lima] API Lookup Result - Success: NO, Message: HTTP Error: 404 - Respuesta: {"message":"not found"}
+[27-Mar-2026 18:20:03 America/Lima] API Lookup Request - Action: ruc, Document: 20609180235, Company: 1
+[27-Mar-2026 18:20:04 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[27-Mar-2026 18:34:26 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 231
+    [quotation_date] => 2026-03-27
+    [valid_until] => 2026-04-03
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => cash
+    [credit_days] => 
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => 295/80R22.5 18PR FENIXWAY VALOR 87 POS O/F
+                    [quantity] => 1
+                    [unit_price] => 308
+                    [discount_percentage] => 23
+                    [product_id] => FE295001
+                )
+
+            [1] => Array
+                (
+                    [description] => 295/80R22.5 18PR GITI GDM686 POS ON/OFF
+                    [quantity] => 1
+                    [unit_price] => 412
+                    [discount_percentage] => 23
+                    [product_id] => GI225296
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/GI225296-GITI-TIRE-GDM686-1.jpg
+                )
+
+            [2] => Array
+                (
+                    [description] => 295/80R22.5 18PR KPATOS KDM19+
+                    [quantity] => 1
+                    [unit_price] => 238
+                    [discount_percentage] => 23
+                    [product_id] => KP295800
+                )
+
+            [3] => Array
+                (
+                    [description] => 295/80R22.5 18PR ECOROAD SUPER A-105 DEL
+                    [quantity] => 1
+                    [unit_price] => 210
+                    [discount_percentage] => 23
+                    [product_id] => TL295000
+                )
+
+        )
+
+)
+
+[27-Mar-2026 18:34:26 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[FE295001] 295\/80R22.5 18PR FENIXWAY VALOR 87 POS O\/F","quantity":1,"unit_price":308,"discount_percentage":23,"image_url":null},{"product_id":null,"description":"[GI225296] 295\/80R22.5 18PR GITI GDM686 POS ON\/OFF","quantity":1,"unit_price":412,"discount_percentage":23,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/GI225296-GITI-TIRE-GDM686-1.jpg"},{"product_id":null,"description":"[KP295800] 295\/80R22.5 18PR KPATOS KDM19+","quantity":1,"unit_price":238,"discount_percentage":23,"image_url":null},{"product_id":null,"description":"[TL295000] 295\/80R22.5 18PR ECOROAD SUPER A-105 DEL","quantity":1,"unit_price":210,"discount_percentage":23,"image_url":null}]
+[27-Mar-2026 18:34:26 America/Lima] Calling quotationRepo->create with companyId=1, customerId=231, currency=USD
+[27-Mar-2026 18:34:32 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[27-Mar-2026 18:37:25 America/Lima] save_quotation.php called - POST data: Array
+(
+    [quotation_id] => 315
+    [customer_id] => 231
+    [quotation_date] => 2026-03-27
+    [valid_until] => 2026-04-03
+    [currency] => USD
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => [FE295001] 295/80R22.5 18PR FENIXWAY VALOR 87 POS O/F
+                    [quantity] => 1
+                    [unit_price] => 238
+                    [discount_percentage] => 0
+                )
+
+            [1] => Array
+                (
+                    [description] => [GI225296] 295/80R22.5 18PR GITI GDM686 POS ON/OFF
+                    [quantity] => 1
+                    [unit_price] => 318
+                    [discount_percentage] => 0
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/GI225296-GITI-TIRE-GDM686-1.jpg
+                )
+
+            [2] => Array
+                (
+                    [description] => [KP295800] 295/80R22.5 18PR KPATOS KDM19+
+                    [quantity] => 1
+                    [unit_price] => 184
+                    [discount_percentage] => 0
+                )
+
+            [3] => Array
+                (
+                    [description] => [TL295000] 295/80R22.5 18PR ECOROAD SUPER A-105 DEL
+                    [quantity] => 1
+                    [unit_price] => 168
+                    [discount_percentage] => 0
+                )
+
+        )
+
+)
+
+[27-Mar-2026 18:37:25 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[FE295001] 295\/80R22.5 18PR FENIXWAY VALOR 87 POS O\/F","quantity":1,"unit_price":238,"discount_percentage":0,"image_url":null},{"product_id":null,"description":"[GI225296] 295\/80R22.5 18PR GITI GDM686 POS ON\/OFF","quantity":1,"unit_price":318,"discount_percentage":0,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/GI225296-GITI-TIRE-GDM686-1.jpg"},{"product_id":null,"description":"[KP295800] 295\/80R22.5 18PR KPATOS KDM19+","quantity":1,"unit_price":184,"discount_percentage":0,"image_url":null},{"product_id":null,"description":"[TL295000] 295\/80R22.5 18PR ECOROAD SUPER A-105 DEL","quantity":1,"unit_price":168,"discount_percentage":0,"image_url":null}]
+[27-Mar-2026 18:37:25 America/Lima] Calling quotationRepo->create with companyId=1, customerId=231, currency=USD
+[27-Mar-2026 18:37:29 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[27-Mar-2026 18:38:57 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[27-Mar-2026 18:39:54 America/Lima] save_quotation.php called - POST data: Array
+(
+    [quotation_id] => 315
+    [customer_id] => 231
+    [quotation_date] => 2026-03-27
+    [valid_until] => 2026-04-03
+    [currency] => USD
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => [FE295001] 295/80R22.5 18PR FENIXWAY VALOR 87 POS O/F
+                    [quantity] => 1
+                    [unit_price] => 308
+                    [discount_percentage] => 23
+                )
+
+            [1] => Array
+                (
+                    [description] => [GI225296] 295/80R22.5 18PR GITI GDM686 POS ON/OFF
+                    [quantity] => 1
+                    [unit_price] => 412
+                    [discount_percentage] => 23
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/GI225296-GITI-TIRE-GDM686-1.jpg
+                )
+
+            [2] => Array
+                (
+                    [description] => [KP295800] 295/80R22.5 18PR KPATOS KDM19+
+                    [quantity] => 1
+                    [unit_price] => 238
+                    [discount_percentage] => 23
+                )
+
+            [3] => Array
+                (
+                    [description] => [TL295000] 295/80R22.5 18PR ECOROAD SUPER A-105 DEL
+                    [quantity] => 1
+                    [unit_price] => 210
+                    [discount_percentage] => 23
+                )
+
+        )
+
+)
+
+[27-Mar-2026 18:39:54 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[FE295001] 295\/80R22.5 18PR FENIXWAY VALOR 87 POS O\/F","quantity":1,"unit_price":308,"discount_percentage":23,"image_url":null},{"product_id":null,"description":"[GI225296] 295\/80R22.5 18PR GITI GDM686 POS ON\/OFF","quantity":1,"unit_price":412,"discount_percentage":23,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/GI225296-GITI-TIRE-GDM686-1.jpg"},{"product_id":null,"description":"[KP295800] 295\/80R22.5 18PR KPATOS KDM19+","quantity":1,"unit_price":238,"discount_percentage":23,"image_url":null},{"product_id":null,"description":"[TL295000] 295\/80R22.5 18PR ECOROAD SUPER A-105 DEL","quantity":1,"unit_price":210,"discount_percentage":23,"image_url":null}]
+[27-Mar-2026 18:39:54 America/Lima] Calling quotationRepo->create with companyId=1, customerId=231, currency=USD
+[28-Mar-2026 12:24:07 America/Lima] API Lookup Request - Action: ruc, Document: 20602876234, Company: 2
+[28-Mar-2026 12:24:08 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[28-Mar-2026 12:25:36 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 232
+    [quotation_date] => 2026-03-28
+    [valid_until] => 2026-04-04
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => credit
+    [credit_days] => 90
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => LT265/65R17 10PR CHAO YANG SL366 MT
+                    [quantity] => 19
+                    [unit_price] => 105
+                    [discount_percentage] => 0
+                    [product_id] => CY172635
+                )
+
+            [1] => Array
+                (
+                    [description] => LT265/65R17 10PR GITIXCURSION XT71
+                    [quantity] => 76
+                    [unit_price] => 110
+                    [discount_percentage] => 0
+                    [product_id] => GI262672
+                )
+
+        )
+
+)
+
+[28-Mar-2026 12:25:36 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[CY172635] LT265\/65R17 10PR CHAO YANG SL366 MT","quantity":19,"unit_price":105,"discount_percentage":0,"image_url":null},{"product_id":null,"description":"[GI262672] LT265\/65R17 10PR GITIXCURSION XT71","quantity":76,"unit_price":110,"discount_percentage":0,"image_url":null}]
+[28-Mar-2026 12:25:36 America/Lima] Calling quotationRepo->create with companyId=2, customerId=232, currency=USD
+[28-Mar-2026 12:34:10 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[28-Mar-2026 12:34:52 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[28-Mar-2026 12:38:06 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[30-Mar-2026 08:41:18 America/Lima] API Lookup Request - Action: ruc, Document: 20534183331, Company: 1
+[30-Mar-2026 08:41:18 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[30-Mar-2026 08:47:54 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 233
+    [quotation_date] => 2026-03-30
+    [valid_until] => 2026-04-06
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => cash
+    [credit_days] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [product_id] => GI225200
+                    [description] => 1200R20 20PR GITI GAO822 P.O OFF ROAD
+                    [quantity] => 10
+                    [unit_price] => 585.00
+                    [discount_percentage] => 29
+                    [line_total] => 4153.50
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/GI225200-GITI-TIRE-GAO822-1.jpg
+                )
+
+            [1] => Array
+                (
+                    [product_id] => KN201200
+                    [description] => 1200R20 20PR KINGRUN TT98 POS(PATA DE OSO)
+                    [quantity] => 10
+                    [unit_price] => 300.00
+                    [discount_percentage] => 29
+                    [line_total] => 2130.00
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/KN201200-1.jpg
+                )
+
+        )
+
+    [notes] => 
+    [terms_and_conditions] => 
+    [global_discount_percentage] => 0
+)
+
+[30-Mar-2026 08:47:54 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[GI225200] 1200R20 20PR GITI GAO822 P.O OFF ROAD","quantity":10,"unit_price":585,"discount_percentage":29,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/GI225200-GITI-TIRE-GAO822-1.jpg"},{"product_id":null,"description":"[KN201200] 1200R20 20PR KINGRUN TT98 POS(PATA DE OSO)","quantity":10,"unit_price":300,"discount_percentage":29,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/KN201200-1.jpg"}]
+[30-Mar-2026 08:47:54 America/Lima] Calling quotationRepo->create with companyId=1, customerId=233, currency=USD
+[30-Mar-2026 08:47:55 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[30-Mar-2026 09:23:04 America/Lima] API Lookup Request - Action: dni, Document: 49669628, Company: 1
+[30-Mar-2026 09:23:06 America/Lima] API Lookup Result - Success: NO, Message: HTTP Error: 404 - Respuesta: {"message":"not found"}
+[30-Mar-2026 09:23:35 America/Lima] API Lookup Request - Action: dni, Document: 40669628, Company: 1
+[30-Mar-2026 09:23:37 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[30-Mar-2026 10:02:34 America/Lima] Failed login attempt for: Godo
+[30-Mar-2026 10:02:38 America/Lima] Failed login attempt for: gsm
+[30-Mar-2026 11:45:06 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 181
+    [quotation_date] => 2026-03-30
+    [valid_until] => 2026-04-06
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => cash
+    [credit_days] => 
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => 215/70R15C 104/101R 8PR LT GITIVAN 600V1
+                    [quantity] => 1
+                    [unit_price] => 58
+                    [discount_percentage] => 0
+                    [product_id] => GI215701
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/GI215701-GITI-TIRE-VAN600-V1-1.jpg
+                )
+
+        )
+
+)
+
+[30-Mar-2026 11:45:06 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[GI215701] 215\/70R15C 104\/101R 8PR LT GITIVAN 600V1","quantity":1,"unit_price":58,"discount_percentage":0,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/GI215701-GITI-TIRE-VAN600-V1-1.jpg"}]
+[30-Mar-2026 11:45:06 America/Lima] Calling quotationRepo->create with companyId=1, customerId=181, currency=USD
+[30-Mar-2026 11:45:11 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[30-Mar-2026 11:46:06 America/Lima] save_quotation.php called - POST data: Array
+(
+    [quotation_id] => 320
+    [customer_id] => 181
+    [quotation_date] => 2026-03-30
+    [valid_until] => 2026-04-06
+    [currency] => USD
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => [GI215701] 215/70R15C 104/101R 8PR LT GITIVAN 600V1
+                    [quantity] => 10
+                    [unit_price] => 58
+                    [discount_percentage] => 0
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/GI215701-GITI-TIRE-VAN600-V1-1.jpg
+                )
+
+        )
+
+)
+
+[30-Mar-2026 11:46:06 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[GI215701] 215\/70R15C 104\/101R 8PR LT GITIVAN 600V1","quantity":10,"unit_price":58,"discount_percentage":0,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/GI215701-GITI-TIRE-VAN600-V1-1.jpg"}]
+[30-Mar-2026 11:46:06 America/Lima] Calling quotationRepo->create with companyId=1, customerId=181, currency=USD
+[30-Mar-2026 11:46:09 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[30-Mar-2026 12:09:28 America/Lima] API Lookup Request - Action: ruc, Document: 20506151547, Company: 1
+[30-Mar-2026 12:09:29 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[30-Mar-2026 12:30:30 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 235
+    [quotation_date] => 2026-03-30
+    [valid_until] => 2026-04-06
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => cash
+    [credit_days] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [product_id] => GI225113
+                    [description] => 11R22.5 16PR GITI GSR225 DEL HYB
+                    [quantity] => 24
+                    [unit_price] => 348.76
+                    [discount_percentage] => 29
+                    [line_total] => 5942.87
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/GI225113-GITI-TIRE-GSR225-1.jpg
+                )
+
+            [1] => Array
+                (
+                    [product_id] => GI225123
+                    [description] => 12R22.5 18PR GITI GSR225 DEL HYB
+                    [quantity] => 22
+                    [unit_price] => 382.00
+                    [discount_percentage] => 29
+                    [line_total] => 5966.84
+                    [image_url] => 
+                )
+
+            [2] => Array
+                (
+                    [product_id] => SN115300
+                    [description] => 11R22.5 18PR SUNWIDE SDR530 POST GALLET
+                    [quantity] => 128
+                    [unit_price] => 212.00
+                    [discount_percentage] => 29
+                    [line_total] => 19266.56
+                    [image_url] => 
+                )
+
+            [3] => Array
+                (
+                    [product_id] => GI225445
+                    [description] => 445/65R22.5 20PR GITI GAM851 ALL ON/OFF
+                    [quantity] => 20
+                    [unit_price] => 545.00
+                    [discount_percentage] => 29
+                    [line_total] => 7739.00
+                    [image_url] => 
+                )
+
+            [4] => Array
+                (
+                    [product_id] => CY445169
+                    [description] => 445/65R22.5 20PR CHAO YANG EZ373 POST
+                    [quantity] => 45
+                    [unit_price] => 520.00
+                    [discount_percentage] => 29
+                    [line_total] => 16614.00
+                    [image_url] => 
+                )
+
+            [5] => Array
+                (
+                    [product_id] => CY225447
+                    [description] => 445/65R22.5 20PR CHAO YANG CR976 DEL
+                    [quantity] => 45
+                    [unit_price] => 490.00
+                    [discount_percentage] => 29
+                    [line_total] => 15655.50
+                    [image_url] => 
+                )
+
+        )
+
+    [notes] => 
+    [terms_and_conditions] => 
+    [global_discount_percentage] => 0
+)
+
+[30-Mar-2026 12:30:30 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[GI225113] 11R22.5 16PR GITI GSR225 DEL HYB","quantity":24,"unit_price":348.76,"discount_percentage":29,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/GI225113-GITI-TIRE-GSR225-1.jpg"},{"product_id":null,"description":"[GI225123] 12R22.5 18PR GITI GSR225 DEL HYB","quantity":22,"unit_price":382,"discount_percentage":29,"image_url":""},{"product_id":null,"description":"[SN115300] 11R22.5 18PR SUNWIDE SDR530 POST GALLET","quantity":128,"unit_price":212,"discount_percentage":29,"image_url":""},{"product_id":null,"description":"[GI225445] 445\/65R22.5 20PR GITI GAM851 ALL ON\/OFF","quantity":20,"unit_price":545,"discount_percentage":29,"image_url":""},{"product_id":null,"description":"[CY445169] 445\/65R22.5 20PR CHAO YANG EZ373 POST","quantity":45,"unit_price":520,"discount_percentage":29,"image_url":""},{"product_id":null,"description":"[CY225447] 445\/65R22.5 20PR CHAO YANG CR976 DEL","quantity":45,"unit_price":490,"discount_percentage":29,"image_url":""}]
+[30-Mar-2026 12:30:30 America/Lima] Calling quotationRepo->create with companyId=1, customerId=235, currency=USD
+[30-Mar-2026 12:30:31 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[30-Mar-2026 12:48:05 America/Lima] API Lookup Request - Action: ruc, Document: 10474340657, Company: 1
+[30-Mar-2026 12:48:06 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[30-Mar-2026 13:07:14 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 220
+    [quotation_date] => 2026-03-30
+    [valid_until] => 2026-04-06
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => cash
+    [credit_days] => 
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => 225/65R17 102H CROSSCONTACT ATR EC
+                    [quantity] => 1
+                    [unit_price] => 193
+                    [discount_percentage] => 31
+                    [product_id] => CR557062
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/CR557062-1.jpg
+                )
+
+            [1] => Array
+                (
+                    [description] => 225/65R17 106T GITI GITI4X4 AT71
+                    [quantity] => 1
+                    [unit_price] => 97
+                    [discount_percentage] => 30
+                    [product_id] => GI454645
+                )
+
+        )
+
+)
+
+[30-Mar-2026 13:07:14 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[CR557062] 225\/65R17 102H CROSSCONTACT ATR EC","quantity":1,"unit_price":193,"discount_percentage":31,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/CR557062-1.jpg"},{"product_id":null,"description":"[GI454645] 225\/65R17 106T GITI GITI4X4 AT71","quantity":1,"unit_price":97,"discount_percentage":30,"image_url":null}]
+[30-Mar-2026 13:07:14 America/Lima] Calling quotationRepo->create with companyId=1, customerId=220, currency=USD
+[30-Mar-2026 13:07:19 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 236
+    [quotation_date] => 2026-03-30
+    [valid_until] => 2026-04-06
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => cash
+    [credit_days] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [product_id] => GI226200
+                    [description] => 1200R20 20PR GITI GAM839 MIX ON-OFF
+                    [quantity] => 30
+                    [unit_price] => 545.00
+                    [discount_percentage] => 29
+                    [line_total] => 11608.50
+                    [image_url] => 
+                )
+
+            [1] => Array
+                (
+                    [product_id] => GI225200
+                    [description] => 1200R20 20PR GITI GAO822 P.O OFF ROAD
+                    [quantity] => 30
+                    [unit_price] => 585.00
+                    [discount_percentage] => 27
+                    [line_total] => 12811.50
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/GI225200-GITI-TIRE-GAO822-1.jpg
+                )
+
+            [2] => Array
+                (
+                    [product_id] => KN201200
+                    [description] => 1200R20 20PR KINGRUN TT98 POS(PATA DE OSO)
+                    [quantity] => 30
+                    [unit_price] => 300.00
+                    [discount_percentage] => 27
+                    [line_total] => 6570.00
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/KN201200-1.jpg
+                )
+
+            [3] => Array
+                (
+                    [product_id] => HO120002
+                    [description] => 1200R20 20PR BOSSWAY BD925 POST MIN
+                    [quantity] => 30
+                    [unit_price] => 340.00
+                    [discount_percentage] => 27
+                    [line_total] => 7446.00
+                    [image_url] => 
+                )
+
+            [4] => Array
+                (
+                    [product_id] => CY201208
+                    [description] => 1200R20 18PR CHAO YANG CR926 MIX ON-OFF
+                    [quantity] => 30
+                    [unit_price] => 389.38
+                    [discount_percentage] => 27
+                    [line_total] => 8527.42
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/CY201208-CHAO-YANG-CR926-1.jpg
+                )
+
+            [5] => Array
+                (
+                    [product_id] => FE201203
+                    [description] => 1200R20 20PR FENIXWAY VALOR 99 MIX ON-OFF
+                    [quantity] => 1
+                    [unit_price] => 463.00
+                    [discount_percentage] => 27
+                    [line_total] => 337.99
+                    [image_url] => 
+                )
+
+        )
+
+    [notes] => 
+    [terms_and_conditions] => 
+    [global_discount_percentage] => 0
+)
+
+[30-Mar-2026 13:07:19 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[GI226200] 1200R20 20PR GITI GAM839 MIX ON-OFF","quantity":30,"unit_price":545,"discount_percentage":29,"image_url":""},{"product_id":null,"description":"[GI225200] 1200R20 20PR GITI GAO822 P.O OFF ROAD","quantity":30,"unit_price":585,"discount_percentage":27,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/GI225200-GITI-TIRE-GAO822-1.jpg"},{"product_id":null,"description":"[KN201200] 1200R20 20PR KINGRUN TT98 POS(PATA DE OSO)","quantity":30,"unit_price":300,"discount_percentage":27,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/KN201200-1.jpg"},{"product_id":null,"description":"[HO120002] 1200R20 20PR BOSSWAY BD925 POST MIN","quantity":30,"unit_price":340,"discount_percentage":27,"image_url":""},{"product_id":null,"description":"[CY201208] 1200R20 18PR CHAO YANG CR926 MIX ON-OFF","quantity":30,"unit_price":389.38,"discount_percentage":27,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/CY201208-CHAO-YANG-CR926-1.jpg"},{"product_id":null,"description":"[FE201203] 1200R20 20PR FENIXWAY VALOR 99 MIX ON-OFF","quantity":1,"unit_price":463,"discount_percentage":27,"image_url":""}]
+[30-Mar-2026 13:07:19 America/Lima] Calling quotationRepo->create with companyId=1, customerId=236, currency=USD
+[30-Mar-2026 13:07:20 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[30-Mar-2026 13:07:24 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[30-Mar-2026 13:08:38 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[30-Mar-2026 16:02:22 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 189
+    [quotation_date] => 2026-03-30
+    [valid_until] => 2026-04-06
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => credit
+    [credit_days] => 30
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => 205/65R16 95V GITI GITICOMFORT 228V1
+                    [quantity] => 2
+                    [unit_price] => 54
+                    [discount_percentage] => 0
+                    [product_id] => GI651600
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/GI651600-GITI-TIRE-COMFORT-228V1-1.jpg
+                )
+
+        )
+
+)
+
+[30-Mar-2026 16:02:22 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[GI651600] 205\/65R16 95V GITI GITICOMFORT 228V1","quantity":2,"unit_price":54,"discount_percentage":0,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/GI651600-GITI-TIRE-COMFORT-228V1-1.jpg"}]
+[30-Mar-2026 16:02:22 America/Lima] Calling quotationRepo->create with companyId=2, customerId=189, currency=USD

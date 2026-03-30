@@ -1,1 +1,0 @@
-user_id|i:20;username|s:18:"NELSONDISTRIBUCION";company_id|i:1;logged_in_timestamp|i:1774641219;user_data|a:7:{s:2:"id";i:20;s:10:"company_id";i:1;s:8:"username";s:18:"NELSONDISTRIBUCION";s:5:"email";s:30:"n.mejia@llantasanmartin.com.pe";s:10:"first_name";s:6:"NELSON";s:9:"last_name";s:5:"MEJIA";s:9:"is_active";i:1;}user_roles|a:1:{i:0;s:8:"Vendedor";}

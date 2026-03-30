@@ -422,3 +422,14 @@
 [26-Mar-2026 15:38:56 America/Lima] Company ID: 1
 [26-Mar-2026 15:38:56 America/Lima] Cotización encontrada: C1-2026-0138
 [26-Mar-2026 15:38:56 America/Lima] ERROR: Cliente no tiene teléfono
+[28-Mar-2026 12:34:37 America/Lima] === ENVÍO POR WHATSAPP INICIADO ===
+[28-Mar-2026 12:34:37 America/Lima] Quotation ID: 317
+[28-Mar-2026 12:34:37 America/Lima] Company ID: 1
+[28-Mar-2026 12:34:37 America/Lima] Cotización encontrada: C1-2026-0143
+[28-Mar-2026 12:34:37 America/Lima] Teléfono del cliente: 953250242
+[28-Mar-2026 12:34:37 America/Lima] Token de aprobación generado: d2c89ead2fb7ae6f0b7f90a800cfd876a531bed95ef55e661a64a6920793a7da
+[28-Mar-2026 12:34:37 America/Lima] Cliente no tiene email configurado
+[28-Mar-2026 12:34:37 America/Lima] Teléfono formateado: 51953250242
+[28-Mar-2026 12:34:37 America/Lima] Estado de cotización actualizado a 'Sent'
+[28-Mar-2026 12:34:37 America/Lima] Error logging activity: SQLSTATE[HY000]: General error: 1364 Field 'id' doesn't have a default value
+[28-Mar-2026 12:34:37 America/Lima] WhatsApp preparado exitosamente
