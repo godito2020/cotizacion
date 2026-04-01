@@ -2122,22 +2122,32 @@ $pageTitle = 'Nueva Cotización';
                 .then(data => {
                     console.log('Save response data:', data);
                     if (data.success) {
-                        // Add to customer select
-                        const customerSelect = document.getElementById('customer_id');
-                        if (customerSelect) {
-                            const option = new Option(
-                                `${data.customer.business_name} - ${data.customer.document}`,
-                                data.customer.id,
-                                true,
-                                true
-                            );
-                            option.setAttribute('data-document', data.customer.document);
-                            option.setAttribute('data-name', data.customer.business_name);
-                            customerSelect.appendChild(option);
+                        const c = data.customer;
+                        const currentUser = <?= json_encode($user['first_name'] . ' ' . $user['last_name']) ?>;
 
-                            // Trigger change event to update dependent fields
-                            customerSelect.dispatchEvent(new Event('change'));
-                        }
+                        // Add to customers array so it appears in future searches
+                        customers.push({
+                            id: c.id,
+                            name: c.name || c.business_name,
+                            tax_id: c.tax_id || c.document,
+                            email: c.email || '',
+                            phone: c.phone || '',
+                            address: c.address || '',
+                            user_id: <?= json_encode($user['id']) ?>,
+                            owner_name: currentUser
+                        });
+
+                        // Auto-select the new customer
+                        const fakeElement = document.createElement('a');
+                        fakeElement.dataset.customerId = c.id;
+                        fakeElement.dataset.customerName = c.name || c.business_name;
+                        fakeElement.dataset.customerTaxId = c.tax_id || c.document;
+                        fakeElement.dataset.customerEmail = c.email || '';
+                        fakeElement.dataset.customerPhone = c.phone || '';
+                        fakeElement.dataset.customerAddress = c.address || '';
+                        fakeElement.dataset.customerUserId = <?= json_encode($user['id']) ?>;
+                        fakeElement.dataset.ownerName = currentUser;
+                        selectCustomer(fakeElement);
 
                         // Close modal
                         const modalInstance = bootstrap.Modal.getInstance(modal);
@@ -2148,7 +2158,7 @@ $pageTitle = 'Nueva Cotización';
                         modal.querySelector('#customer_data').style.display = 'none';
                         modal.querySelector('#save_customer_btn').disabled = true;
 
-                        showAlert('success', 'Cliente creado exitosamente');
+                        showAlert('success', 'Cliente "' + (c.name || c.business_name) + '" creado y seleccionado');
                     } else {
                         showAlert('error', data.message || 'Error al crear el cliente');
                     }

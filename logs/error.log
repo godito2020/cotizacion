@@ -9501,3 +9501,149 @@ Stack trace:
 [01-Apr-2026 12:36:47 America/Lima] Product::getMostQuotedProducts Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'qi.product_code' in 'field list'
 [01-Apr-2026 12:37:59 America/Lima] Product::getMostQuotedProducts Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'qi.product_code' in 'field list'
 [01-Apr-2026 12:38:55 America/Lima] Customer::getCountByType Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'customer_type' in 'field list'
+[01-Apr-2026 13:04:30 America/Lima] API Lookup Request - Action: dni, Document: 43848064, Company: 1
+[01-Apr-2026 13:04:35 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[01-Apr-2026 13:04:38 America/Lima] API Lookup Request - Action: dni, Document: 43848064, Company: 1
+[01-Apr-2026 13:04:38 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[01-Apr-2026 13:24:10 America/Lima] API Lookup Request - Action: ruc, Document: 20269112060, Company: 2
+[01-Apr-2026 13:24:10 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[01-Apr-2026 13:24:15 America/Lima] API Lookup Request - Action: ruc, Document: 20269112060, Company: 2
+[01-Apr-2026 13:24:16 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[01-Apr-2026 13:26:01 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 245
+    [quotation_date] => 2026-04-01
+    [valid_until] => 2026-04-08
+    [currency] => USD
+    [price_includes_igv] => plus_igv
+    [payment_condition] => credit
+    [credit_days] => 60
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => 12R22.5 16PR CONTINENTAL CONTI HAC 3 EC.
+                    [quantity] => 2
+                    [unit_price] => 654
+                    [discount_percentage] => 25
+                    [product_id] => CR251540
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/CR251540-1.jpg
+                )
+
+        )
+
+)
+
+[01-Apr-2026 13:26:01 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[CR251540] 12R22.5 16PR CONTINENTAL CONTI HAC 3 EC.","quantity":2,"unit_price":654,"discount_percentage":25,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/CR251540-1.jpg"}]
+[01-Apr-2026 13:26:01 America/Lima] Calling quotationRepo->create with companyId=2, customerId=245, currency=USD
+[01-Apr-2026 13:27:35 America/Lima] save_quotation.php called - POST data: Array
+(
+    [quotation_id] => 336
+    [customer_id] => 245
+    [quotation_date] => 2026-04-01
+    [valid_until] => 2026-04-08
+    [currency] => USD
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => [CR251540] 12R22.5 16PR CONTINENTAL CONTI HAC 3 EC.
+                    [quantity] => 2
+                    [unit_price] => 415.25
+                    [discount_percentage] => 25
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/CR251540-1.jpg
+                )
+
+        )
+
+)
+
+[01-Apr-2026 13:27:35 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[CR251540] 12R22.5 16PR CONTINENTAL CONTI HAC 3 EC.","quantity":2,"unit_price":415.25,"discount_percentage":25,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/CR251540-1.jpg"}]
+[01-Apr-2026 13:27:35 America/Lima] Calling quotationRepo->create with companyId=2, customerId=245, currency=USD
+[01-Apr-2026 13:28:37 America/Lima] save_quotation.php called - POST data: Array
+(
+    [quotation_id] => 337
+    [customer_id] => 245
+    [quotation_date] => 2026-04-01
+    [valid_until] => 2026-04-08
+    [currency] => USD
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => [CR251540] 12R22.5 16PR CONTINENTAL CONTI HAC 3 EC.
+                    [quantity] => 2
+                    [unit_price] => 415.25
+                    [discount_percentage] => 0
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/CR251540-1.jpg
+                )
+
+        )
+
+)
+
+[01-Apr-2026 13:28:37 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[CR251540] 12R22.5 16PR CONTINENTAL CONTI HAC 3 EC.","quantity":2,"unit_price":415.25,"discount_percentage":0,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/CR251540-1.jpg"}]
+[01-Apr-2026 13:28:37 America/Lima] Calling quotationRepo->create with companyId=2, customerId=245, currency=USD
+[01-Apr-2026 13:29:26 America/Lima] save_quotation.php called - POST data: Array
+(
+    [quotation_id] => 338
+    [customer_id] => 245
+    [quotation_date] => 2026-04-01
+    [valid_until] => 2026-04-08
+    [currency] => USD
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => [CR251540] 12R22.5 16PR CONTINENTAL CONTI HAC 3 EC.
+                    [quantity] => 2
+                    [unit_price] => 489.99
+                    [discount_percentage] => 0
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/CR251540-1.jpg
+                )
+
+        )
+
+)
+
+[01-Apr-2026 13:29:26 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[CR251540] 12R22.5 16PR CONTINENTAL CONTI HAC 3 EC.","quantity":2,"unit_price":489.99,"discount_percentage":0,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/CR251540-1.jpg"}]
+[01-Apr-2026 13:29:26 America/Lima] Calling quotationRepo->create with companyId=2, customerId=245, currency=USD
+[01-Apr-2026 13:56:33 America/Lima] API Lookup Request - Action: ruc, Document: 20606990961, Company: 1
+[01-Apr-2026 13:56:34 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[01-Apr-2026 13:58:09 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 246
+    [quotation_date] => 2026-04-01
+    [valid_until] => 2026-04-08
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => cash
+    [credit_days] => 
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => 185/70R14 88S CHAO YANG MAX T
+                    [quantity] => 20
+                    [unit_price] => 27
+                    [discount_percentage] => 0
+                    [product_id] => CY185748
+                )
+
+        )
+
+)
+
+[01-Apr-2026 13:58:09 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[CY185748] 185\/70R14 88S CHAO YANG MAX T","quantity":20,"unit_price":27,"discount_percentage":0,"image_url":null}]
+[01-Apr-2026 13:58:09 America/Lima] Calling quotationRepo->create with companyId=1, customerId=246, currency=USD
+[01-Apr-2026 13:58:13 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185

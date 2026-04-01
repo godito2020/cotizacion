@@ -444,3 +444,8 @@
 [31-Mar-2026 16:26:15 America/Lima] Estado de cotización actualizado a 'Sent'
 [31-Mar-2026 16:26:15 America/Lima] Error logging activity: SQLSTATE[HY000]: General error: 1364 Field 'id' doesn't have a default value
 [31-Mar-2026 16:26:15 America/Lima] WhatsApp preparado exitosamente
+[01-Apr-2026 13:26:06 America/Lima] === ENVÍO POR WHATSAPP INICIADO ===
+[01-Apr-2026 13:26:06 America/Lima] Quotation ID: 336
+[01-Apr-2026 13:26:06 America/Lima] Company ID: 2
+[01-Apr-2026 13:26:06 America/Lima] Cotización encontrada: C2-2026-0062
+[01-Apr-2026 13:26:06 America/Lima] ERROR: Cliente no tiene teléfono
