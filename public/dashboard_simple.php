@@ -746,6 +746,13 @@ function statusLabel($status) {
                                 </a>
                             </div>
                             <?php endif; ?>
+                            <?php if (Permissions::canAccessCostAnalysis($auth)): ?>
+                            <div class="col mb-2">
+                                <a href="<?= BASE_URL ?>/cost-analysis/index.php" class="btn btn-outline-info btn-lg w-100">
+                                    <i class="fas fa-calculator"></i><br>Análisis de Costos
+                                </a>
+                            </div>
+                            <?php endif; ?>
                             <?php if (Permissions::canAccessAdminPanel($auth)): ?>
                             <div class="col mb-2">
                                 <a href="<?= BASE_URL ?>/admin/exchange_rate.php" class="btn btn-outline-success btn-lg w-100">

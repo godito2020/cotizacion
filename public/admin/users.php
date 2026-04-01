@@ -175,7 +175,7 @@ ob_start();
         <?php endif; ?>
 
         <div class="card">
-            <div class="card-header">
+            <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">
                     <?php if ($isSystemAdmin): ?>
                         Usuarios del Sistema
@@ -188,6 +188,11 @@ ob_start();
                         Usuarios de la Empresa
                     <?php endif; ?>
                 </h5>
+                <div style="width: 320px;">
+                    <input type="text" class="form-control form-control-sm" id="searchUsers"
+                           placeholder="Buscar por nombre, usuario, correo, WhatsApp o empresa..."
+                           autocomplete="off">
+                </div>
             </div>
             <div class="card-body">
                 <?php if (!empty($users)): ?>
@@ -321,5 +326,19 @@ $content = ob_get_clean();
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    document.getElementById('searchUsers').addEventListener('input', function() {
+        const query = this.value.toLowerCase().trim();
+        const rows = document.querySelectorAll('table.table tbody tr');
+        let visible = 0;
+
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            const match = !query || text.includes(query);
+            row.style.display = match ? '' : 'none';
+            if (match) visible++;
+        });
+    });
+    </script>
 </body>
 </html>

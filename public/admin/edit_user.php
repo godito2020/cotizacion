@@ -52,6 +52,16 @@ $userRolesStmt = $db->prepare("SELECT role_id FROM user_roles WHERE user_id = ?"
 $userRolesStmt->execute([$userId]);
 $userRoles = $userRolesStmt->fetchAll(PDO::FETCH_COLUMN);
 
+// Check if user has cost analysis access
+$hasCostAnalysis = false;
+try {
+    $caStmt = $db->prepare("SELECT COUNT(*) FROM cost_analysis_access WHERE user_id = ?");
+    $caStmt->execute([$userId]);
+    $hasCostAnalysis = (int)$caStmt->fetchColumn() > 0;
+} catch (Exception $e) {
+    // Table may not exist yet
+}
+
 $pageTitle = 'Editar Usuario: ' . htmlspecialchars($editUser['username']);
 
 // Handle form submission
@@ -94,6 +104,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     $updateStmt = $db->prepare("UPDATE users SET company_id = ?, email = ?, first_name = ?, last_name = ?, phone = ?, can_view_all_quotations = ? WHERE id = ?");
                     $updateStmt->execute([$newCompanyId, $email, $firstName, $lastName, $phone, $canViewAll, $userId]);
+                }
+
+                // Update cost analysis access
+                $costAnalysis = isset($_POST['cost_analysis_access']) ? 1 : 0;
+                try {
+                    if ($costAnalysis) {
+                        $db->prepare("INSERT IGNORE INTO cost_analysis_access (user_id, granted_by) VALUES (?, ?)")
+                           ->execute([$userId, $auth->getUserId()]);
+                    } else {
+                        $db->prepare("DELETE FROM cost_analysis_access WHERE user_id = ?")
+                           ->execute([$userId]);
+                    }
+                } catch (Exception $e) {
+                    // Table may not exist yet
                 }
 
                 // Update roles - delete existing and insert new ones
@@ -242,6 +266,17 @@ ob_start();
                             </label>
                         </div>
                         <small class="text-muted">Si no está marcado, el usuario solo verá sus propias cotizaciones</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="cost_analysis_access" name="cost_analysis_access"
+                                   value="1" <?= $hasCostAnalysis ? 'checked' : '' ?>>
+                            <label class="form-check-label" for="cost_analysis_access">
+                                <i class="fas fa-calculator text-info me-1"></i> Acceso al Módulo de Análisis de Costos
+                            </label>
+                        </div>
+                        <small class="text-muted">Permite ver costos, márgenes de ganancia y aplicar descuentos a productos</small>
                     </div>
 
                     <hr>

@@ -433,3 +433,14 @@
 [28-Mar-2026 12:34:37 America/Lima] Estado de cotización actualizado a 'Sent'
 [28-Mar-2026 12:34:37 America/Lima] Error logging activity: SQLSTATE[HY000]: General error: 1364 Field 'id' doesn't have a default value
 [28-Mar-2026 12:34:37 America/Lima] WhatsApp preparado exitosamente
+[31-Mar-2026 16:26:15 America/Lima] === ENVÍO POR WHATSAPP INICIADO ===
+[31-Mar-2026 16:26:15 America/Lima] Quotation ID: 331
+[31-Mar-2026 16:26:15 America/Lima] Company ID: 1
+[31-Mar-2026 16:26:15 America/Lima] Cotización encontrada: C1-2026-0151
+[31-Mar-2026 16:26:15 America/Lima] Teléfono del cliente: 924174884
+[31-Mar-2026 16:26:15 America/Lima] Token de aprobación generado: fc730d83b03a03aaa8240227aa57d3d879bf414075d24c279bb6a1cff7133135
+[31-Mar-2026 16:26:15 America/Lima] Cliente no tiene email configurado
+[31-Mar-2026 16:26:15 America/Lima] Teléfono formateado: 51924174884
+[31-Mar-2026 16:26:15 America/Lima] Estado de cotización actualizado a 'Sent'
+[31-Mar-2026 16:26:15 America/Lima] Error logging activity: SQLSTATE[HY000]: General error: 1364 Field 'id' doesn't have a default value
+[31-Mar-2026 16:26:15 America/Lima] WhatsApp preparado exitosamente

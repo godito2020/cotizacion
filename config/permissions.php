@@ -26,6 +26,7 @@ class Permissions {
             'manage_warehouses' => true,
             'manage_bank_accounts' => true,
             'billing_panel' => true,
+            'cost_analysis_panel' => true,
         ],
 
         'Administrador de Empresa' => [
@@ -43,6 +44,7 @@ class Permissions {
             'manage_warehouses' => true,
             'manage_bank_accounts' => true,
             'billing_panel' => false,
+            'cost_analysis_panel' => true,
         ],
 
         'Vendedor' => [
@@ -288,6 +290,27 @@ class Permissions {
      */
     public static function canGenerateInventoryReports($auth) {
         return self::userCan($auth, 'inventory_reports');
+    }
+
+    /**
+     * Verifica acceso al Módulo de Análisis de Costos
+     * Requiere permiso de rol + acceso individual en cost_analysis_access
+     */
+    public static function canAccessCostAnalysis($auth) {
+        if (!$auth->isLoggedIn()) return false;
+
+        // Admins del sistema siempre tienen acceso
+        if ($auth->hasRole('Administrador del Sistema')) return true;
+
+        // Para otros, verificar acceso individual en BD
+        try {
+            $db = getDBConnection();
+            $stmt = $db->prepare("SELECT COUNT(*) FROM cost_analysis_access WHERE user_id = ?");
+            $stmt->execute([$auth->getUserId()]);
+            return (int)$stmt->fetchColumn() > 0;
+        } catch (Exception $e) {
+            return false;
+        }
     }
 }
 ?>

@@ -9133,3 +9133,351 @@ Stack trace:
 
 [30-Mar-2026 16:02:22 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[GI651600] 205\/65R16 95V GITI GITICOMFORT 228V1","quantity":2,"unit_price":54,"discount_percentage":0,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/GI651600-GITI-TIRE-COMFORT-228V1-1.jpg"}]
 [30-Mar-2026 16:02:22 America/Lima] Calling quotationRepo->create with companyId=2, customerId=189, currency=USD
+[31-Mar-2026 11:44:19 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 201
+    [quotation_date] => 2026-03-31
+    [valid_until] => 2026-03-05
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => credit
+    [credit_days] => 30
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => 295/80R22.5 18PR GITI GDM686 POS ON/OFF
+                    [quantity] => 4
+                    [unit_price] => 290
+                    [discount_percentage] => 0
+                    [product_id] => GI225296
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/GI225296-GITI-TIRE-GDM686-1.jpg
+                )
+
+        )
+
+)
+
+[31-Mar-2026 11:44:19 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[GI225296] 295\/80R22.5 18PR GITI GDM686 POS ON\/OFF","quantity":4,"unit_price":290,"discount_percentage":0,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/GI225296-GITI-TIRE-GDM686-1.jpg"}]
+[31-Mar-2026 11:44:19 America/Lima] Calling quotationRepo->create with companyId=2, customerId=201, currency=USD
+[31-Mar-2026 12:35:48 America/Lima] API Lookup Request - Action: ruc, Document: 1048162568, Company: 2
+[31-Mar-2026 12:35:49 America/Lima] API Lookup Result - Success: NO, Message: HTTP Error: 422 - Respuesta: {"message":"ruc no valido"}
+[31-Mar-2026 12:36:02 America/Lima] API Lookup Request - Action: ruc, Document: 10481625268, Company: 2
+[31-Mar-2026 12:36:03 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[31-Mar-2026 12:38:08 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 237
+    [quotation_date] => 2026-03-31
+    [valid_until] => 2026-04-07
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => cash
+    [credit_days] => 
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => 295/80R22.5 18PR SUNWIDE SMX300 MIX REG
+                    [quantity] => 2
+                    [unit_price] => 223
+                    [discount_percentage] => 25.11
+                    [product_id] => SN001001
+                )
+
+        )
+
+)
+
+[31-Mar-2026 12:38:08 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[SN001001] 295\/80R22.5 18PR SUNWIDE SMX300 MIX REG","quantity":2,"unit_price":223,"discount_percentage":25.11,"image_url":null}]
+[31-Mar-2026 12:38:08 America/Lima] Calling quotationRepo->create with companyId=2, customerId=237, currency=USD
+[31-Mar-2026 15:25:04 America/Lima] API Lookup Request - Action: ruc, Document: 20613346571, Company: 1
+[31-Mar-2026 15:25:05 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[31-Mar-2026 15:25:22 America/Lima] Customer::create - Invalid email format for: .
+[31-Mar-2026 15:26:22 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 238
+    [quotation_date] => 2026-03-31
+    [valid_until] => 2026-04-07
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => cash
+    [credit_days] => 
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => 1200R20 20PR TAITONG HS715 POS MIN
+                    [quantity] => 30
+                    [unit_price] => 235
+                    [discount_percentage] => 0
+                    [product_id] => TA201201
+                )
+
+        )
+
+)
+
+[31-Mar-2026 15:26:22 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[TA201201] 1200R20 20PR TAITONG HS715 POS MIN","quantity":30,"unit_price":235,"discount_percentage":0,"image_url":null}]
+[31-Mar-2026 15:26:22 America/Lima] Calling quotationRepo->create with companyId=1, customerId=238, currency=USD
+[31-Mar-2026 15:26:26 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[31-Mar-2026 15:49:49 America/Lima] API Lookup Request - Action: dni, Document: 20609532, Company: 2
+[31-Mar-2026 15:49:51 America/Lima] API Lookup Result - Success: NO, Message: HTTP Error: 404 - Respuesta: {"message":"not found"}
+[31-Mar-2026 15:49:56 America/Lima] API Lookup Request - Action: ruc, Document: 20609532484, Company: 2
+[31-Mar-2026 15:49:57 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[31-Mar-2026 15:51:30 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 239
+    [quotation_date] => 2026-03-31
+    [valid_until] => 2026-04-07
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => credit
+    [credit_days] => 30
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => 275/70R22.5 18PR 152/148 GAU867V1 GITI
+                    [quantity] => 8
+                    [unit_price] => 240
+                    [discount_percentage] => 0
+                    [product_id] => GI222761
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/GI222761-GITI-TIRE-GAU867V1-1.jpg
+                )
+
+        )
+
+)
+
+[31-Mar-2026 15:51:30 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[GI222761] 275\/70R22.5 18PR 152\/148 GAU867V1 GITI","quantity":8,"unit_price":240,"discount_percentage":0,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/GI222761-GITI-TIRE-GAU867V1-1.jpg"}]
+[31-Mar-2026 15:51:30 America/Lima] Calling quotationRepo->create with companyId=2, customerId=239, currency=USD
+[31-Mar-2026 15:57:34 America/Lima] save_quotation.php called - POST data: Array
+(
+    [quotation_id] => 329
+    [customer_id] => 239
+    [quotation_date] => 2026-03-31
+    [valid_until] => 2026-04-07
+    [currency] => USD
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => [GI222761] 275/70R22.5 18PR 152/148 GAU867V1 GITI
+                    [quantity] => 8
+                    [unit_price] => 240
+                    [discount_percentage] => 0
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/GI222761-GITI-TIRE-GAU867V1-1.jpg
+                )
+
+            [1] => Array
+                (
+                    [description] => 185/70R13 86S CHAO YANG MAX T
+                    [quantity] => 4
+                    [unit_price] => 30
+                    [discount_percentage] => 20
+                    [product_id] => CY185002
+                )
+
+        )
+
+)
+
+[31-Mar-2026 15:57:34 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[GI222761] 275\/70R22.5 18PR 152\/148 GAU867V1 GITI","quantity":8,"unit_price":240,"discount_percentage":0,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/GI222761-GITI-TIRE-GAU867V1-1.jpg"},{"product_id":null,"description":"[CY185002] 185\/70R13 86S CHAO YANG MAX T","quantity":4,"unit_price":30,"discount_percentage":20,"image_url":null}]
+[31-Mar-2026 15:57:34 America/Lima] Calling quotationRepo->create with companyId=2, customerId=239, currency=USD
+[31-Mar-2026 16:20:04 America/Lima] API Lookup Request - Action: dni, Document: 20101363, Company: 1
+[31-Mar-2026 16:20:04 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[31-Mar-2026 16:20:05 America/Lima] API Lookup Request - Action: ruc, Document: 20101363008, Company: 1
+[31-Mar-2026 16:20:05 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[31-Mar-2026 16:20:10 America/Lima] API Lookup Request - Action: ruc, Document: 20101363008, Company: 1
+[31-Mar-2026 16:20:10 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[31-Mar-2026 16:26:07 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 240
+    [quotation_date] => 2026-03-31
+    [valid_until] => 2026-04-07
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => credit
+    [credit_days] => 30
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => 295/80R22.5 16PR CONTINENTAL HDC1 POS ECU
+                    [quantity] => 32
+                    [unit_price] => 492
+                    [discount_percentage] => 0
+                    [product_id] => CR222955
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/CR222955-u.jpg
+                )
+
+        )
+
+)
+
+[31-Mar-2026 16:26:07 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[CR222955] 295\/80R22.5 16PR CONTINENTAL HDC1 POS ECU","quantity":32,"unit_price":492,"discount_percentage":0,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/CR222955-u.jpg"}]
+[31-Mar-2026 16:26:07 America/Lima] Calling quotationRepo->create with companyId=1, customerId=240, currency=USD
+[31-Mar-2026 16:26:31 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[31-Mar-2026 16:31:35 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 240
+    [quotation_date] => 2026-03-31
+    [valid_until] => 2026-04-07
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => credit
+    [credit_days] => 30
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => 295/80R22.5 18PR GITI GDM686 POS ON/OFF
+                    [quantity] => 32
+                    [unit_price] => 309
+                    [discount_percentage] => 0
+                    [product_id] => GI225296
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/GI225296-GITI-TIRE-GDM686-1.jpg
+                )
+
+        )
+
+)
+
+[31-Mar-2026 16:31:35 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[GI225296] 295\/80R22.5 18PR GITI GDM686 POS ON\/OFF","quantity":32,"unit_price":309,"discount_percentage":0,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/GI225296-GITI-TIRE-GDM686-1.jpg"}]
+[31-Mar-2026 16:31:35 America/Lima] Calling quotationRepo->create with companyId=1, customerId=240, currency=USD
+[31-Mar-2026 16:31:39 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[01-Apr-2026 09:38:33 America/Lima] Failed login attempt for: Godo
+[01-Apr-2026 09:38:42 America/Lima] Failed login attempt for: master
+[01-Apr-2026 10:06:41 America/Lima] API Lookup Request - Action: ruc, Document: 20604117411, Company: 1
+[01-Apr-2026 10:06:42 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[01-Apr-2026 10:10:11 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[01-Apr-2026 10:12:06 America/Lima] save_quotation.php called - POST data: Array
+(
+    [quotation_id] => 330
+    [customer_id] => 239
+    [quotation_date] => 2026-03-31
+    [valid_until] => 2026-04-07
+    [currency] => USD
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => [GI222761] 275/70R22.5 18PR 152/148 GAU867V1 GITI
+                    [quantity] => 8
+                    [unit_price] => 240
+                    [discount_percentage] => 0
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/GI222761-GITI-TIRE-GAU867V1-1.jpg
+                )
+
+            [1] => Array
+                (
+                    [description] => [CY185002] 185/70R13 86S CHAO YANG MAX T
+                    [quantity] => 8
+                    [unit_price] => 30
+                    [discount_percentage] => 0
+                )
+
+        )
+
+)
+
+[01-Apr-2026 10:12:06 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[GI222761] 275\/70R22.5 18PR 152\/148 GAU867V1 GITI","quantity":8,"unit_price":240,"discount_percentage":0,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/GI222761-GITI-TIRE-GAU867V1-1.jpg"},{"product_id":null,"description":"[CY185002] 185\/70R13 86S CHAO YANG MAX T","quantity":8,"unit_price":30,"discount_percentage":0,"image_url":null}]
+[01-Apr-2026 10:12:06 America/Lima] Calling quotationRepo->create with companyId=2, customerId=239, currency=USD
+[01-Apr-2026 10:32:28 America/Lima] API Lookup Request - Action: ruc, Document: 2047972914, Company: 2
+[01-Apr-2026 10:32:28 America/Lima] API Lookup Result - Success: NO, Message: HTTP Error: 422 - Respuesta: {"message":"ruc no valido"}
+[01-Apr-2026 10:32:32 America/Lima] API Lookup Request - Action: ruc, Document: 20479729141, Company: 2
+[01-Apr-2026 10:32:33 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[01-Apr-2026 10:32:52 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:32:53 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:32:54 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:32:56 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:32:57 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:32:58 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:32:58 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:33:01 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:33:03 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:33:04 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:33:05 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:33:06 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:33:20 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:33:28 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:33:31 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:33:32 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:33:46 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:33:49 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:34:04 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:34:07 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:34:32 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:34:32 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:34:36 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:34:43 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:35:33 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 242
+    [quotation_date] => 2026-04-01
+    [valid_until] => 2026-04-08
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => credit
+    [credit_days] => 120
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => 445/65R22.5 20PR CHAO YANG CR976 DEL
+                    [quantity] => 62
+                    [unit_price] => 365
+                    [discount_percentage] => 0
+                )
+
+        )
+
+)
+
+[01-Apr-2026 10:35:33 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"445\/65R22.5 20PR CHAO YANG CR976 DEL","quantity":62,"unit_price":365,"discount_percentage":0,"image_url":null}]
+[01-Apr-2026 10:35:33 America/Lima] Calling quotationRepo->create with companyId=2, customerId=242, currency=USD
+[01-Apr-2026 10:37:21 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:37:23 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:37:23 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:41:24 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 10:41:25 America/Lima] Error searching products: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cobol.vista_productos' doesn't exist
+[01-Apr-2026 11:02:48 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[01-Apr-2026 11:29:26 America/Lima] API Lookup Request - Action: dni, Document: 10102585, Company: 1
+[01-Apr-2026 11:29:27 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[01-Apr-2026 11:29:27 America/Lima] API Lookup Request - Action: dni, Document: 10102585, Company: 1
+[01-Apr-2026 11:29:27 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[01-Apr-2026 11:29:32 America/Lima] API Lookup Request - Action: ruc, Document: 10102585360, Company: 1
+[01-Apr-2026 11:29:33 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[01-Apr-2026 11:29:35 America/Lima] API Lookup Request - Action: ruc, Document: 10102585360, Company: 1
+[01-Apr-2026 11:29:35 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[01-Apr-2026 11:34:37 America/Lima] API Lookup Request - Action: dni, Document: 10102585, Company: 1
+[01-Apr-2026 11:34:37 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[01-Apr-2026 11:34:38 America/Lima] API Lookup Request - Action: dni, Document: 10102585, Company: 1
+[01-Apr-2026 11:34:38 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[01-Apr-2026 11:34:44 America/Lima] API Lookup Request - Action: ruc, Document: 10102585360, Company: 1
+[01-Apr-2026 11:34:44 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[01-Apr-2026 11:34:46 America/Lima] API Lookup Request - Action: ruc, Document: 10102585360, Company: 1
+[01-Apr-2026 11:34:47 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[01-Apr-2026 12:26:28 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[01-Apr-2026 12:27:35 America/Lima] Product::getMostQuotedProducts Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'qi.product_code' in 'field list'
+[01-Apr-2026 12:28:02 America/Lima] Product::getMostQuotedProducts Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'qi.product_code' in 'field list'
+[01-Apr-2026 12:28:06 America/Lima] Product::getMostQuotedProducts Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'qi.product_code' in 'field list'
+[01-Apr-2026 12:28:29 America/Lima] Product::getMostQuotedProducts Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'qi.product_code' in 'field list'
