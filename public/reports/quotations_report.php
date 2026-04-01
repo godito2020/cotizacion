@@ -83,10 +83,9 @@
                         'Invoiced' => 'primary'
                     ];
                     ?>
-                    <?php foreach ($reportData['summary']['by_status'] as $statusData): ?>
+                    <?php foreach ($reportData['summary']['by_status'] as $status => $count): ?>
                         <?php
-                        $status = $statusData['status'];
-                        $count = $statusData['count'];
+                        // $status = key (e.g. 'Draft'), $count = value (e.g. 5)
                         ?>
                         <div class="col-md-6 mb-3">
                             <div class="d-flex align-items-center">

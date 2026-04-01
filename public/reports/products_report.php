@@ -72,6 +72,12 @@
                             </thead>
                             <tbody>
                                 <?php foreach ($reportData['most_quoted'] as $index => $product): ?>
+                                    <?php
+                                    $desc = $product['description'] ?? $product['descripcion'] ?? '';
+                                    $code = $product['code'] ?? $product['codigo'] ?? '';
+                                    $brand = $product['brand'] ?? $product['marca'] ?? '';
+                                    $stock = (float)($product['total_stock'] ?? $product['saldo'] ?? 0);
+                                    ?>
                                     <tr>
                                         <td>
                                             <span class="badge bg-<?= $index < 3 ? 'warning' : 'secondary' ?>">
@@ -80,30 +86,30 @@
                                         </td>
                                         <td>
                                             <div>
-                                                <strong><?= htmlspecialchars($product['description']) ?></strong>
-                                                <?php if ($product['code']): ?>
-                                                    <br><small class="text-muted">Código: <?= htmlspecialchars($product['code']) ?></small>
+                                                <strong><?= htmlspecialchars($desc) ?></strong>
+                                                <?php if ($code): ?>
+                                                    <br><small class="text-muted">Código: <?= htmlspecialchars($code) ?></small>
                                                 <?php endif; ?>
                                             </div>
                                         </td>
                                         <td>
-                                            <?php if ($product['brand']): ?>
-                                                <span class="badge bg-light text-dark"><?= htmlspecialchars($product['brand']) ?></span>
+                                            <?php if ($brand): ?>
+                                                <span class="badge bg-light text-dark"><?= htmlspecialchars($brand) ?></span>
                                             <?php endif; ?>
                                         </td>
                                         <td class="text-center">
                                             <span class="badge bg-primary"><?= $product['times_quoted'] ?? 0 ?></span>
                                         </td>
                                         <td class="text-center">
-                                            <strong><?= number_format($product['total_quantity'], 2) ?></strong>
+                                            <strong><?= number_format($product['total_quantity'] ?? 0, 2) ?></strong>
                                         </td>
                                         <td class="text-end">
                                             <?php
                                             $stockClass = 'text-success';
-                                            if ($product['total_stock'] <= 10) $stockClass = 'text-danger';
-                                            elseif ($product['total_stock'] <= 50) $stockClass = 'text-warning';
+                                            if ($stock <= 10) $stockClass = 'text-danger';
+                                            elseif ($stock <= 50) $stockClass = 'text-warning';
                                             ?>
-                                            <span class="<?= $stockClass ?>"><?= number_format($product['total_stock'], 2) ?></span>
+                                            <span class="<?= $stockClass ?>"><?= number_format($stock, 2) ?></span>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -129,10 +135,10 @@
                     </div>
                 <?php else: ?>
                     <?php
-                    // Convert array of arrays to associative array
                     $sortedBrands = [];
                     foreach ($reportData['by_brand'] as $brandData) {
-                        $sortedBrands[$brandData['brand']] = $brandData['count'];
+                        $key = $brandData['brand'] ?? 'Sin marca';
+                        $sortedBrands[$key] = (int)($brandData['count'] ?? 0);
                     }
                     arsort($sortedBrands);
                     $topBrands = array_slice($sortedBrands, 0, 8, true);
@@ -196,55 +202,41 @@
                             </thead>
                             <tbody>
                                 <?php foreach ($reportData['low_stock_products'] as $product): ?>
+                                    <?php
+                                    $stock = (float)($product['saldo'] ?? $product['total_stock'] ?? 0);
+                                    $desc = $product['descripcion'] ?? $product['description'] ?? '';
+                                    $code = $product['codigo'] ?? $product['code'] ?? '';
+                                    ?>
                                     <tr>
                                         <td>
-                                            <strong><?= htmlspecialchars($product['description']) ?></strong>
+                                            <strong><?= htmlspecialchars($desc) ?></strong>
                                         </td>
+                                        <td>-</td>
                                         <td>
-                                            <?php if ($product['brand']): ?>
-                                                <span class="badge bg-light text-dark"><?= htmlspecialchars($product['brand']) ?></span>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td>
-                                            <?php if ($product['code']): ?>
-                                                <code><?= htmlspecialchars($product['code']) ?></code>
+                                            <?php if ($code): ?>
+                                                <code><?= htmlspecialchars($code) ?></code>
                                             <?php endif; ?>
                                         </td>
                                         <td class="text-end">
                                             <?php
                                             $stockLevel = 'danger';
-                                            if ($product['total_stock'] > 5) $stockLevel = 'warning';
-                                            if ($product['total_stock'] == 0) $stockLevel = 'dark';
+                                            if ($stock > 5) $stockLevel = 'warning';
+                                            if ($stock == 0) $stockLevel = 'dark';
                                             ?>
                                             <span class="badge bg-<?= $stockLevel ?> fs-6">
-                                                <?= number_format($product['total_stock'], 2) ?>
+                                                <?= number_format($stock, 2) ?>
                                             </span>
                                         </td>
                                         <td class="text-center">
-                                            <?php if ($product['total_stock'] == 0): ?>
+                                            <?php if ($stock == 0): ?>
                                                 <span class="badge bg-dark">Sin Stock</span>
-                                            <?php elseif ($product['total_stock'] <= 5): ?>
+                                            <?php elseif ($stock <= 5): ?>
                                                 <span class="badge bg-danger">Crítico</span>
                                             <?php else: ?>
                                                 <span class="badge bg-warning">Bajo</span>
                                             <?php endif; ?>
                                         </td>
-                                        <td>
-                                            <small class="text-muted">
-                                                <?php
-                                                $warehouseStocks = [];
-                                                if (isset($product['warehouse_stocks'])) {
-                                                    foreach ($product['warehouse_stocks'] as $warehouse => $stock) {
-                                                        if ($stock > 0) {
-                                                            $warehouseStocks[] = $warehouse . ': ' . number_format($stock, 2);
-                                                        }
-                                                    }
-                                                }
-                                                echo implode(', ', array_slice($warehouseStocks, 0, 3));
-                                                if (count($warehouseStocks) > 3) echo '...';
-                                                ?>
-                                            </small>
-                                        </td>
+                                        <td>-</td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>

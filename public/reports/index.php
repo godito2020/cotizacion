@@ -73,13 +73,25 @@ $pageTitle = 'Reportes y Estadísticas';
 function getDashboardReport($quotationRepo, $customerRepo, $productRepo, $companyId, $startDate, $endDate, $sellerId = null) {
     $data = [];
 
-    // Quotation statistics
+    // Quotation statistics - convert arrays to key-value for charts
+    $byStatusRaw = $quotationRepo->getCountByStatus($companyId, $startDate, $endDate, $sellerId);
+    $byStatus = [];
+    foreach ($byStatusRaw as $row) {
+        $byStatus[$row['status']] = (int)$row['count'];
+    }
+
+    $byMonthRaw = $quotationRepo->getCountByMonth($companyId, $startDate, $endDate, $sellerId);
+    $byMonth = [];
+    foreach ($byMonthRaw as $row) {
+        $byMonth[$row['month']] = (int)$row['count'];
+    }
+
     $data['quotations'] = [
         'total' => $quotationRepo->getCount($companyId, $startDate, $endDate, $sellerId),
-        'by_status' => $quotationRepo->getCountByStatus($companyId, $startDate, $endDate, $sellerId),
+        'by_status' => $byStatus,
         'total_amount' => $quotationRepo->getTotalAmount($companyId, $startDate, $endDate, $sellerId),
         'average_amount' => $quotationRepo->getAverageAmount($companyId, $startDate, $endDate, $sellerId),
-        'by_month' => $quotationRepo->getCountByMonth($companyId, $startDate, $endDate, $sellerId)
+        'by_month' => $byMonth
     ];
 
     // Customer statistics
@@ -91,23 +103,35 @@ function getDashboardReport($quotationRepo, $customerRepo, $productRepo, $compan
 
     // Product statistics
     $data['products'] = [
-        'total' => $productRepo->getCount($companyId),
-        'most_quoted' => $productRepo->getMostQuotedProducts($companyId, $startDate, $endDate, 10, $sellerId),
-        'low_stock' => $productRepo->getLowStockProducts($companyId, 10)
+        'total' => $productRepo->getCount(),
+        'most_quoted' => $productRepo->getMostQuotedProducts($startDate, $endDate, 10),
+        'low_stock' => $productRepo->getLowStockProducts(10, 10)
     ];
 
     return $data;
 }
 
 function getQuotationReport($quotationRepo, $companyId, $startDate, $endDate, $sellerId = null) {
+    $byStatusRaw = $quotationRepo->getCountByStatus($companyId, $startDate, $endDate, $sellerId);
+    $byStatus = [];
+    foreach ($byStatusRaw as $row) {
+        $byStatus[$row['status']] = (int)$row['count'];
+    }
+
+    $byMonthRaw = $quotationRepo->getCountByMonth($companyId, $startDate, $endDate, $sellerId);
+    $byMonth = [];
+    foreach ($byMonthRaw as $row) {
+        $byMonth[$row['month']] = (int)$row['count'];
+    }
+
     return [
         'summary' => [
             'total' => $quotationRepo->getCount($companyId, $startDate, $endDate, $sellerId),
-            'by_status' => $quotationRepo->getCountByStatus($companyId, $startDate, $endDate, $sellerId),
+            'by_status' => $byStatus,
             'total_amount' => $quotationRepo->getTotalAmount($companyId, $startDate, $endDate, $sellerId),
             'average_amount' => $quotationRepo->getAverageAmount($companyId, $startDate, $endDate, $sellerId),
         ],
-        'by_month' => $quotationRepo->getCountByMonth($companyId, $startDate, $endDate, $sellerId),
+        'by_month' => $byMonth,
         'by_user' => $quotationRepo->getCountByUser($companyId, $startDate, $endDate, $sellerId),
         'conversion_rate' => $quotationRepo->getConversionRate($companyId, $startDate, $endDate, $sellerId),
         'recent_quotations' => $quotationRepo->getRecent($companyId, 10, $startDate, $endDate, $sellerId)
@@ -115,6 +139,13 @@ function getQuotationReport($quotationRepo, $companyId, $startDate, $endDate, $s
 }
 
 function getCustomerReport($customerRepo, $companyId, $startDate, $endDate, $sellerId = null) {
+    $byTypeRaw = $customerRepo->getCountByType($companyId);
+    $byType = [];
+    foreach ($byTypeRaw as $row) {
+        $typeName = $row['customer_type'] ?? 'Sin tipo';
+        $byType[$typeName] = (int)$row['count'];
+    }
+
     return [
         'summary' => [
             'total' => $customerRepo->getCount($companyId),
@@ -122,7 +153,7 @@ function getCustomerReport($customerRepo, $companyId, $startDate, $endDate, $sel
             'active_customers' => $customerRepo->getActiveCustomersCount($companyId, $startDate, $endDate, $sellerId)
         ],
         'top_customers' => $customerRepo->getTopCustomers($companyId, $startDate, $endDate, 20, $sellerId),
-        'by_type' => $customerRepo->getCountByType($companyId),
+        'by_type' => $byType,
         'recent_customers' => $customerRepo->getRecent($companyId, 10)
     ];
 }
@@ -130,13 +161,13 @@ function getCustomerReport($customerRepo, $companyId, $startDate, $endDate, $sel
 function getProductReport($productRepo, $companyId, $startDate, $endDate, $sellerId = null) {
     return [
         'summary' => [
-            'total' => $productRepo->getCount($companyId),
-            'with_stock' => $productRepo->getCountWithStock($companyId),
-            'low_stock' => $productRepo->getLowStockCount($companyId)
+            'total' => $productRepo->getCount(),
+            'with_stock' => $productRepo->getCountWithStock(),
+            'low_stock' => $productRepo->getLowStockCount(10)
         ],
-        'most_quoted' => $productRepo->getMostQuotedProducts($companyId, $startDate, $endDate, 20, $sellerId),
-        'low_stock_products' => $productRepo->getLowStockProducts($companyId, 20),
-        'by_brand' => $productRepo->getCountByBrand($companyId)
+        'most_quoted' => $productRepo->getMostQuotedProducts($startDate, $endDate, 20),
+        'low_stock_products' => $productRepo->getLowStockProducts(10, 20),
+        'by_brand' => $productRepo->getCountByBrand()
     ];
 }
 ?>

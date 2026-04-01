@@ -248,37 +248,31 @@
                                     <tr>
                                         <td>
                                             <div>
-                                                <strong>
-                                                    <?php if ($customer['company_name']): ?>
-                                                        <?= htmlspecialchars($customer['company_name']) ?>
-                                                    <?php else: ?>
-                                                        <?= htmlspecialchars($customer['first_name'] . ' ' . $customer['last_name']) ?>
-                                                    <?php endif; ?>
-                                                </strong>
-                                                <?php if ($customer['contact_person']): ?>
+                                                <strong><?= htmlspecialchars($customer['name'] ?? '') ?></strong>
+                                                <?php if (!empty($customer['contact_person'])): ?>
                                                     <br><small class="text-muted">Contacto: <?= htmlspecialchars($customer['contact_person']) ?></small>
                                                 <?php endif; ?>
                                             </div>
                                         </td>
                                         <td>
-                                            <span class="badge bg-<?= $customer['company_name'] ? 'primary' : 'info' ?>">
-                                                <?= $customer['company_name'] ? 'Empresa' : 'Persona' ?>
+                                            <span class="badge bg-<?= (strlen($customer['tax_id'] ?? '') == 11) ? 'primary' : 'info' ?>">
+                                                <?= (strlen($customer['tax_id'] ?? '') == 11) ? 'Empresa' : 'Persona' ?>
                                             </span>
                                         </td>
                                         <td>
-                                            <?php if ($customer['tax_id']): ?>
+                                            <?php if (!empty($customer['tax_id'])): ?>
                                                 <code><?= htmlspecialchars($customer['tax_id']) ?></code>
                                             <?php endif; ?>
                                         </td>
                                         <td>
-                                            <?php if ($customer['email']): ?>
+                                            <?php if (!empty($customer['email'])): ?>
                                                 <a href="mailto:<?= htmlspecialchars($customer['email']) ?>">
                                                     <?= htmlspecialchars($customer['email']) ?>
                                                 </a>
                                             <?php endif; ?>
                                         </td>
                                         <td>
-                                            <?php if ($customer['phone']): ?>
+                                            <?php if (!empty($customer['phone'])): ?>
                                                 <a href="tel:<?= htmlspecialchars($customer['phone']) ?>">
                                                     <?= htmlspecialchars($customer['phone']) ?>
                                                 </a>

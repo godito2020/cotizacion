@@ -162,9 +162,10 @@
                                 <?php foreach ($reportData['products']['most_quoted'] as $product): ?>
                                     <tr>
                                         <td>
-                                            <strong><?= htmlspecialchars($product['description']) ?></strong>
-                                            <?php if ($product['code']): ?>
-                                                <br><small class="text-muted">Código: <?= htmlspecialchars($product['code']) ?></small>
+                                            <strong><?= htmlspecialchars($product['description'] ?? $product['descripcion'] ?? '') ?></strong>
+                                            <?php $code = $product['code'] ?? $product['codigo'] ?? ''; ?>
+                                            <?php if ($code): ?>
+                                                <br><small class="text-muted">Código: <?= htmlspecialchars($code) ?></small>
                                             <?php endif; ?>
                                         </td>
                                         <td class="text-center">
@@ -222,10 +223,9 @@
                     <ul class="list-unstyled small">
                         <?php foreach (array_slice($reportData['products']['low_stock'], 0, 5) as $product): ?>
                             <?php
-                            // Handle both COBOL (lowercase/uppercase) and local field names
-                            $descripcion = $product['descripcion'] ?? $product['DESCRIPCION'] ?? $product['description'] ?? '';
-                            $stockActual = $product['stock_actual'] ?? $product['STOCK_ACTUAL'] ?? $product['total_stock'] ?? 0;
-                            $codigo = $product['codigo'] ?? $product['CODIGO'] ?? $product['code'] ?? '';
+                            $descripcion = $product['descripcion'] ?? $product['description'] ?? '';
+                            $stockActual = $product['saldo'] ?? $product['stock_actual'] ?? $product['total_stock'] ?? 0;
+                            $codigo = $product['codigo'] ?? $product['code'] ?? '';
                             ?>
                             <li>
                                 <i class="fas fa-box text-warning"></i>

@@ -363,8 +363,7 @@ class Product {
     public function getMostQuotedProducts($startDate = null, $endDate = null, $limit = 10): array {
         try {
             $sql = "SELECT
-                        qi.product_code as codigo,
-                        qi.product_name as descripcion,
+                        qi.description as description,
                         COUNT(qi.id) as times_quoted,
                         SUM(qi.quantity) as total_quantity,
                         AVG(qi.unit_price) as avg_price
@@ -379,7 +378,7 @@ class Product {
                 $params['end_date'] = $endDate;
             }
 
-            $sql .= " GROUP BY qi.product_code, qi.product_name
+            $sql .= " GROUP BY qi.description
                       ORDER BY times_quoted DESC
                       LIMIT :limit";
 
@@ -390,9 +389,42 @@ class Product {
             $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
             $stmt->execute();
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Extract code from description format "[CODE] Description"
+            foreach ($results as &$row) {
+                $row['code'] = '';
+                $row['brand'] = '';
+                $row['total_stock'] = 0;
+                if (preg_match('/^\[([^\]]+)\]\s*(.+)$/', $row['description'], $matches)) {
+                    $row['code'] = $matches[1];
+                    $row['description'] = $matches[2];
+                }
+            }
+            unset($row);
+
+            return $results;
         } catch (PDOException $e) {
             error_log("Product::getMostQuotedProducts Error: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Cuenta productos agrupados por marca
+     */
+    public function getCountByBrand(): array {
+        try {
+            $sql = "SELECT
+                        COALESCE(marca, 'Sin marca') as brand,
+                        COUNT(*) as count
+                    FROM vista_productos
+                    GROUP BY marca
+                    ORDER BY count DESC";
+            $stmt = $this->dbCobol->query($sql);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Product::getCountByBrand Error: " . $e->getMessage());
             return [];
         }
     }
