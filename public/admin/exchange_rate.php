@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $result = $stmt->execute([(string)$exchangeRate, $companyId]);
             } else {
                 // Insert new
-                $sql = "INSERT INTO settings (company_id, setting_key, setting_value, setting_type, description) VALUES (?, 'exchange_rate_usd_pen', ?, 'number', 'Tipo de cambio USD a PEN')";
+                $sql = "INSERT INTO settings (company_id, setting_key, setting_value, description) VALUES (?, 'exchange_rate_usd_pen', ?, 'Tipo de cambio USD a PEN')";
                 $stmt = $db->prepare($sql);
                 $result = $stmt->execute([$companyId, (string)$exchangeRate]);
             }
@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         if ($chkStmt->fetch()) {
                             $db->prepare("UPDATE settings SET setting_value = ? WHERE company_id = ? AND setting_key = 'exchange_rate_usd_pen'")->execute([(string)$exchangeRate, $cid]);
                         } else {
-                            $db->prepare("INSERT INTO settings (company_id, setting_key, setting_value, setting_type, description) VALUES (?, 'exchange_rate_usd_pen', ?, 'number', 'Tipo de cambio USD a PEN')")->execute([$cid, (string)$exchangeRate]);
+                            $db->prepare("INSERT INTO settings (company_id, setting_key, setting_value, description) VALUES (?, 'exchange_rate_usd_pen', ?, 'Tipo de cambio USD a PEN')")->execute([$cid, (string)$exchangeRate]);
                         }
                     }
                 }

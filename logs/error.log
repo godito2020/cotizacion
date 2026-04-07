@@ -9647,3 +9647,1000 @@ Stack trace:
 [01-Apr-2026 13:58:09 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[CY185748] 185\/70R14 88S CHAO YANG MAX T","quantity":20,"unit_price":27,"discount_percentage":0,"image_url":null}]
 [01-Apr-2026 13:58:09 America/Lima] Calling quotationRepo->create with companyId=1, customerId=246, currency=USD
 [01-Apr-2026 13:58:13 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[01-Apr-2026 16:09:32 America/Lima] API Lookup Request - Action: dni, Document: 10283084, Company: 1
+[01-Apr-2026 16:09:33 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[01-Apr-2026 16:09:53 America/Lima] API Lookup Request - Action: ruc, Document: 10283084294, Company: 1
+[01-Apr-2026 16:09:54 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[01-Apr-2026 16:10:06 America/Lima] API Lookup Request - Action: ruc, Document: 10283084294, Company: 1
+[01-Apr-2026 16:10:07 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[01-Apr-2026 16:11:31 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 247
+    [quotation_date] => 2026-04-01
+    [valid_until] => 2026-04-08
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => cash
+    [credit_days] => 
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => 165/65R13 77T CHAOYANG MAX T
+                    [quantity] => 10
+                    [unit_price] => 20.5
+                    [discount_percentage] => 0
+                    [product_id] => CY656514
+                )
+
+        )
+
+)
+
+[01-Apr-2026 16:11:31 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[CY656514] 165\/65R13 77T CHAOYANG MAX T","quantity":10,"unit_price":20.5,"discount_percentage":0,"image_url":null}]
+[01-Apr-2026 16:11:31 America/Lima] Calling quotationRepo->create with companyId=1, customerId=247, currency=USD
+[01-Apr-2026 16:11:41 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[01-Apr-2026 16:16:21 America/Lima] save_quotation.php called - POST data: Array
+(
+    [quotation_id] => 341
+    [customer_id] => 247
+    [quotation_date] => 2026-04-01
+    [valid_until] => 2026-04-08
+    [currency] => USD
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => [CY656514] 165/65R13 77T CHAOYANG MAX T
+                    [quantity] => 10
+                    [unit_price] => 20.5
+                    [discount_percentage] => 0
+                )
+
+            [1] => Array
+                (
+                    [description] => 205/60R15 91V GITI GITICOMFORT 228V1
+                    [quantity] => 1
+                    [unit_price] => 64
+                    [discount_percentage] => 29
+                    [product_id] => GI152051
+                )
+
+        )
+
+)
+
+[01-Apr-2026 16:16:21 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[CY656514] 165\/65R13 77T CHAOYANG MAX T","quantity":10,"unit_price":20.5,"discount_percentage":0,"image_url":null},{"product_id":null,"description":"[GI152051] 205\/60R15 91V GITI GITICOMFORT 228V1","quantity":1,"unit_price":64,"discount_percentage":29,"image_url":null}]
+[01-Apr-2026 16:16:21 America/Lima] Calling quotationRepo->create with companyId=1, customerId=247, currency=USD
+[01-Apr-2026 16:16:30 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[02-Apr-2026 09:48:27 America/Lima] InventoryReports::getAllProductsWithMultipleEntries Error: SQLSTATE[23000]: Integrity constraint violation: 1052 Column 'warehouse_number' in field list is ambiguous
+[02-Apr-2026 10:11:39 America/Lima] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in C:\inetpub\wwwroot\coti\public\inventario\select_warehouse.php on line 362
+[02-Apr-2026 10:11:40 America/Lima] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in C:\inetpub\wwwroot\coti\public\inventario\select_warehouse.php on line 362
+[02-Apr-2026 10:11:41 America/Lima] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in C:\inetpub\wwwroot\coti\public\inventario\select_warehouse.php on line 362
+[02-Apr-2026 10:12:04 America/Lima] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in C:\inetpub\wwwroot\coti\public\inventario\select_warehouse.php on line 362
+[02-Apr-2026 10:12:07 America/Lima] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in C:\inetpub\wwwroot\coti\public\inventario\select_warehouse.php on line 362
+[02-Apr-2026 10:12:07 America/Lima] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in C:\inetpub\wwwroot\coti\public\inventario\select_warehouse.php on line 362
+[02-Apr-2026 10:12:25 America/Lima] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in C:\inetpub\wwwroot\coti\public\inventario\select_warehouse.php on line 364
+[02-Apr-2026 10:13:17 America/Lima] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in C:\inetpub\wwwroot\coti\public\inventario\select_warehouse.php on line 364
+[02-Apr-2026 10:13:18 America/Lima] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in C:\inetpub\wwwroot\coti\public\inventario\select_warehouse.php on line 364
+[02-Apr-2026 10:13:18 America/Lima] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in C:\inetpub\wwwroot\coti\public\inventario\select_warehouse.php on line 364
+[02-Apr-2026 10:13:54 America/Lima] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in C:\inetpub\wwwroot\coti\public\inventario\select_warehouse.php on line 364
+[02-Apr-2026 10:13:55 America/Lima] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in C:\inetpub\wwwroot\coti\public\inventario\select_warehouse.php on line 364
+[02-Apr-2026 10:13:55 America/Lima] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in C:\inetpub\wwwroot\coti\public\inventario\select_warehouse.php on line 364
+[02-Apr-2026 10:13:55 America/Lima] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in C:\inetpub\wwwroot\coti\public\inventario\select_warehouse.php on line 364
+[02-Apr-2026 10:18:11 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 63
+[02-Apr-2026 10:18:11 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 69
+[02-Apr-2026 10:18:11 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 75
+[02-Apr-2026 10:18:11 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 81
+[02-Apr-2026 10:18:11 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 87
+[02-Apr-2026 10:18:11 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 93
+[02-Apr-2026 10:18:11 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 99
+[02-Apr-2026 10:18:11 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 105
+[02-Apr-2026 10:18:11 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 111
+[02-Apr-2026 10:18:11 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 124
+[02-Apr-2026 10:18:11 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 63
+[02-Apr-2026 10:18:11 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 69
+[02-Apr-2026 10:18:11 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 75
+[02-Apr-2026 10:18:11 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 81
+[02-Apr-2026 10:18:11 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 87
+[02-Apr-2026 10:18:11 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 93
+[02-Apr-2026 10:18:11 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 99
+[02-Apr-2026 10:18:11 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 105
+[02-Apr-2026 10:18:11 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 111
+[02-Apr-2026 10:18:11 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 124
+[02-Apr-2026 10:18:20 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 63
+[02-Apr-2026 10:18:20 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 69
+[02-Apr-2026 10:18:20 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 75
+[02-Apr-2026 10:18:20 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 81
+[02-Apr-2026 10:18:20 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 87
+[02-Apr-2026 10:18:20 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 93
+[02-Apr-2026 10:18:20 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 99
+[02-Apr-2026 10:18:20 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 105
+[02-Apr-2026 10:18:20 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 111
+[02-Apr-2026 10:18:20 America/Lima] PHP Warning:  Undefined variable $iconUrl in C:\inetpub\wwwroot\coti\public\inventario\manifest.php on line 124
+[02-Apr-2026 11:00:47 America/Lima] Failed login attempt for: 74965861
+[02-Apr-2026 13:35:51 America/Lima] InventoryReports::getAllProductsWithMultipleEntries Error: SQLSTATE[23000]: Integrity constraint violation: 1052 Column 'warehouse_number' in field list is ambiguous
+[02-Apr-2026 13:39:24 America/Lima] InventoryReports::getAllProductsWithMultipleEntries Error: SQLSTATE[23000]: Integrity constraint violation: 1052 Column 'warehouse_number' in field list is ambiguous
+[02-Apr-2026 13:40:09 America/Lima] InventoryReports::getAllProductsWithMultipleEntries Error: SQLSTATE[23000]: Integrity constraint violation: 1052 Column 'warehouse_number' in field list is ambiguous
+[02-Apr-2026 13:41:18 America/Lima] InventoryReports::getAllProductsWithMultipleEntries Error: SQLSTATE[23000]: Integrity constraint violation: 1052 Column 'warehouse_number' in field list is ambiguous
+[02-Apr-2026 13:41:27 America/Lima] InventoryReports::getAllProductsWithMultipleEntries Error: SQLSTATE[23000]: Integrity constraint violation: 1052 Column 'warehouse_number' in field list is ambiguous
+[04-Apr-2026 06:53:51 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 245
+    [quotation_date] => 2026-04-04
+    [valid_until] => 2026-04-11
+    [currency] => USD
+    [price_includes_igv] => plus_igv
+    [payment_condition] => credit
+    [credit_days] => 60
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => 295/80R22.5 16PR CONTINENTAL HAC3 MIX EC.
+                    [quantity] => 2
+                    [unit_price] => 658
+                    [discount_percentage] => 25
+                    [product_id] => CR225804
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/CR225804-1.jpg
+                )
+
+            [1] => Array
+                (
+                    [description] => 295/80R22.5 16PR CONTINENTAL HDR2+SA POSEC
+                    [quantity] => 8
+                    [unit_price] => 640
+                    [discount_percentage] => 24
+                    [product_id] => CR102230
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/CR102230-u.jpg
+                )
+
+            [2] => Array
+                (
+                    [description] => 295/80R22.5 16PR CONTINENTAL HDC1 POS ECU
+                    [quantity] => 8
+                    [unit_price] => 655
+                    [discount_percentage] => 25
+                    [product_id] => CR222955
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/CR222955-u.jpg
+                )
+
+        )
+
+)
+
+[04-Apr-2026 06:53:51 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[CR225804] 295\/80R22.5 16PR CONTINENTAL HAC3 MIX EC.","quantity":2,"unit_price":658,"discount_percentage":25,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/CR225804-1.jpg"},{"product_id":null,"description":"[CR102230] 295\/80R22.5 16PR CONTINENTAL HDR2+SA POSEC","quantity":8,"unit_price":640,"discount_percentage":24,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/CR102230-u.jpg"},{"product_id":null,"description":"[CR222955] 295\/80R22.5 16PR CONTINENTAL HDC1 POS ECU","quantity":8,"unit_price":655,"discount_percentage":25,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/CR222955-u.jpg"}]
+[04-Apr-2026 06:53:51 America/Lima] Calling quotationRepo->create with companyId=2, customerId=245, currency=USD
+[04-Apr-2026 10:02:11 America/Lima] API Lookup Request - Action: ruc, Document: 20611300299, Company: 1
+[04-Apr-2026 10:02:12 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[04-Apr-2026 10:03:01 America/Lima] Customer create POST data: {"name":"EMPRESA COMUNAL SANTA CRUZ DE OYO-OYO, MAYCUNACA Y ANTAJAHUA DE RESPONSABILIDAD LIMITADA","contact_person":"EDSON RIVERA","email":"","email_cc":"","phone":"962725024","tax_id":"20611300299","company_status":"ACTIVO","address":"PJ SAN FRANCISCO MZA. B LOTE 6 URB. LOS FICUS , MOQUEGUA, MARISCAL NIETO, MOQUEGUA"}
+[04-Apr-2026 10:03:01 America/Lima] Customer create - Errors before save: []
+[04-Apr-2026 10:03:01 America/Lima] Customer create - No errors, attempting to create customer
+[04-Apr-2026 10:05:52 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[04-Apr-2026 10:16:12 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[04-Apr-2026 10:22:43 America/Lima] API Lookup Request - Action: ruc, Document: 20602140491, Company: 1
+[04-Apr-2026 10:22:43 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[04-Apr-2026 10:23:15 America/Lima] Customer create POST data: {"name":"TRANSPORTES & SERVICIOS LOGISTICOS TRANSERVI S.R.L.","contact_person":"JUAN JOSE NU\u00d1EZ","email":"","email_cc":"","phone":"","tax_id":"20602140491","company_status":"ACTIVO","address":"JR. MOLLENDO NRO 193 , ILO, ILO, MOQUEGUA"}
+[04-Apr-2026 10:23:15 America/Lima] Customer create - Errors before save: []
+[04-Apr-2026 10:23:15 America/Lima] Customer create - No errors, attempting to create customer
+[04-Apr-2026 10:26:32 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[04-Apr-2026 10:34:29 America/Lima] API Lookup Request - Action: ruc, Document: 20558105756, Company: 1
+[04-Apr-2026 10:34:29 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[04-Apr-2026 10:34:48 America/Lima] Customer create POST data: {"name":"GRUPO TTN S.A.C.","contact_person":"SR LEOPOLDO","email":"","email_cc":"","phone":"","tax_id":"20558105756","company_status":"ACTIVO","address":"MZA. F LOTE 9 URB. VILLA EL SOL , CERRO COLORADO, AREQUIPA, AREQUIPA"}
+[04-Apr-2026 10:34:48 America/Lima] Customer create - Errors before save: []
+[04-Apr-2026 10:34:48 America/Lima] Customer create - No errors, attempting to create customer
+[04-Apr-2026 10:37:22 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[04-Apr-2026 11:05:43 America/Lima] Failed login attempt for: Godo
+[04-Apr-2026 11:36:09 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 
+    [quotation_date] => 2026-04-04
+    [valid_until] => 2026-04-11
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => cash
+    [credit_days] => 
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => 185/70R14 88S CHAO YANG MAX T
+                    [quantity] => 1
+                    [unit_price] => 27
+                    [discount_percentage] => 8
+                    [product_id] => CY185748
+                )
+
+            [1] => Array
+                (
+                    [description] => 185/70R13 86T WIDEWAY SAFEWAY
+                    [quantity] => 3
+                    [unit_price] => 23.5
+                    [discount_percentage] => 0
+                    [product_id] => WY185000
+                )
+
+        )
+
+)
+
+[04-Apr-2026 11:36:14 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 
+    [quotation_date] => 2026-04-04
+    [valid_until] => 2026-04-11
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => cash
+    [credit_days] => 
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => 185/70R14 88S CHAO YANG MAX T
+                    [quantity] => 1
+                    [unit_price] => 27
+                    [discount_percentage] => 8
+                    [product_id] => CY185748
+                )
+
+            [1] => Array
+                (
+                    [description] => 185/70R13 86T WIDEWAY SAFEWAY
+                    [quantity] => 3
+                    [unit_price] => 23.5
+                    [discount_percentage] => 0
+                    [product_id] => WY185000
+                )
+
+        )
+
+)
+
+[04-Apr-2026 11:36:58 America/Lima] API Lookup Request - Action: ruc, Document: 10746097491, Company: 1
+[04-Apr-2026 11:36:58 America/Lima] API Lookup Result - Success: NO, Message: HTTP Error: 422 - Respuesta: {"message":"ruc no valido"}
+[04-Apr-2026 11:37:27 America/Lima] API Lookup Request - Action: ruc, Document: 10747097491, Company: 1
+[04-Apr-2026 11:37:28 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[04-Apr-2026 11:37:33 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 251
+    [quotation_date] => 2026-04-04
+    [valid_until] => 2026-04-11
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => cash
+    [credit_days] => 
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => 185/70R14 88S CHAO YANG MAX T
+                    [quantity] => 1
+                    [unit_price] => 27
+                    [discount_percentage] => 8
+                    [product_id] => CY185748
+                )
+
+            [1] => Array
+                (
+                    [description] => 185/70R13 86T WIDEWAY SAFEWAY
+                    [quantity] => 3
+                    [unit_price] => 23.5
+                    [discount_percentage] => 0
+                    [product_id] => WY185000
+                )
+
+        )
+
+)
+
+[04-Apr-2026 11:37:33 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[CY185748] 185\/70R14 88S CHAO YANG MAX T","quantity":1,"unit_price":27,"discount_percentage":8,"image_url":null},{"product_id":null,"description":"[WY185000] 185\/70R13 86T WIDEWAY SAFEWAY","quantity":3,"unit_price":23.5,"discount_percentage":0,"image_url":null}]
+[04-Apr-2026 11:37:33 America/Lima] Calling quotationRepo->create with companyId=1, customerId=251, currency=USD
+[04-Apr-2026 11:37:41 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[04-Apr-2026 11:39:16 America/Lima] save_quotation.php called - POST data: Array
+(
+    [quotation_id] => 347
+    [customer_id] => 251
+    [quotation_date] => 2026-04-04
+    [valid_until] => 2026-04-11
+    [currency] => USD
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => [CY185748] 185/70R14 88S CHAO YANG MAX T
+                    [quantity] => 8
+                    [unit_price] => 27
+                    [discount_percentage] => 0
+                )
+
+            [1] => Array
+                (
+                    [description] => [WY185000] 185/70R13 86T WIDEWAY SAFEWAY
+                    [quantity] => 3
+                    [unit_price] => 23.5
+                    [discount_percentage] => 0
+                )
+
+        )
+
+)
+
+[04-Apr-2026 11:39:16 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[CY185748] 185\/70R14 88S CHAO YANG MAX T","quantity":8,"unit_price":27,"discount_percentage":0,"image_url":null},{"product_id":null,"description":"[WY185000] 185\/70R13 86T WIDEWAY SAFEWAY","quantity":3,"unit_price":23.5,"discount_percentage":0,"image_url":null}]
+[04-Apr-2026 11:39:16 America/Lima] Calling quotationRepo->create with companyId=1, customerId=251, currency=USD
+[04-Apr-2026 11:39:20 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[04-Apr-2026 11:43:47 America/Lima] save_quotation.php called - POST data: Array
+(
+    [quotation_id] => 348
+    [customer_id] => 251
+    [quotation_date] => 2026-04-04
+    [valid_until] => 2026-04-11
+    [currency] => USD
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => [CY185748] 185/70R14 88S CHAO YANG MAX T
+                    [quantity] => 8
+                    [unit_price] => 27
+                    [discount_percentage] => 0
+                )
+
+        )
+
+)
+
+[04-Apr-2026 11:43:47 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[CY185748] 185\/70R14 88S CHAO YANG MAX T","quantity":8,"unit_price":27,"discount_percentage":0,"image_url":null}]
+[04-Apr-2026 11:43:47 America/Lima] Calling quotationRepo->create with companyId=1, customerId=251, currency=USD
+[04-Apr-2026 11:43:51 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[06-Apr-2026 09:24:10 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 150
+    [quotation_date] => 2026-04-06
+    [valid_until] => 2026-04-13
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => cash
+    [credit_days] => 
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => 1200R20 20PR KINGRUN TT98 POS(PATA DE OSO)
+                    [quantity] => 1
+                    [unit_price] => 205
+                    [discount_percentage] => 0
+                    [product_id] => KN201200
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/KN201200-1.jpg
+                )
+
+        )
+
+)
+
+[06-Apr-2026 09:24:10 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[KN201200] 1200R20 20PR KINGRUN TT98 POS(PATA DE OSO)","quantity":1,"unit_price":205,"discount_percentage":0,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/KN201200-1.jpg"}]
+[06-Apr-2026 09:24:10 America/Lima] Calling quotationRepo->create with companyId=1, customerId=150, currency=USD
+[06-Apr-2026 09:24:31 America/Lima] save_quotation.php called - POST data: Array
+(
+    [quotation_id] => 350
+    [customer_id] => 150
+    [quotation_date] => 2026-04-06
+    [valid_until] => 2026-04-13
+    [currency] => USD
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => [KN201200] 1200R20 20PR KINGRUN TT98 POS(PATA DE OSO)
+                    [quantity] => 8
+                    [unit_price] => 205
+                    [discount_percentage] => 0
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/KN201200-1.jpg
+                )
+
+        )
+
+)
+
+[06-Apr-2026 09:24:31 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[KN201200] 1200R20 20PR KINGRUN TT98 POS(PATA DE OSO)","quantity":8,"unit_price":205,"discount_percentage":0,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/KN201200-1.jpg"}]
+[06-Apr-2026 09:24:31 America/Lima] Calling quotationRepo->create with companyId=1, customerId=150, currency=USD
+[06-Apr-2026 09:24:35 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[06-Apr-2026 09:27:34 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[06-Apr-2026 09:28:52 America/Lima] COBOL Database Connection Error: SQLSTATE[HY000] [1045] Access denied for user 'admin'@'localhost' (using password: YES)
+[06-Apr-2026 09:34:15 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[06-Apr-2026 10:10:22 America/Lima] Failed login attempt for: almacenllsm@gmail.com
+[06-Apr-2026 11:41:07 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[06-Apr-2026 11:43:10 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[06-Apr-2026 11:56:48 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 220
+    [quotation_date] => 2026-04-06
+    [valid_until] => 2026-04-13
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => cash
+    [credit_days] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [product_id] => GI162660
+                    [description] => 265/65R17 112T GITI GITI4X4 AT71 BSW
+                    [quantity] => 1
+                    [unit_price] => 120.21
+                    [discount_percentage] => 25
+                    [line_total] => 90.16
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/GI162660-1.jpg
+                )
+
+        )
+
+    [notes] => 
+    [terms_and_conditions] => 
+    [global_discount_percentage] => 0
+)
+
+[06-Apr-2026 11:56:48 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[GI162660] 265\/65R17 112T GITI GITI4X4 AT71 BSW","quantity":1,"unit_price":120.21,"discount_percentage":25,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/GI162660-1.jpg"}]
+[06-Apr-2026 11:56:48 America/Lima] Calling quotationRepo->create with companyId=1, customerId=220, currency=USD
+[06-Apr-2026 11:56:49 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[06-Apr-2026 12:04:09 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[06-Apr-2026 12:04:45 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[06-Apr-2026 12:07:54 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[06-Apr-2026 12:08:37 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[06-Apr-2026 12:08:39 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[06-Apr-2026 12:12:15 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[06-Apr-2026 12:13:57 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[06-Apr-2026 12:14:12 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[06-Apr-2026 12:15:20 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[06-Apr-2026 13:09:17 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 175
+    [quotation_date] => 2026-04-06
+    [valid_until] => 2026-04-13
+    [currency] => PEN
+    [price_includes_igv] => included
+    [payment_condition] => cash
+    [credit_days] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [product_id] => KN201200
+                    [description] => 1200R20 20PR KINGRUN TT98 POS(PATA DE OSO)
+                    [quantity] => 8
+                    [unit_price] => 795.38
+                    [discount_percentage] => 
+                    [line_total] => 6363.04
+                    [image_url] => file:///C:/Users/GSM_COMERCIAL/Downloads/KINGRUN.jfif
+                )
+
+            [1] => Array
+                (
+                    [product_id] => KN201201
+                    [description] => 1200R20 20PR KINGRUN TT78 MIX SET
+                    [quantity] => 2
+                    [unit_price] => 742.55
+                    [discount_percentage] => 
+                    [line_total] => 1485.10
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/KN201201-KINGRUN-TT78-1.jpg
+                )
+
+        )
+
+    [notes] => 
+    [terms_and_conditions] => 
+    [global_discount_percentage] => 0
+)
+
+[06-Apr-2026 13:09:17 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[KN201200] 1200R20 20PR KINGRUN TT98 POS(PATA DE OSO)","quantity":8,"unit_price":795.38,"discount_percentage":0,"image_url":"file:\/\/\/C:\/Users\/GSM_COMERCIAL\/Downloads\/KINGRUN.jfif"},{"product_id":null,"description":"[KN201201] 1200R20 20PR KINGRUN TT78 MIX SET","quantity":2,"unit_price":742.55,"discount_percentage":0,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/KN201201-KINGRUN-TT78-1.jpg"}]
+[06-Apr-2026 13:09:17 America/Lima] Calling quotationRepo->create with companyId=1, customerId=175, currency=PEN
+[06-Apr-2026 13:09:18 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[06-Apr-2026 13:09:42 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 20
+    [quotation_date] => 2026-04-06
+    [valid_until] => 2026-04-13
+    [currency] => USD
+    [price_includes_igv] => plus_igv
+    [payment_condition] => credit
+    [credit_days] => 30
+    [notes] => Incluse servicio de instalación
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => 11R22.5 18PR SUNWIDE SMX330
+                    [quantity] => 2
+                    [unit_price] => 195
+                    [discount_percentage] => 25
+                    [product_id] => SN113330
+                )
+
+            [1] => Array
+                (
+                    [description] => 11R22.5 18PR ROADSHINE RS602 MIX REG
+                    [quantity] => 2
+                    [unit_price] => 258
+                    [discount_percentage] => 25
+                    [product_id] => RS225114
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/RS225114-1.jpg
+                )
+
+        )
+
+)
+
+[06-Apr-2026 13:09:42 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[SN113330] 11R22.5 18PR SUNWIDE SMX330","quantity":2,"unit_price":195,"discount_percentage":25,"image_url":null},{"product_id":null,"description":"[RS225114] 11R22.5 18PR ROADSHINE RS602 MIX REG","quantity":2,"unit_price":258,"discount_percentage":25,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/RS225114-1.jpg"}]
+[06-Apr-2026 13:09:42 America/Lima] Calling quotationRepo->create with companyId=2, customerId=20, currency=USD
+[06-Apr-2026 13:13:17 America/Lima] save_quotation.php called - POST data: Array
+(
+    [quotation_id] => 355
+    [customer_id] => 20
+    [quotation_date] => 2026-04-06
+    [valid_until] => 2026-04-13
+    [currency] => USD
+    [notes] => Incluse servicio de instalación
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => [SN113330] 11R22.5 18PR SUNWIDE SMX330
+                    [quantity] => 2
+                    [unit_price] => 124.15
+                    [discount_percentage] => 0
+                )
+
+            [1] => Array
+                (
+                    [description] => [RS225114] 11R22.5 18PR ROADSHINE RS602 MIX REG
+                    [quantity] => 2
+                    [unit_price] => 163.98
+                    [discount_percentage] => 0
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/RS225114-1.jpg
+                )
+
+        )
+
+)
+
+[06-Apr-2026 13:13:17 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[SN113330] 11R22.5 18PR SUNWIDE SMX330","quantity":2,"unit_price":124.15,"discount_percentage":0,"image_url":null},{"product_id":null,"description":"[RS225114] 11R22.5 18PR ROADSHINE RS602 MIX REG","quantity":2,"unit_price":163.98,"discount_percentage":0,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/RS225114-1.jpg"}]
+[06-Apr-2026 13:13:17 America/Lima] Calling quotationRepo->create with companyId=2, customerId=20, currency=USD
+[06-Apr-2026 13:15:22 America/Lima] save_quotation.php called - POST data: Array
+(
+    [quotation_id] => 356
+    [customer_id] => 20
+    [quotation_date] => 2026-04-06
+    [valid_until] => 2026-04-13
+    [currency] => USD
+    [notes] => Incluse servicio de instalación
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => [SN113330] 11R22.5 18PR SUNWIDE SMX330
+                    [quantity] => 2
+                    [unit_price] => 146.25
+                    [discount_percentage] => 0
+                )
+
+            [1] => Array
+                (
+                    [description] => [RS225114] 11R22.5 18PR ROADSHINE RS602 MIX REG
+                    [quantity] => 2
+                    [unit_price] => 193.5
+                    [discount_percentage] => 0
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/RS225114-1.jpg
+                )
+
+        )
+
+)
+
+[06-Apr-2026 13:15:22 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[SN113330] 11R22.5 18PR SUNWIDE SMX330","quantity":2,"unit_price":146.25,"discount_percentage":0,"image_url":null},{"product_id":null,"description":"[RS225114] 11R22.5 18PR ROADSHINE RS602 MIX REG","quantity":2,"unit_price":193.5,"discount_percentage":0,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/RS225114-1.jpg"}]
+[06-Apr-2026 13:15:22 America/Lima] Calling quotationRepo->create with companyId=2, customerId=20, currency=USD
+[06-Apr-2026 13:16:47 America/Lima] save_quotation.php called - POST data: Array
+(
+    [quotation_id] => 357
+    [customer_id] => 20
+    [quotation_date] => 2026-04-06
+    [valid_until] => 2026-04-13
+    [currency] => USD
+    [notes] => Incluye servicio de instalación
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => [SN113330] 11R22.5 18PR SUNWIDE SMX330
+                    [quantity] => 2
+                    [unit_price] => 146.25
+                    [discount_percentage] => 0
+                )
+
+            [1] => Array
+                (
+                    [description] => [RS225114] 11R22.5 18PR ROADSHINE RS602 MIX REG
+                    [quantity] => 2
+                    [unit_price] => 193.5
+                    [discount_percentage] => 0
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/RS225114-1.jpg
+                )
+
+        )
+
+)
+
+[06-Apr-2026 13:16:47 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[SN113330] 11R22.5 18PR SUNWIDE SMX330","quantity":2,"unit_price":146.25,"discount_percentage":0,"image_url":null},{"product_id":null,"description":"[RS225114] 11R22.5 18PR ROADSHINE RS602 MIX REG","quantity":2,"unit_price":193.5,"discount_percentage":0,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/RS225114-1.jpg"}]
+[06-Apr-2026 13:16:47 America/Lima] Calling quotationRepo->create with companyId=2, customerId=20, currency=USD
+[06-Apr-2026 13:18:49 America/Lima] save_quotation.php called - POST data: Array
+(
+    [quotation_id] => 358
+    [customer_id] => 20
+    [quotation_date] => 2026-04-06
+    [valid_until] => 2026-04-13
+    [currency] => USD
+    [notes] => Incluye servicio de instalación
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => [SN113330] 11R22.5 18PR SUNWIDE SMX330
+                    [quantity] => 2
+                    [unit_price] => 146.25
+                    [discount_percentage] => 0
+                )
+
+            [1] => Array
+                (
+                    [description] => [RS225114] 11R22.5 18PR ROADSHINE RS602 MIX REG
+                    [quantity] => 2
+                    [unit_price] => 193.5
+                    [discount_percentage] => 0
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/RS225114-1.jpg
+                )
+
+            [2] => Array
+                (
+                    [description] => 11R22.5 18PR SUNWIDE SDR590 POST
+                    [quantity] => 2
+                    [unit_price] => 163.5
+                    [discount_percentage] => 0
+                    [product_id] => SN110202
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/SN110202-SUNWIDE-SDR590POST-1.jpg
+                )
+
+        )
+
+)
+
+[06-Apr-2026 13:18:49 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[SN113330] 11R22.5 18PR SUNWIDE SMX330","quantity":2,"unit_price":146.25,"discount_percentage":0,"image_url":null},{"product_id":null,"description":"[RS225114] 11R22.5 18PR ROADSHINE RS602 MIX REG","quantity":2,"unit_price":193.5,"discount_percentage":0,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/RS225114-1.jpg"},{"product_id":null,"description":"[SN110202] 11R22.5 18PR SUNWIDE SDR590 POST","quantity":2,"unit_price":163.5,"discount_percentage":0,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/SN110202-SUNWIDE-SDR590POST-1.jpg"}]
+[06-Apr-2026 13:18:49 America/Lima] Calling quotationRepo->create with companyId=2, customerId=20, currency=USD
+[06-Apr-2026 14:13:55 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 175
+    [quotation_date] => 2026-04-06
+    [valid_until] => 2026-04-13
+    [currency] => PEN
+    [price_includes_igv] => included
+    [payment_condition] => cash
+    [credit_days] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [product_id] => CY201208
+                    [description] => 1200R20 18PR CHAO YANG CR926 MIX ON-OFF
+                    [quantity] => 2
+                    [unit_price] => 945.00
+                    [discount_percentage] => 
+                    [line_total] => 1890.00
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/CY201208-CHAO-YANG-CR926-1.jpg
+                )
+
+        )
+
+    [notes] => 
+    [terms_and_conditions] => 
+    [global_discount_percentage] => 0
+)
+
+[06-Apr-2026 14:13:55 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[CY201208] 1200R20 18PR CHAO YANG CR926 MIX ON-OFF","quantity":2,"unit_price":945,"discount_percentage":0,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/CY201208-CHAO-YANG-CR926-1.jpg"}]
+[06-Apr-2026 14:13:55 America/Lima] Calling quotationRepo->create with companyId=1, customerId=175, currency=PEN
+[06-Apr-2026 14:13:56 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[06-Apr-2026 15:00:55 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 106
+    [quotation_date] => 2026-04-06
+    [valid_until] => 2026-04-13
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => cash
+    [credit_days] => 
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => 750X16-16PR TRACK KING DELANTERA VIKRANK
+                    [quantity] => 10
+                    [unit_price] => 115
+                    [discount_percentage] => 0
+                    [product_id] => CL750166
+                )
+
+        )
+
+)
+
+[06-Apr-2026 15:00:55 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[CL750166] 750X16-16PR TRACK KING DELANTERA VIKRANK","quantity":10,"unit_price":115,"discount_percentage":0,"image_url":null}]
+[06-Apr-2026 15:00:55 America/Lima] Calling quotationRepo->create with companyId=1, customerId=106, currency=USD
+[06-Apr-2026 15:01:03 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[06-Apr-2026 15:49:10 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 175
+    [quotation_date] => 2026-04-06
+    [valid_until] => 2026-04-13
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => cash
+    [credit_days] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [product_id] => KN201200
+                    [description] => 1200R20 20PR KINGRUN TT98 POS(PATA DE OSO)
+                    [quantity] => 8
+                    [unit_price] => 228.88
+                    [discount_percentage] => 
+                    [line_total] => 1831.04
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/KN201200-1.jpg
+                )
+
+            [1] => Array
+                (
+                    [product_id] => GI226200
+                    [description] => 1200R20 20PR GITI GAM839 MIX ON-OFF
+                    [quantity] => 2
+                    [unit_price] => 379.85
+                    [discount_percentage] => 
+                    [line_total] => 759.70
+                    [image_url] => https://fleet.giti.com/storage/images/tires/GAM839/sliders/CTR_ChinaPattern000878_3__20161018141845.jpg
+                )
+
+        )
+
+    [notes] => 
+    [terms_and_conditions] => 
+    [global_discount_percentage] => 0
+)
+
+[06-Apr-2026 15:49:10 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[KN201200] 1200R20 20PR KINGRUN TT98 POS(PATA DE OSO)","quantity":8,"unit_price":228.88,"discount_percentage":0,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/KN201200-1.jpg"},{"product_id":null,"description":"[GI226200] 1200R20 20PR GITI GAM839 MIX ON-OFF","quantity":2,"unit_price":379.85,"discount_percentage":0,"image_url":"https:\/\/fleet.giti.com\/storage\/images\/tires\/GAM839\/sliders\/CTR_ChinaPattern000878_3__20161018141845.jpg"}]
+[06-Apr-2026 15:49:10 America/Lima] Calling quotationRepo->create with companyId=1, customerId=175, currency=USD
+[06-Apr-2026 15:49:10 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[06-Apr-2026 15:49:26 America/Lima] PHP Warning:  imagecreatefrompng(): gd-png: libpng warning: iCCP: known incorrect sRGB profile in C:\inetpub\wwwroot\coti\vendor\tecnickcom\tcpdf\tcpdf.php on line 7185
+[06-Apr-2026 16:00:41 America/Lima] API Lookup Request - Action: ruc, Document: 20120389760, Company: 2
+[06-Apr-2026 16:00:41 America/Lima] API Lookup Result - Success: YES, Message: N/A
+[06-Apr-2026 16:02:01 America/Lima] save_quotation.php called - POST data: Array
+(
+    [customer_id] => 252
+    [quotation_date] => 2026-04-06
+    [valid_until] => 2026-04-13
+    [currency] => USD
+    [price_includes_igv] => included
+    [payment_condition] => cash
+    [credit_days] => 
+    [notes] => 
+    [terms_and_conditions] => 
+    [items] => Array
+        (
+            [0] => Array
+                (
+                    [description] => 215/75R17.5 18PR FENIXWAY VALOR 89 POS
+                    [quantity] => 2
+                    [unit_price] => 116
+                    [discount_percentage] => 0
+                    [product_id] => FE215753
+                    [image_url] => https://llantasm.com.pe/wp-content/uploads/2025/08/FE215753-FENIXWAY-TIRE-FLAMA89-1.jpg
+                )
+
+        )
+
+)
+
+[06-Apr-2026 16:02:01 America/Lima] Creating quotation - validItems: [{"product_id":null,"description":"[FE215753] 215\/75R17.5 18PR FENIXWAY VALOR 89 POS","quantity":2,"unit_price":116,"discount_percentage":0,"image_url":"https:\/\/llantasm.com.pe\/wp-content\/uploads\/2025\/08\/FE215753-FENIXWAY-TIRE-FLAMA89-1.jpg"}]
+[06-Apr-2026 16:02:01 America/Lima] Calling quotationRepo->create with companyId=2, customerId=252, currency=USD
+[06-Apr-2026 16:42:41 America/Lima] Failed login attempt for: Godo
+[06-Apr-2026 16:43:00 America/Lima] Failed login attempt for: Godo
+[06-Apr-2026 17:25:05 America/Lima] cost_analysis_search API error: SQLSTATE[HY093]: Invalid parameter number
+[06-Apr-2026 17:25:12 America/Lima] cost_analysis_search API error: SQLSTATE[HY093]: Invalid parameter number
+[06-Apr-2026 17:25:16 America/Lima] cost_analysis_search API error: SQLSTATE[HY093]: Invalid parameter number
+[06-Apr-2026 17:25:24 America/Lima] cost_analysis_search API error: SQLSTATE[HY093]: Invalid parameter number
+[06-Apr-2026 17:25:51 America/Lima] cost_analysis_search API error: SQLSTATE[HY093]: Invalid parameter number
+[06-Apr-2026 17:25:59 America/Lima] cost_analysis_search API error: SQLSTATE[HY093]: Invalid parameter number
+[06-Apr-2026 17:29:22 America/Lima] Database Connection Error: SQLSTATE[HY000] [1045] Access denied for user 'admin'@'localhost' (using password: YES)
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:47:56 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:44 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 33
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "KEYN_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 35
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "NOMBRE_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 36
+[06-Apr-2026 17:48:45 America/Lima] PHP Warning:  Undefined array key "PRECOM_MST" in C:\inetpub\wwwroot\coti\public\api\test_search_direct.php on line 37

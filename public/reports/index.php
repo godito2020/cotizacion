@@ -142,7 +142,7 @@ function getCustomerReport($customerRepo, $companyId, $startDate, $endDate, $sel
     $byTypeRaw = $customerRepo->getCountByType($companyId);
     $byType = [];
     foreach ($byTypeRaw as $row) {
-        $typeName = $row['customer_type'] ?? 'Sin tipo';
+        $typeName = $row['company_status'] ?? 'Sin tipo';
         $byType[$typeName] = (int)$row['count'];
     }
 

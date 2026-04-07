@@ -70,6 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $firstName = trim($_POST['first_name']);
     $lastName = trim($_POST['last_name']);
     $phone = trim($_POST['phone'] ?? '');
+    $address = trim($_POST['address'] ?? '');
     $canViewAll = isset($_POST['can_view_all_quotations']) ? 1 : 0;
     $newPassword = trim($_POST['password'] ?? '');
     $selectedRoles = $_POST['roles'] ?? [];
@@ -99,11 +100,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Update user
                 if (!empty($newPassword)) {
                     $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-                    $updateStmt = $db->prepare("UPDATE users SET company_id = ?, email = ?, first_name = ?, last_name = ?, phone = ?, password_hash = ?, can_view_all_quotations = ? WHERE id = ?");
-                    $updateStmt->execute([$newCompanyId, $email, $firstName, $lastName, $phone, $hashedPassword, $canViewAll, $userId]);
+                    $updateStmt = $db->prepare("UPDATE users SET company_id = ?, email = ?, first_name = ?, last_name = ?, phone = ?, address = ?, password_hash = ?, can_view_all_quotations = ? WHERE id = ?");
+                    $updateStmt->execute([$newCompanyId, $email, $firstName, $lastName, $phone, $address, $hashedPassword, $canViewAll, $userId]);
                 } else {
-                    $updateStmt = $db->prepare("UPDATE users SET company_id = ?, email = ?, first_name = ?, last_name = ?, phone = ?, can_view_all_quotations = ? WHERE id = ?");
-                    $updateStmt->execute([$newCompanyId, $email, $firstName, $lastName, $phone, $canViewAll, $userId]);
+                    $updateStmt = $db->prepare("UPDATE users SET company_id = ?, email = ?, first_name = ?, last_name = ?, phone = ?, address = ?, can_view_all_quotations = ? WHERE id = ?");
+                    $updateStmt->execute([$newCompanyId, $email, $firstName, $lastName, $phone, $address, $canViewAll, $userId]);
                 }
 
                 // Update cost analysis access
@@ -219,6 +220,16 @@ ob_start();
                                placeholder="Ej: +51 987 654 321"
                                value="<?= htmlspecialchars($editUser['phone'] ?? '') ?>">
                         <small class="text-muted">Se mostrará en la firma del PDF para contacto directo con el cliente.</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="address" class="form-label">
+                            <i class="fas fa-map-marker-alt text-info me-1"></i>Dirección de Tienda (Opcional)
+                        </label>
+                        <input type="text" class="form-control" id="address" name="address"
+                               placeholder="Ej: Av. Principal 123, San Isidro, Lima"
+                               value="<?= htmlspecialchars($editUser['address'] ?? '') ?>">
+                        <small class="text-muted">Dirección personalizada para este vendedor. Si se deja vacío, se usará la dirección de la empresa en el PDF.</small>
                     </div>
 
                     <div class="mb-3">

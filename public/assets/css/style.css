@@ -86,8 +86,8 @@ body:not([data-theme="dark"]) .modal-header {
 body:not([data-theme="dark"]) .form-control,
 body:not([data-theme="dark"]) .form-select,
 body:not([data-theme="dark"]) textarea.form-control {
-    background-color: #ffffff !important;
-    color: #212529 !important;
+    background-color: #bcbcbc !important;
+    color: #000000 !important;
     border-color: #dee2e6 !important;
 }
 
@@ -363,9 +363,9 @@ body:not([data-theme="dark"]) .input-group-text {
 }
 
 .card-header {
-    background-color: var(--primary-color);
-    color: white;
+    color: rgb(255 255 255);
     border-bottom: none;
+    background: #0d6efd !important;
 }
 
 /* Stats Cards */

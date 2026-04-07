@@ -51,11 +51,30 @@ $availableZones = $zoneManager->getByWarehouse($companyId, $warehouseNumber, tru
 $userZones = $zoneManager->getUserZones($activeSession['id'], $userId);
 $hasZones = !empty($availableZones);
 
-// Obtener icono PWA personalizado
-$customIconPath = __DIR__ . '/../uploads/pwa_icons/inventory_icon_' . $companyId . '.png';
-$pwaIconUrl = file_exists($customIconPath)
-    ? BASE_URL . '/uploads/pwa_icons/inventory_icon_' . $companyId . '.png'
-    : BASE_URL . '/assets/icons/icon-192x192.png';
+// Obtener favicon/logo de la empresa para PWA
+$pwaIconUrl = BASE_URL . '/assets/icons/icon-192x192.png';  // fallback
+try {
+    $db = getDBConnection();
+    $stmt = $db->prepare(
+        "SELECT setting_value FROM settings
+         WHERE company_id = ? AND setting_key IN ('company_favicon_url', 'company_logo_url')
+         ORDER BY FIELD(setting_key, 'company_favicon_url', 'company_logo_url') LIMIT 1"
+    );
+    $stmt->execute([$companyId]);
+    $iconPath = $stmt->fetchColumn();
+
+    if ($iconPath) {
+        // Verificar si existe el icono PWA pre-generado
+        $preGen192 = PUBLIC_PATH . "/uploads/company/pwa_{$companyId}_192x192.png";
+        if (file_exists($preGen192)) {
+            $pwaIconUrl = upload_url("uploads/company/pwa_{$companyId}_192x192.png");
+        } else {
+            $pwaIconUrl = upload_url($iconPath);
+        }
+    }
+} catch (Exception $e) {
+    error_log('dashboard.php: Error al obtener favicon: ' . $e->getMessage());
+}
 
 $pageTitle = 'Inventario';
 ?>

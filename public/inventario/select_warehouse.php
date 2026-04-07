@@ -27,7 +27,9 @@ $session = new InventorySession();
 $activeSession = $session->getActiveSession($companyId);
 
 if (!$activeSession) {
+    session_start();
     $_SESSION['warning_message'] = 'No hay una sesión de inventario activa en este momento';
+    session_write_close();
 }
 
 // Procesar selección de almacén
@@ -41,8 +43,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         foreach ($warehouses as $wh) {
             if ((int)$wh['warehouse_number'] === $selectedWarehouse) {
                 $valid = true;
+                // Reabrir sesión para escribir (init.php la cierra con session_write_close)
+                session_start();
                 $_SESSION['inventory_warehouse'] = $selectedWarehouse;
                 $_SESSION['inventory_warehouse_name'] = $wh['warehouse_name'];
+                session_write_close();
                 break;
             }
         }
@@ -51,7 +56,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: ' . BASE_URL . '/inventario/dashboard.php');
             exit;
         } else {
+            session_start();
             $_SESSION['error_message'] = 'El almacén seleccionado no está habilitado para esta sesión';
+            session_write_close();
         }
     }
 }
@@ -60,13 +67,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $warehouses = $activeSession ? $session->getSessionWarehouses($activeSession['id']) : [];
 
 // Almacén actualmente seleccionado
+session_start();
 $currentWarehouse = $_SESSION['inventory_warehouse'] ?? null;
 
-// Obtener icono PWA personalizado
-$customIconPath = __DIR__ . '/../uploads/pwa_icons/inventory_icon_' . $companyId . '.png';
-$pwaIconUrl = file_exists($customIconPath)
-    ? BASE_URL . '/uploads/pwa_icons/inventory_icon_' . $companyId . '.png'
-    : BASE_URL . '/assets/icons/icon-192x192.png';
+// Leer mensajes de error/warning antes de cerrar la sesión
+$errorMsg = $_SESSION['error_message'] ?? null;
+$warningMsg = $_SESSION['warning_message'] ?? null;
+if ($errorMsg) unset($_SESSION['error_message']);
+if ($warningMsg) unset($_SESSION['warning_message']);
+
+session_write_close();
+
+// Obtener favicon/logo de la empresa para PWA
+$pwaIconUrl = BASE_URL . '/assets/icons/icon-192x192.png';  // fallback
+try {
+    $db = getDBConnection();
+    $stmt = $db->prepare(
+        "SELECT setting_value FROM settings
+         WHERE company_id = ? AND setting_key IN ('company_favicon_url', 'company_logo_url')
+         ORDER BY FIELD(setting_key, 'company_favicon_url', 'company_logo_url') LIMIT 1"
+    );
+    $stmt->execute([$companyId]);
+    $iconPath = $stmt->fetchColumn();
+
+    if ($iconPath) {
+        // Verificar si existe el icono PWA pre-generado
+        $preGen192 = PUBLIC_PATH . "/uploads/company/pwa_{$companyId}_192x192.png";
+        if (file_exists($preGen192)) {
+            $pwaIconUrl = upload_url("uploads/company/pwa_{$companyId}_192x192.png");
+        } else {
+            $pwaIconUrl = upload_url($iconPath);
+        }
+    }
+} catch (Exception $e) {
+    error_log('select_warehouse.php: Error al obtener favicon: ' . $e->getMessage());
+}
 
 $pageTitle = 'Seleccionar Almacén';
 ?>
@@ -351,20 +386,18 @@ $pageTitle = 'Seleccionar Almacén';
 
     <!-- Contenido principal -->
     <main class="app-content">
-        <?php if (isset($_SESSION['error_message'])): ?>
+        <?php if ($errorMsg): ?>
             <div class="alert-card danger">
                 <i class="fas fa-exclamation-circle alert-icon"></i>
-                <?= htmlspecialchars($_SESSION['error_message']) ?>
+                <?= htmlspecialchars($errorMsg) ?>
             </div>
-            <?php unset($_SESSION['error_message']); ?>
         <?php endif; ?>
 
-        <?php if (isset($_SESSION['warning_message'])): ?>
+        <?php if ($warningMsg): ?>
             <div class="alert-card warning">
                 <i class="fas fa-exclamation-triangle alert-icon"></i>
-                <?= htmlspecialchars($_SESSION['warning_message']) ?>
+                <?= htmlspecialchars($warningMsg) ?>
             </div>
-            <?php unset($_SESSION['warning_message']); ?>
         <?php endif; ?>
 
         <?php if ($activeSession): ?>

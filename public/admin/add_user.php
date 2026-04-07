@@ -39,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $firstName = trim($_POST['first_name']);
     $lastName = trim($_POST['last_name']);
     $phone = trim($_POST['phone'] ?? '');
+    $address = trim($_POST['address'] ?? '');
     $password = $_POST['password'];
     $confirmPassword = $_POST['confirm_password'];
     $canViewAll = isset($_POST['can_view_all_quotations']) ? 1 : 0;
@@ -80,8 +81,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $maxIdStmt = $db->query("SELECT COALESCE(MAX(id), 0) + 1 as next_id FROM users");
                 $nextId = $maxIdStmt->fetch(PDO::FETCH_ASSOC)['next_id'];
 
-                $insertStmt = $db->prepare("INSERT INTO users (id, company_id, username, email, password_hash, first_name, last_name, phone, can_view_all_quotations, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)");
-                $insertStmt->execute([$nextId, $companyId, $username, $email, $hashedPassword, $firstName, $lastName, $phone, $canViewAll]);
+                $insertStmt = $db->prepare("INSERT INTO users (id, company_id, username, email, password_hash, first_name, last_name, phone, address, can_view_all_quotations, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)");
+                $insertStmt->execute([$nextId, $companyId, $username, $email, $hashedPassword, $firstName, $lastName, $phone, $address, $canViewAll]);
 
                 // Insert roles
                 $insertRoleStmt = $db->prepare("INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)");
@@ -174,6 +175,16 @@ ob_start();
                                placeholder="Ej: +51 987 654 321"
                                value="<?= htmlspecialchars($_POST['phone'] ?? '') ?>">
                         <small class="text-muted">Se mostrará en la firma del PDF para contacto directo con el cliente.</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="address" class="form-label">
+                            <i class="fas fa-map-marker-alt text-info me-1"></i>Dirección de Tienda (Opcional)
+                        </label>
+                        <input type="text" class="form-control" id="address" name="address"
+                               placeholder="Ej: Av. Principal 123, San Isidro, Lima"
+                               value="<?= htmlspecialchars($_POST['address'] ?? '') ?>">
+                        <small class="text-muted">Dirección personalizada para este vendedor. Si se deja vacío, se usará la dirección de la empresa en el PDF.</small>
                     </div>
 
                     <div class="row">

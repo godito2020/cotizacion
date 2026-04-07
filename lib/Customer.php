@@ -378,9 +378,9 @@ class Customer {
      */
     public function getCountByType($companyId) {
         try {
-            $sql = "SELECT customer_type, COUNT(*) as count FROM customers
+            $sql = "SELECT company_status, COUNT(*) as count FROM customers
                     WHERE company_id = :company_id
-                    GROUP BY customer_type";
+                    GROUP BY company_status";
             $stmt = $this->db->prepare($sql);
             $stmt->execute(['company_id' => $companyId]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);

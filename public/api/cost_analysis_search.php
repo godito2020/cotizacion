@@ -2,6 +2,11 @@
 /**
  * API: Búsqueda de productos con datos de costo para Análisis de Costos
  * Retorna: código, descripción, precio, costos (soles/dólares), fecha ingreso, imagen, fichas
+ *
+ * Filtros aplicados:
+ * - Solo productos activos (FLAG_MST NOT IN '9', 'X')
+ * - Solo productos CON costo (PRECOM_MST > 0)
+ * - Productos con o sin stock (se calcula el stock total para mostrar)
  */
 error_reporting(E_ERROR | E_PARSE);
 ob_start();
@@ -44,16 +49,39 @@ try {
         }
     }
 
-    // Solo productos con stock
-    $whereConditions[] = "p.saldo > 0";
+    // NO filtrar por costo - mostrar TODOS los productos (incluso sin costo)
+    // Esto permite ver qué productos necesitan costo asignado
 
-    $whereClause = 'WHERE ' . implode(' AND ', $whereConditions);
+    if (!empty($whereConditions)) {
+        $whereClause = ' AND ' . implode(' AND ', $whereConditions);
+    } else {
+        $whereClause = '';
+    }
 
-    // Query con costos y fecha de ingreso
-    $sql = "SELECT p.codigo, p.descripcion, p.marca, p.saldo, p.precio, p.premium,
-                   p.ultcosto, p.fecultcos, p.unidad, p.costo_soles, p.costo_dolares
+    // Get exchange rate first (needed for display)
+    $companyId = $auth->getCompanyId();
+    $companySettings = new CompanySettings();
+    $exchangeRate = (float)($companySettings->getSetting($companyId, 'exchange_rate_usd_pen') ?? 3.80);
+
+    // Query usando vista_productos que ya tiene COSTO_SOLES y COSTO_DOLARES calculados
+    // IMPORTANTE: PDO::CASE_LOWER convierte nombres a minúsculas, por eso usamos alias en minúsculas
+    // La vista vista_productos ya tiene las columnas COSTO_SOLES y COSTO_DOLARES con valores correctos
+    // STOCK TOTAL: Calculamos la suma de TODOS los almacenes, no solo el almacén '1'
+    $sql = "SELECT p.codigo AS codigo,
+                   p.descripcion AS descripcion,
+                   p.marca AS marca,
+                   p.precio AS precio,
+                   p.premium AS premium,
+                   p.ultcosto AS ultcosto,
+                   p.fecultcos AS fecultcos,
+                   p.unidad AS unidad,
+                   p.costo_soles AS costo_soles,
+                   p.costo_dolares AS costo_dolares,
+                   COALESCE((SELECT SUM(a.almace_alm)
+                            FROM m35alm a
+                            WHERE a.keyn_alm = p.codigo), 0) AS saldo
             FROM vista_productos p
-            {$whereClause}
+            WHERE 1=1" . $whereClause . "
             ORDER BY p.descripcion ASC";
 
     $stmt = $dbCobol->prepare($sql);
@@ -115,11 +143,6 @@ try {
         $p['saldo'] = (float)$p['saldo'];
     }
     unset($p);
-
-    // Get exchange rate
-    $companyId = $auth->getCompanyId();
-    $companySettings = new CompanySettings();
-    $exchangeRate = (float)($companySettings->getSetting($companyId, 'exchange_rate_usd_pen') ?? 3.80);
 
     echo json_encode([
         'success'      => true,

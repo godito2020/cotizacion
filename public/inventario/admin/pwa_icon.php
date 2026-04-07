@@ -113,6 +113,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+// NOTA: Este módulo ahora usa el favicon de la empresa configurado en Configuración > Marca y Logos
+// Redirigir al panel de configuración de la empresa
+session_start();
+$_SESSION['info_message'] = 'El módulo de Inventario ahora usa automáticamente el favicon configurado en Configuración > Marca y Logos de la empresa.';
+session_write_close();
+header('Location: ' . BASE_URL . '/admin/settings.php');
+exit;
+
 $pageTitle = 'Icono PWA';
 ?>
 <!DOCTYPE html>

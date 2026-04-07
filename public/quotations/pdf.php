@@ -70,7 +70,7 @@ $currency       = $quotation['currency'] ?? 'USD';
 $currencySymbol = $currency === 'PEN' ? 'S/' : '$';
 $currencyLabel  = $currency === 'PEN' ? 'Soles' : 'Dólares';
 
-$vendorStmt = $db->prepare("SELECT id, username, email, phone, first_name, last_name, signature_url FROM users WHERE id = ?");
+$vendorStmt = $db->prepare("SELECT id, username, email, phone, first_name, last_name, signature_url, address FROM users WHERE id = ?");
 $vendorStmt->execute([$quotation['user_id']]);
 $vendor = $vendorStmt->fetch(PDO::FETCH_ASSOC);
 
@@ -573,10 +573,12 @@ try {
         $pdf->SetX($sigLX);
         $pdf->Cell($sigHW, 4, $vendor['email'], 0, 1, 'L');
     }
-    if (!empty($company['company_address'])) {
+    // Use vendor's address if available, otherwise use company address
+    $displayAddress = !empty($vendor['address']) ? $vendor['address'] : ($company['company_address'] ?? '');
+    if (!empty($displayAddress)) {
         $pdf->SetFont('helvetica', '', 7.5);
         $pdf->SetX($sigLX);
-        $pdf->MultiCell($sigHW, 4, $company['company_address'], 0, 'L', false, 1, $sigLX, $pdf->GetY());
+        $pdf->MultiCell($sigHW, 4, $displayAddress, 0, 'L', false, 1, $sigLX, $pdf->GetY());
     }
 
     // Customer (right)
@@ -595,6 +597,9 @@ try {
         $taxLabel = strlen($customer['tax_id']) == 8 ? 'DNI: ' : 'RUC: ';
         $pdf->Cell($sigHW, 4, $taxLabel . $customer['tax_id'], 0, 1, 'L');
     }
+
+    // Add extra space after signature section to prevent overlap with product images title
+    $pdf->Ln(5);
 
     // ── Product images (4-column grid) ────────────────────────────────────
     // Pre-collect valid image items (resolve URL→local path once)

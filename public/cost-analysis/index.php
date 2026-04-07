@@ -312,7 +312,11 @@ $pageTitle = 'Análisis de Costos y Márgenes';
             const resp = await fetch(`${BASE_URL}/api/cost_analysis_search.php?search=${encodeURIComponent(query)}&page=1`);
             const data = await resp.json();
 
+            console.log('Search query:', query);
+            console.log('API response:', data);
+
             if (!data.success) {
+                console.error('Search failed:', data.message);
                 hideDropdown();
                 return;
             }
@@ -321,9 +325,11 @@ $pageTitle = 'Análisis de Costos y Márgenes';
             document.getElementById('exchangeRateBadge').textContent = `T.C.: ${exchangeRate.toFixed(3)}`;
 
             searchResults = data.products;
+            console.log('Total products found:', data.total);
             renderDropdown(data.products, data.total);
 
         } catch (err) {
+            console.error('Search error:', err);
             hideDropdown();
         } finally {
             searchSpinner.classList.add('d-none');
@@ -348,6 +354,9 @@ $pageTitle = 'Análisis de Costos y Márgenes';
         }
 
         products.forEach((p, idx) => {
+            const hasCosto = p.costo_dolares > 0 || p.costo_soles > 0;
+            const costoWarning = !hasCosto ? '<i class="fas fa-exclamation-triangle text-warning ms-2" title="Sin costo asignado"></i>' : '';
+
             html += `
             <div class="search-item ${idx === 0 ? 'active' : ''}" data-index="${idx}">
                 ${p.imagen
@@ -357,6 +366,7 @@ $pageTitle = 'Análisis de Costos y Márgenes';
                 <div class="flex-grow-1">
                     <span class="search-item-code">${escHtml(p.codigo)}</span>
                     <span class="ms-1">${escHtml(p.descripcion)}</span>
+                    ${costoWarning}
                 </div>
                 <span class="search-item-stock text-muted">
                     <i class="fas fa-box"></i> ${p.saldo}
@@ -438,6 +448,7 @@ $pageTitle = 'Análisis de Costos y Márgenes';
                             ${p.fecultcos
                                 ? `<span class="badge bg-warning text-dark"><i class="fas fa-calendar-alt"></i> Ingreso: ${formatDate(p.fecultcos)}</span>`
                                 : ''}
+                            ${calc.costo === 0 ? `<span class="badge bg-danger"><i class="fas fa-exclamation-triangle"></i> SIN COSTO</span>` : ''}
                         </div>
 
                         <!-- Pricing grid -->
@@ -449,7 +460,10 @@ $pageTitle = 'Análisis de Costos y Márgenes';
                             <div class="col-md-3">
                                 <div class="info-label">Costo</div>
                                 <div class="info-value" id="detCosto">
-                                    <span class="badge bg-dark" style="font-size:0.95rem; padding:5px 12px;">${formatMoney(calc.costo)}</span>
+                                    <span class="badge ${calc.costo > 0 ? 'bg-dark' : 'bg-danger'}" style="font-size:0.95rem; padding:5px 12px;">
+                                        ${formatMoney(calc.costo)}
+                                    </span>
+                                    ${calc.costo === 0 ? '<div class="text-danger small mt-1"><i class="fas fa-exclamation-triangle"></i> Sin costo asignado</div>' : ''}
                                 </div>
                             </div>
                             <div class="col-md-3">
@@ -499,7 +513,11 @@ $pageTitle = 'Análisis de Costos y Márgenes';
         document.getElementById('detPrecioVenta').textContent = formatMoney(calc.precioVenta);
 
         // Update costo
-        document.getElementById('detCosto').innerHTML = `<span class="badge bg-dark" style="font-size:0.95rem; padding:5px 12px;">${formatMoney(calc.costo)}</span>`;
+        document.getElementById('detCosto').innerHTML = `
+            <span class="badge ${calc.costo > 0 ? 'bg-dark' : 'bg-danger'}" style="font-size:0.95rem; padding:5px 12px;">
+                ${formatMoney(calc.costo)}
+            </span>
+            ${calc.costo === 0 ? '<div class="text-danger small mt-1"><i class="fas fa-exclamation-triangle"></i> Sin costo asignado</div>' : ''}`;
 
         // Update precio con descuento
         const detPrecioDesc = document.getElementById('detPrecioDesc');

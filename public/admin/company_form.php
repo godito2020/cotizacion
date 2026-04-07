@@ -184,7 +184,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Copy exchange rate from any existing company
             $erSrc = $db->query("SELECT setting_value FROM settings WHERE setting_key = 'exchange_rate_usd_pen' AND setting_value != '' ORDER BY company_id ASC LIMIT 1")->fetchColumn();
             if ($erSrc !== false) {
-                $db->prepare("INSERT IGNORE INTO settings (company_id, setting_key, setting_value, setting_type, description) VALUES (?, 'exchange_rate_usd_pen', ?, 'number', 'Tipo de cambio USD a PEN')")->execute([$targetCompanyId, $erSrc]);
+                $db->prepare("INSERT IGNORE INTO settings (company_id, setting_key, setting_value, description) VALUES (?, 'exchange_rate_usd_pen', ?, 'Tipo de cambio USD a PEN')")->execute([$targetCompanyId, $erSrc]);
             }
 
             $apiNames = ['sunat', 'reniec'];
