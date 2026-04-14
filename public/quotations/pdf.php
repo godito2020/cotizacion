@@ -346,11 +346,10 @@ try {
     // Column widths (total = 180mm)
     $cItem  = 10;
     $cCode  = 22;
-    $cDesc  = 60;
+    $cDesc  = 73;
     $cUnd   = 12;
     $cQty   = 13;
     $cPUnit = 25;
-    $cDisc  = 13;
     $cTotal = 25;
 
     // Header row
@@ -364,7 +363,6 @@ try {
     $pdf->Cell($cUnd,   7, 'UND',         1, 0, 'C', true);
     $pdf->Cell($cQty,   7, 'Cantidad',    1, 0, 'C', true);
     $pdf->Cell($cPUnit, 7, 'Precio Unit.',1, 0, 'C', true);
-    $pdf->Cell($cDisc,  7, 'Desc.%',      1, 0, 'C', true);
     $pdf->Cell($cTotal, 7, 'Total',       1, 1, 'C', true);
 
     $pdf->SetTextColor(0, 0, 0);
@@ -409,7 +407,6 @@ try {
             $pdf->Cell($cUnd,   7, 'UND',         1, 0, 'C', true);
             $pdf->Cell($cQty,   7, 'Cantidad',    1, 0, 'C', true);
             $pdf->Cell($cPUnit, 7, 'Precio Unit.',1, 0, 'C', true);
-            $pdf->Cell($cDisc,  7, 'Desc.%',      1, 0, 'C', true);
             $pdf->Cell($cTotal, 7, 'Total',       1, 1, 'C', true);
             $pdf->SetTextColor(0, 0, 0);
             $pdf->SetDrawColor(200, 200, 200);
@@ -429,7 +426,6 @@ try {
         $pdf->Cell($cUnd,   $rowH, 'UND',                                                                   1, 0, 'C', true);
         $pdf->Cell($cQty,   $rowH, number_format((float)($item['quantity'] ?? 0), 2),                       1, 0, 'C', true);
         $pdf->Cell($cPUnit, $rowH, $currencySymbol . ' ' . number_format((float)($item['unit_price'] ?? 0), 2), 1, 0, 'R', true);
-        $pdf->Cell($cDisc,  $rowH, number_format((float)($item['discount_percentage'] ?? 0), 1) . '%',      1, 0, 'C', true);
         $pdf->Cell($cTotal, $rowH, $currencySymbol . ' ' . number_format((float)($item['line_total'] ?? 0), 2), 1, 1, 'R', true);
 
         $totalDiscount += (float)($item['discount_amount'] ?? 0);
@@ -455,8 +451,8 @@ try {
         $totalDiscount += (float)($quotation['global_discount_amount'] ?? 0);
     }
 
-    $totalsX  = $mL + $cItem + $cCode + $cDesc + $cUnd + $cQty;  // starts at Price Unit col
-    $lblColW  = $cPUnit + $cDisc;  // 38mm label
+    $totalsX  = $mL + $cItem + $cCode + $cDesc + $cUnd;  // starts at Cantidad col
+    $lblColW  = $cQty + $cPUnit;   // 38mm label
     $valColW  = $cTotal;           // 25mm value
 
     $totalsRows = [
