@@ -454,3 +454,41 @@
 [01-Apr-2026 16:16:28 America/Lima] Company ID: 1
 [01-Apr-2026 16:16:28 America/Lima] Cotización encontrada: C1-2026-0156
 [01-Apr-2026 16:16:28 America/Lima] ERROR: Cliente no tiene teléfono
+[09-Apr-2026 08:38:44 America/Lima] === ENVÍO POR WHATSAPP INICIADO ===
+[09-Apr-2026 08:38:44 America/Lima] Quotation ID: 381
+[09-Apr-2026 08:38:44 America/Lima] Company ID: 1
+[09-Apr-2026 08:38:45 America/Lima] Cotización encontrada: C1-2026-0182
+[09-Apr-2026 08:38:45 America/Lima] Teléfono del cliente: 959971797
+[09-Apr-2026 08:38:45 America/Lima] Token de aprobación generado: 1588be391b6f2c697b42157633f14d2a4745f1049970f00454fd98eb0a79e78a
+[09-Apr-2026 08:38:45 America/Lima] Cliente tiene email: juliananinaatencio@gmail.com
+[09-Apr-2026 08:38:45 America/Lima] Teléfono formateado: 51959971797
+[09-Apr-2026 08:38:45 America/Lima] Estado de cotización actualizado a 'Sent'
+[09-Apr-2026 08:38:45 America/Lima] Error logging activity: SQLSTATE[HY000]: General error: 1364 Field 'id' doesn't have a default value
+[09-Apr-2026 08:38:45 America/Lima] WhatsApp preparado exitosamente
+[11-Apr-2026 12:38:11 America/Lima] === ENVÍO POR WHATSAPP INICIADO ===
+[11-Apr-2026 12:38:11 America/Lima] Quotation ID: 398
+[11-Apr-2026 12:38:11 America/Lima] Company ID: 1
+[11-Apr-2026 12:38:11 America/Lima] Cotización encontrada: C1-2026-0190
+[11-Apr-2026 12:38:11 America/Lima] ERROR: Cliente no tiene teléfono
+[14-Apr-2026 10:51:59 America/Lima] === ENVÍO POR WHATSAPP INICIADO ===
+[14-Apr-2026 10:51:59 America/Lima] Quotation ID: 381
+[14-Apr-2026 10:51:59 America/Lima] Company ID: 1
+[14-Apr-2026 10:51:59 America/Lima] Cotización encontrada: C1-2026-0182
+[14-Apr-2026 10:51:59 America/Lima] Teléfono del cliente: 959971797
+[14-Apr-2026 10:51:59 America/Lima] Token de aprobación generado: d8deec3322d2f81f3ea9ca9471ea268a562ef6855f9150794b48f39250f58997
+[14-Apr-2026 10:51:59 America/Lima] Cliente tiene email: juliananinaatencio@gmail.com
+[14-Apr-2026 10:51:59 America/Lima] Teléfono formateado: 51959971797
+[14-Apr-2026 10:51:59 America/Lima] Estado de cotización actualizado a 'Sent'
+[14-Apr-2026 10:51:59 America/Lima] Error logging activity: SQLSTATE[HY000]: General error: 1364 Field 'id' doesn't have a default value
+[14-Apr-2026 10:51:59 America/Lima] WhatsApp preparado exitosamente
+[16-Apr-2026 04:31:27 America/Lima] === ENVÍO POR WHATSAPP INICIADO ===
+[16-Apr-2026 04:31:27 America/Lima] Quotation ID: 437
+[16-Apr-2026 04:31:27 America/Lima] Company ID: 1
+[16-Apr-2026 04:31:27 America/Lima] Cotización encontrada: C1-2026-0213
+[16-Apr-2026 04:31:27 America/Lima] Teléfono del cliente: 959971797
+[16-Apr-2026 04:31:27 America/Lima] Token de aprobación generado: e3b3d3b01c5667869fa0dc32cc964e30cef08b749e2ec97cd92b2cce650d4327
+[16-Apr-2026 04:31:27 America/Lima] Cliente tiene email: juliananinaatencio@gmail.com
+[16-Apr-2026 04:31:27 America/Lima] Teléfono formateado: 51959971797
+[16-Apr-2026 04:31:27 America/Lima] Estado de cotización actualizado a 'Sent'
+[16-Apr-2026 04:31:27 America/Lima] Error logging activity: SQLSTATE[HY000]: General error: 1364 Field 'id' doesn't have a default value
+[16-Apr-2026 04:31:27 America/Lima] WhatsApp preparado exitosamente

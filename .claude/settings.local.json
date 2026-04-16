@@ -9,7 +9,9 @@
       "Bash(then echo \"❌ $file aún existe\")",
       "Bash(else echo \"✅ $file eliminado\")",
       "Bash(fi)",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(cp Z:/coti/public/quotations/pdf.php Z:/coti/public/quotations/pdf.php.bak)",
+      "Bash(ls -la Z:/coti/public/quotations/pdf.php*)"
     ],
     "deny": [],
     "ask": []

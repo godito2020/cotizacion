@@ -32,6 +32,13 @@ $search = trim($_GET['search'] ?? '');
 $page   = max(1, (int)($_GET['page'] ?? 1));
 $perPage = 30;
 
+// Mes actual para calcular stock (misma lógica que products/index.php)
+$meses = [
+    1=>'enero',2=>'febrero',3=>'marzo',4=>'abril',5=>'mayo',6=>'junio',
+    7=>'julio',8=>'agosto',9=>'septiembre',10=>'octubre',11=>'noviembre',12=>'diciembre'
+];
+$mesActual = $meses[(int)date('n')];
+
 try {
     $dbCobol = getCobolConnection();
     $dbLocal = getDBConnection();
@@ -66,7 +73,8 @@ try {
     // Query usando vista_productos que ya tiene COSTO_SOLES y COSTO_DOLARES calculados
     // IMPORTANTE: PDO::CASE_LOWER convierte nombres a minúsculas, por eso usamos alias en minúsculas
     // La vista vista_productos ya tiene las columnas COSTO_SOLES y COSTO_DOLARES con valores correctos
-    // STOCK TOTAL: Calculamos la suma de TODOS los almacenes, no solo el almacén '1'
+    // STOCK TOTAL: Suma de la columna del mes actual en vista_almacenes_anual
+    // (misma lógica que la columna "Total" de Productos y Stock — products_search.php)
     $sql = "SELECT p.codigo AS codigo,
                    p.descripcion AS descripcion,
                    p.marca AS marca,
@@ -77,9 +85,9 @@ try {
                    p.unidad AS unidad,
                    p.costo_soles AS costo_soles,
                    p.costo_dolares AS costo_dolares,
-                   COALESCE((SELECT SUM(a.almace_alm)
-                            FROM m35alm a
-                            WHERE a.keyn_alm = p.codigo), 0) AS saldo
+                   COALESCE((SELECT SUM(s.{$mesActual})
+                            FROM vista_almacenes_anual s
+                            WHERE s.codigo = p.codigo), 0) AS saldo
             FROM vista_productos p
             WHERE 1=1" . $whereClause . "
             ORDER BY p.descripcion ASC";

@@ -562,7 +562,7 @@ $pageTitle = 'Análisis de Costos y Márgenes';
         const montoDescuento = precioVenta * (discountPct / 100);
         const precioConDescuento = precioVenta - montoDescuento;
         const margenMonto = precioConDescuento - costo;
-        const margenPorcentaje = costo > 0 ? ((margenMonto / costo) * 100) : 0;
+        const margenPorcentaje = precioConDescuento > 0 ? ((margenMonto / precioConDescuento) * 100) : 0;
 
         return { precioVenta, costo, precioConDescuento, montoDescuento, margenMonto, margenPorcentaje };
     }
