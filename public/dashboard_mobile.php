@@ -347,6 +347,9 @@ $pageTitle = 'Dashboard';
                         <li><a class="dropdown-item" href="<?= BASE_URL ?>/quotations/index_mobile.php"><i class="fas fa-file-invoice"></i> Cotizaciones</a></li>
                         <li><a class="dropdown-item" href="<?= BASE_URL ?>/customers/index_mobile.php"><i class="fas fa-users"></i> Clientes</a></li>
                         <li><a class="dropdown-item" href="<?= BASE_URL ?>/products/index.php"><i class="fas fa-box"></i> Productos</a></li>
+                        <?php if (Permissions::canAccessCostAnalysis($auth)): ?>
+                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/cost-analysis/index.php"><i class="fas fa-calculator"></i> Análisis de Costos</a></li>
+                        <?php endif; ?>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="<?= BASE_URL ?>/reports/index.php"><i class="fas fa-chart-bar"></i> Reportes</a></li>
                         <li><a class="dropdown-item" href="<?= BASE_URL ?>/activities/index.php"><i class="fas fa-history"></i> Actividades</a></li>

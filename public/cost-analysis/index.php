@@ -13,6 +13,10 @@ if (!Permissions::canAccessCostAnalysis($auth)) {
 
 $user = $auth->getUser();
 $pageTitle = 'Análisis de Costos y Márgenes';
+
+// Mobile detection (same logic used across the app)
+$userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+$isMobile = !isset($_GET['desktop']) && preg_match('/(android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini)/i', $userAgent);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -159,9 +163,69 @@ $pageTitle = 'Análisis de Costos y Márgenes';
         .discount-input-lg {
             width: 120px;
         }
+
+        /* Mobile header (matches dashboard_mobile.php) */
+        .mobile-header {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            color: white;
+            padding: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .mobile-header h1 {
+            font-size: 20px;
+            margin: 0;
+            font-weight: 600;
+        }
+        .mobile-header .welcome {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
+    <?php if ($isMobile): ?>
+    <!-- Mobile Header (matches dashboard_mobile.php) -->
+    <div class="mobile-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1><i class="fas fa-calculator"></i> Análisis de Costos</h1>
+                <div class="welcome">Bienvenido, <?= htmlspecialchars($user['first_name'] ?: $user['username']) ?></div>
+            </div>
+            <div class="d-flex gap-2">
+                <?php include __DIR__ . '/../../includes/notification_bell.php'; ?>
+                <div class="dropdown">
+                    <button class="btn btn-light btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 8px;">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/dashboard_mobile.php"><i class="fas fa-tachometer-alt"></i> Inicio</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/quotations/index_mobile.php"><i class="fas fa-file-invoice"></i> Cotizaciones</a></li>
+                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/customers/index_mobile.php"><i class="fas fa-users"></i> Clientes</a></li>
+                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/products/index.php"><i class="fas fa-box"></i> Productos</a></li>
+                        <?php if (Permissions::canAccessCostAnalysis($auth)): ?>
+                        <li><a class="dropdown-item active" href="<?= BASE_URL ?>/cost-analysis/index.php"><i class="fas fa-calculator"></i> Análisis de Costos</a></li>
+                        <?php endif; ?>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/reports/index.php"><i class="fas fa-chart-bar"></i> Reportes</a></li>
+                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/activities/index.php"><i class="fas fa-history"></i> Actividades</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/profile.php"><i class="fas fa-user-circle"></i> Perfil</a></li>
+                        <?php if ($auth->hasRole(['Administrador del Sistema', 'Administrador de Empresa'])): ?>
+                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/admin/index.php"><i class="fas fa-cog"></i> Panel Admin</a></li>
+                        <?php endif; ?>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="<?= BASE_URL ?>/logout.php"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php else: ?>
     <nav class="navbar navbar-expand-lg bg-primary">
         <div class="container-fluid">
             <a class="navbar-brand text-white" href="<?= BASE_URL ?>/dashboard_simple.php">
@@ -181,6 +245,7 @@ $pageTitle = 'Análisis de Costos y Márgenes';
             </div>
         </div>
     </nav>
+    <?php endif; ?>
 
     <main class="container-fluid py-4">
         <!-- Header -->
