@@ -49,6 +49,19 @@ $products = []; // Se cargarán via búsqueda AJAX
 $stmt = $db->query("SELECT nombre FROM desc_almacen WHERE activo = 1 ORDER BY nombre");
 $warehousesData = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
+// Almacén asignado al vendedor: preselecciona el filtro de stock (sin restringir otros).
+// Se resuelve a NOMBRE porque el filtro del frontend trabaja por nombre de almacén.
+$assignedWarehouseName = '';
+try {
+    $awStmt = $db->prepare("SELECT d.nombre FROM users u
+                            JOIN desc_almacen d ON d.numero_almacen = u.default_warehouse
+                            WHERE u.id = ? AND d.activo = 1");
+    $awStmt->execute([$auth->getUserId()]);
+    $assignedWarehouseName = (string)($awStmt->fetchColumn() ?: '');
+} catch (Exception $e) {
+    $assignedWarehouseName = ''; // Columna aún no migrada: sin preselección
+}
+
 // Get exchange rate and quotation settings
 $exchangeRate = $companySettings->getSetting($companyId, 'exchange_rate_usd_pen');
 $exchangeRate = !empty($exchangeRate) ? floatval($exchangeRate) : 3.80;
@@ -1250,6 +1263,9 @@ $pageTitle = 'Nueva Cotización';
         const exchangeRate = <?= json_encode($exchangeRate) ?>;
         const enableDiscounts = <?= json_encode($enableDiscounts) ?>;
         const warehouses = <?= json_encode($warehousesData) ?>;
+        // Almacén asignado al vendedor (preselecciona el filtro de stock; no restringe)
+        const ASSIGNED_WAREHOUSE = <?= json_encode($assignedWarehouseName) ?>;
+        let userWarehouseChoice = ASSIGNED_WAREHOUSE;
         let itemIndex = 0;
 
         // Initialize quotation builder
@@ -2240,6 +2256,16 @@ Tiempo de entrega: 7 días hábiles.`;
                     warehouseFilter.appendChild(option);
                 });
 
+                // Preseleccionar el almacén asignado al vendedor (si tiene)
+                if (ASSIGNED_WAREHOUSE) {
+                    warehouseFilter.value = ASSIGNED_WAREHOUSE;
+                }
+
+                // Recordar la elección del usuario para mantenerla entre búsquedas
+                warehouseFilter.addEventListener('change', function() {
+                    userWarehouseChoice = warehouseFilter.value;
+                });
+
                 // Filter results visually when warehouse filter changes
                 warehouseFilter.addEventListener('change', function() {
                     filterModalResults();
@@ -2495,6 +2521,11 @@ Tiempo de entrega: 7 días hábiles.`;
                 warehouseSelect.innerHTML += `<option value="${warehouse}">${warehouse}</option>`;
             });
 
+            // Mantener el almacén asignado/elegido como selección por defecto (si está disponible)
+            if (userWarehouseChoice && [...warehouseSelect.options].some(o => o.value === userWarehouseChoice)) {
+                warehouseSelect.value = userWarehouseChoice;
+            }
+
             // Remove existing event listeners to avoid duplicates
             brandSelect.removeEventListener('change', filterModalResults);
             warehouseSelect.removeEventListener('change', filterModalResults);
@@ -2502,6 +2533,9 @@ Tiempo de entrega: 7 días hábiles.`;
             // Add filter event listeners
             brandSelect.addEventListener('change', filterModalResults);
             warehouseSelect.addEventListener('change', filterModalResults);
+
+            // Aplicar el filtro por defecto (almacén asignado) sobre los resultados
+            filterModalResults();
         }
 
         function filterModalResults() {

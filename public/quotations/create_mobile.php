@@ -62,6 +62,19 @@ $stockRepo = new Stock();
 $warehousesList = $stockRepo->getWarehouses();
 $warehousesData = array_column($warehousesList, 'nombre');
 
+// Almacén asignado al vendedor: preselecciona el filtro de stock (sin restringir otros).
+// Se resuelve a NOMBRE porque el filtro del frontend trabaja por nombre de almacén.
+$assignedWarehouseName = '';
+try {
+    $awStmt = $db->prepare("SELECT d.nombre FROM users u
+                            JOIN desc_almacen d ON d.numero_almacen = u.default_warehouse
+                            WHERE u.id = ? AND d.activo = 1");
+    $awStmt->execute([$auth->getUserId()]);
+    $assignedWarehouseName = (string)($awStmt->fetchColumn() ?: '');
+} catch (Exception $e) {
+    $assignedWarehouseName = ''; // Columna aún no migrada: sin preselección
+}
+
 // Get company settings
 $companySettings = new CompanySettings();
 $exchangeRate = $companySettings->getSetting($companyId, 'exchange_rate_usd_pen');
@@ -822,6 +835,8 @@ $pageTitle = 'Nueva Cotización (Móvil)';
         const exchangeRate = <?= $exchangeRate ?>;
         const products = <?= json_encode($products) ?>;
         const warehouses = <?= json_encode($warehousesData) ?>;
+        // Almacén asignado al vendedor (preselecciona el filtro de stock; no restringe)
+        const ASSIGNED_WAREHOUSE = <?= json_encode($assignedWarehouseName) ?>;
         const customers = <?= json_encode($customers) ?>;
 
         let productItems = [];
@@ -1264,6 +1279,12 @@ $pageTitle = 'Nueva Cotización (Móvil)';
                 option.textContent = warehouse;
                 warehouseFilter.appendChild(option);
             });
+
+            // Preseleccionar el almacén asignado al vendedor (si tiene). La búsqueda
+            // ya respeta este valor y el vendedor puede cambiarlo libremente.
+            if (ASSIGNED_WAREHOUSE) {
+                warehouseFilter.value = ASSIGNED_WAREHOUSE;
+            }
         }
 
         function searchProducts(term) {

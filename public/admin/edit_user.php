@@ -19,6 +19,19 @@ $user = $auth->getUser();
 $currentCompanyId = $auth->getCompanyId();
 $db = getDBConnection();
 
+// ¿Existe la columna de almacén asignado? (correr install_user_warehouse.php si es false)
+$hasWarehouseCol = false;
+try {
+    $hasWarehouseCol = (bool)$db->query("SHOW COLUMNS FROM users LIKE 'default_warehouse'")->fetch();
+} catch (Exception $e) {}
+
+// Lista de almacenes disponibles (desc_almacen, integración COBOL)
+$warehouses = [];
+try {
+    $whStmt = $db->query("SELECT numero_almacen, nombre FROM desc_almacen WHERE activo = 1 ORDER BY nombre");
+    $warehouses = $whStmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {}
+
 $userId = $_GET['id'] ?? 0;
 
 // Get user data - system admin can edit any user, company admin only their company users
@@ -105,6 +118,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     $updateStmt = $db->prepare("UPDATE users SET company_id = ?, email = ?, first_name = ?, last_name = ?, phone = ?, address = ?, can_view_all_quotations = ? WHERE id = ?");
                     $updateStmt->execute([$newCompanyId, $email, $firstName, $lastName, $phone, $address, $canViewAll, $userId]);
+                }
+
+                // Update assigned default warehouse (almacén por defecto para cotizaciones)
+                if ($hasWarehouseCol) {
+                    $defaultWarehouse = (isset($_POST['default_warehouse']) && $_POST['default_warehouse'] !== '')
+                        ? (int)$_POST['default_warehouse']
+                        : null;
+                    $db->prepare("UPDATE users SET default_warehouse = ? WHERE id = ?")
+                       ->execute([$defaultWarehouse, $userId]);
                 }
 
                 // Update cost analysis access
@@ -231,6 +253,24 @@ ob_start();
                                value="<?= htmlspecialchars($editUser['address'] ?? '') ?>">
                         <small class="text-muted">Dirección personalizada para este vendedor. Si se deja vacío, se usará la dirección de la empresa en el PDF.</small>
                     </div>
+
+                    <?php if ($hasWarehouseCol): ?>
+                    <div class="mb-3">
+                        <label for="default_warehouse" class="form-label">
+                            <i class="fas fa-warehouse text-primary me-1"></i>Almacén Asignado (Opcional)
+                        </label>
+                        <select class="form-select" id="default_warehouse" name="default_warehouse">
+                            <option value="">-- Sin almacén asignado (ver todos) --</option>
+                            <?php foreach ($warehouses as $wh): ?>
+                                <option value="<?= (int)$wh['numero_almacen'] ?>"
+                                    <?= ((string)($editUser['default_warehouse'] ?? '') === (string)$wh['numero_almacen']) ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($wh['nombre']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <small class="text-muted">Al crear cotizaciones, el filtro de stock mostrará por defecto este almacén. El vendedor podrá seleccionar otro almacén cuando lo necesite.</small>
+                    </div>
+                    <?php endif; ?>
 
                     <div class="mb-3">
                         <label for="password" class="form-label">Nueva Contraseña</label>
