@@ -120,11 +120,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#667eea">
+    <meta name="theme-color" content="#15181d">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Iniciar Sesión - Sistema de Cotizaciones</title>
+    <!-- Fijar tema antes de pintar para evitar parpadeo -->
+    <script>
+        (function () {
+            var t = localStorage.getItem('coti-theme')
+                    || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-bs-theme', t);
+        })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --brand: #d32f2f;
+            --brand-dark: #b71c1c;
+            --brand-rgb: 211, 47, 47;
+            --card-bg: #ffffff;
+            --card-fg: #1f2937;
+            --muted: #6b7280;
+            --input-bg: #f8f9fa;
+            --input-border: #e2e5ea;
+        }
+        [data-bs-theme="dark"] {
+            --brand: #ef5350;
+            --brand-dark: #e53935;
+            --brand-rgb: 239, 83, 80;
+            --card-bg: #1b1e24;
+            --card-fg: #e6e8ec;
+            --muted: #9aa1ac;
+            --input-bg: #14171c;
+            --input-border: #2b3038;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -133,8 +164,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: radial-gradient(1200px 600px at 50% -10%, rgba(var(--brand-rgb), .25), transparent 60%),
+                        linear-gradient(160deg, #1f2329 0%, #15181d 55%, #0f1115 100%);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -147,242 +179,210 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         body::before {
             content: '';
             position: absolute;
+            inset: 0;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: moveBackground 20s linear infinite;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 46px 46px;
+            animation: moveBackground 24s linear infinite;
+            pointer-events: none;
         }
 
         @keyframes moveBackground {
             0% { transform: translate(0, 0); }
-            100% { transform: translate(50px, 50px); }
+            100% { transform: translate(46px, 46px); }
         }
 
+        /* Botón de cambio de tema */
+        .theme-toggle {
+            position: fixed;
+            top: 18px; right: 18px;
+            width: 42px; height: 42px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,.22);
+            background: rgba(255,255,255,.10);
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 5;
+            transition: background .18s ease;
+        }
+        .theme-toggle:hover { background: rgba(255,255,255,.2); }
+
         .login-container {
-            background-color: #ffffff;
-            padding: 32px 24px;
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            background-color: var(--card-bg);
+            color: var(--card-fg);
+            padding: 36px 28px;
+            border-radius: 20px;
+            box-shadow: 0 24px 70px rgba(0,0,0,0.45);
             width: 100%;
             max-width: 420px;
             position: relative;
             z-index: 1;
-            animation: fadeIn 0.5s ease-in;
+            border: 1px solid rgba(255,255,255,.06);
+            animation: fadeIn 0.5s ease-out;
         }
 
-        /* Mobile optimizations */
         @media (max-width: 480px) {
-            .login-container {
-                padding: 24px 20px;
-                border-radius: 20px;
-            }
+            .login-container { padding: 26px 20px; border-radius: 18px; }
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-16px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
-        .logo-container {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+        .logo-container { text-align: center; margin-bottom: 26px; }
 
         .logo-container img {
-            max-width: 180px;
-            max-height: 100px;
+            max-width: 190px;
+            max-height: 104px;
             object-fit: contain;
-            margin-bottom: 15px;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+            margin-bottom: 14px;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.15));
         }
 
         .company-name {
             font-size: 18px;
-            font-weight: 600;
-            color: #555;
-            margin-bottom: 5px;
+            font-weight: 700;
+            color: var(--card-fg);
+            margin-bottom: 4px;
         }
 
         .logo-placeholder {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 50%;
+            width: 84px;
+            height: 84px;
+            margin: 0 auto 14px;
+            background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
+            border-radius: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 36px;
-            color: white;
-            font-weight: 700;
+            font-size: 38px;
+            color: #fff;
+            font-weight: 800;
+            box-shadow: 0 8px 22px rgba(var(--brand-rgb), .4);
         }
 
-        .login-container h2 {
+        .login-container h1 {
             text-align: center;
-            color: #667eea;
+            color: var(--card-fg);
             margin-bottom: 24px;
-            font-size: 26px;
-            font-weight: 600;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -.3px;
         }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+        .form-group { margin-bottom: 18px; }
 
         .login-container label {
             display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: 500;
-            font-size: 15px;
+            margin-bottom: 7px;
+            color: var(--card-fg);
+            font-weight: 600;
+            font-size: 14.5px;
         }
 
         .login-container input[type="text"],
         .login-container input[type="email"],
         .login-container input[type="password"] {
             width: 100%;
-            padding: 16px 18px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
+            padding: 15px 16px;
+            border: 1.5px solid var(--input-border);
+            border-radius: 11px;
             font-size: 16px;
-            transition: all 0.3s ease;
-            background-color: #f8f9fa;
+            transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+            background-color: var(--input-bg);
+            color: var(--card-fg);
             -webkit-appearance: none;
             appearance: none;
         }
 
-        /* Mobile font size optimization */
         @media (max-width: 480px) {
-            .login-container h2 {
-                font-size: 24px;
-                margin-bottom: 20px;
-            }
-
-            .login-container label {
-                font-size: 16px;
-            }
-
-            .login-container input[type="text"],
-            .login-container input[type="email"],
-            .login-container input[type="password"] {
-                font-size: 16px;
-                padding: 14px 16px;
-            }
-
-            .company-name {
-                font-size: 17px;
-            }
+            .login-container h1 { font-size: 22px; margin-bottom: 20px; }
+            .login-container label { font-size: 15px; }
+            .login-container input { font-size: 16px; padding: 14px 15px; }
+            .company-name { font-size: 17px; }
         }
 
-        .login-container input[type="text"]:focus,
-        .login-container input[type="email"]:focus,
-        .login-container input[type="password"]:focus {
+        .login-container input:focus {
             outline: none;
-            border-color: #667eea;
-            background-color: #fff;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: var(--brand);
+            box-shadow: 0 0 0 3.5px rgba(var(--brand-rgb), 0.18);
         }
+        .login-container input:focus-visible { outline: none; }
 
-        .login-container button {
+        .login-container button[type="submit"] {
             width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px;
+            background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 11px;
             cursor: pointer;
-            font-size: 17px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            margin-top: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size: 16px;
+            font-weight: 700;
+            transition: transform .18s ease, box-shadow .18s ease;
+            margin-top: 6px;
+            letter-spacing: 0.3px;
             -webkit-appearance: none;
             appearance: none;
             touch-action: manipulation;
         }
 
-        .login-container button:hover {
+        .login-container button[type="submit"]:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 12px 26px rgba(var(--brand-rgb), 0.4);
         }
-
-        .login-container button:active {
-            transform: scale(0.98);
-        }
-
-        @media (max-width: 480px) {
-            .login-container button {
-                font-size: 16px;
-                padding: 15px;
-            }
-        }
+        .login-container button[type="submit"]:active { transform: scale(0.99); }
 
         .error-message {
-            background-color: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-            padding: 14px 16px;
-            border-radius: 12px;
-            margin-bottom: 20px;
+            background-color: rgba(var(--brand-rgb), .10);
+            color: var(--brand-dark);
+            border: 1px solid rgba(var(--brand-rgb), .3);
+            padding: 13px 15px;
+            border-radius: 11px;
+            margin-bottom: 18px;
             text-align: center;
-            font-size: 15px;
-            animation: shake 0.5s;
+            font-size: 14.5px;
+            font-weight: 500;
+            animation: shake 0.4s;
         }
-
-        @media (max-width: 480px) {
-            .error-message {
-                font-size: 14px;
-                padding: 12px 14px;
-            }
-        }
+        [data-bs-theme="dark"] .error-message { color: #ff8a80; }
 
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
         }
 
         .info-message {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            padding: 14px 16px;
-            border-radius: 12px;
-            margin-bottom: 20px;
+            background-color: rgba(22, 163, 74, .12);
+            color: #15803d;
+            border: 1px solid rgba(22, 163, 74, .3);
+            padding: 13px 15px;
+            border-radius: 11px;
+            margin-bottom: 18px;
             text-align: center;
-            font-size: 15px;
+            font-size: 14.5px;
         }
-
-        @media (max-width: 480px) {
-            .info-message {
-                font-size: 14px;
-                padding: 12px 14px;
-            }
-        }
+        [data-bs-theme="dark"] .info-message { color: #4ade80; }
 
         .footer-text {
             text-align: center;
-            margin-top: 20px;
-            color: #888;
-            font-size: 14px;
+            margin-top: 22px;
+            color: var(--muted);
+            font-size: 13px;
         }
 
-        @media (max-width: 480px) {
-            .footer-text {
-                font-size: 13px;
-            }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; transition: none !important; }
         }
     </style>
 </head>
 <body>
+    <button type="button" class="theme-toggle" id="themeToggle" aria-label="Cambiar modo de color" title="Cambiar modo de color">🌙</button>
+
     <div class="login-container">
         <!-- Logo de la empresa -->
         <div class="logo-container">
@@ -407,10 +407,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
         </div>
 
-        <h2>Iniciar Sesión</h2>
+        <h1>Iniciar Sesión</h1>
 
         <?php if (!empty($error_message)): ?>
-            <div class="error-message"><?php echo htmlspecialchars($error_message); ?></div>
+            <div class="error-message" role="alert"><?php echo htmlspecialchars($error_message); ?></div>
         <?php endif; ?>
 
         <?php if (isset($_GET['logged_out'])): ?>
@@ -439,5 +439,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             Sistema de Cotizaciones &copy; <?php echo date('Y'); ?>
         </div>
     </div>
+
+    <script>
+        (function () {
+            var btn = document.getElementById('themeToggle');
+            function sync() {
+                var dark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+                btn.textContent = dark ? '☀️' : '🌙';
+                btn.setAttribute('aria-label', dark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
+            }
+            btn.addEventListener('click', function () {
+                var dark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+                var next = dark ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-bs-theme', next);
+                try { localStorage.setItem('coti-theme', next); } catch (e) {}
+                sync();
+            });
+            sync();
+        })();
+    </script>
 </body>
 </html>

@@ -53,19 +53,16 @@ class CompanySettings {
     // Settings Table Management Methods
     public function updateSetting($companyId, $settingKey, $settingValue) {
         try {
-            // UPDATE primero (funciona aunque no haya UNIQUE constraint)
+            // UPSERT atómico. Usar ON DUPLICATE KEY UPDATE evita el bug de
+            // rowCount()===0 cuando el UPDATE no cambia el valor (MySQL devuelve
+            // 0 filas afectadas aunque la fila exista), que provocaba un INSERT
+            // y violaba la constraint única uq_company_setting (company_id, setting_key).
             $stmt = $this->db->prepare(
-                "UPDATE settings SET setting_value = ? WHERE company_id = ? AND setting_key = ?"
+                "INSERT INTO settings (company_id, setting_key, setting_value)
+                 VALUES (?, ?, ?)
+                 ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)"
             );
-            $stmt->execute([$settingValue, $companyId, $settingKey]);
-
-            if ($stmt->rowCount() === 0) {
-                // No existía fila — insertar
-                $stmt = $this->db->prepare(
-                    "INSERT INTO settings (company_id, setting_key, setting_value) VALUES (?, ?, ?)"
-                );
-                $stmt->execute([$companyId, $settingKey, $settingValue]);
-            }
+            $stmt->execute([$companyId, $settingKey, $settingValue]);
             return true;
         } catch (PDOException $e) {
             error_log("Error updating setting: " . $e->getMessage());

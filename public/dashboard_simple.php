@@ -297,15 +297,22 @@ function statusLabel($status) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Sistema de Cotizaciones</title>
     <?php include __DIR__ . '/../includes/pwa_head.php'; ?>
+    <!-- Fijar tema antes de pintar para evitar parpadeo (modo claro/oscuro) -->
+    <script>
+        (function () {
+            var t = localStorage.getItem('coti-theme')
+                    || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-bs-theme', t);
+        })();
+    </script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/theme-pro.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/theme-pro.css") ?>">
     <style>
-        .stats-card { border-radius: 10px; padding: 1.5rem; color: white; }
-        .stats-number { font-size: 2rem; font-weight: bold; }
-        .card { transition: transform 0.2s; }
-        .card:hover { transform: translateY(-2px); }
-        .workflow-stat { text-align: center; padding: 0.75rem; border-radius: 8px; }
-        .workflow-stat .number { font-size: 1.5rem; font-weight: bold; }
+        .stats-card { border-radius: 12px; padding: 1.5rem; color: white; }
+        .stats-number { font-size: 2rem; font-weight: 800; }
+        .workflow-stat { text-align: center; padding: 0.75rem; border-radius: 10px; background-color: var(--bs-tertiary-bg) !important; }
+        .workflow-stat .number { font-size: 1.5rem; font-weight: 800; }
         .workflow-stat .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
         #notificationDropdown .fa-shake { animation: fa-shake 1.5s ease infinite; }
         @keyframes fa-shake {
@@ -314,41 +321,14 @@ function statusLabel($status) {
             20%, 40% { transform: rotate(10deg); }
             50% { transform: rotate(0deg); }
         }
-        .dropdown-menu .dropdown-item:hover { background-color: #f0f4ff !important; }
+        .dropdown-menu .dropdown-item:hover { background-color: var(--bs-tertiary-bg) !important; }
         .dropdown-menu .border-start { border-left-width: 3px !important; }
     </style>
-    <style>
-    html, body { background-color: #ffffff !important; color: #212529 !important; }
-    html[data-theme="dark"] body { background-color: #121212 !important; color: #e0e0e0 !important; }
-    body:not([data-theme="dark"]) * {
-        --bs-body-bg: #ffffff !important; --bs-body-color: #212529 !important; --bs-border-color: #dee2e6 !important;
-    }
-    body:not([data-theme="dark"]) .card,
-    body:not([data-theme="dark"]) .dropdown-menu,
-    body:not([data-theme="dark"]) .list-group-item,
-    body:not([data-theme="dark"]) .table,
-    body:not([data-theme="dark"]) .table td,
-    body:not([data-theme="dark"]) .table th {
-        background-color: #ffffff !important; color: #212529 !important; border-color: #dee2e6 !important;
-    }
-    .navbar, .navbar-dark, .navbar-light { background-color: #0d6efd !important; }
-    .navbar .navbar-brand, .navbar .navbar-nav .nav-link { color: #ffffff !important; }
-    </style>
-    <script>
-    (function() {
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme !== 'dark') {
-            localStorage.setItem('theme', 'light');
-            document.documentElement.removeAttribute('data-theme');
-        } else {
-            document.documentElement.setAttribute('data-theme', 'dark');
-        }
-    })();
-    </script>
 </head>
 <body>
+    <a href="#mainContent" class="skip-link">Saltar al contenido</a>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-brandbar">
         <div class="container-fluid">
             <a class="navbar-brand" href="<?= BASE_URL ?>/dashboard_simple.php">
                 <i class="fas fa-chart-line"></i> Sistema de Cotizaciones
@@ -378,7 +358,12 @@ function statusLabel($status) {
                 </ul>
 
                 <?php $totalBellCount = count($alerts) + $unreadNotifications; ?>
-                <ul class="navbar-nav">
+                <ul class="navbar-nav align-items-lg-center">
+                    <li class="nav-item me-2 my-1 my-lg-0">
+                        <button type="button" class="theme-toggle-btn" data-theme-toggle aria-label="Cambiar modo de color">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </li>
                     <li class="nav-item dropdown me-3">
                         <a class="nav-link dropdown-toggle position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="fas fa-bell<?= $totalBellCount > 0 ? ' fa-shake' : '' ?>"></i>
@@ -520,7 +505,7 @@ function statusLabel($status) {
     </nav>
 
     <!-- Main Content -->
-    <main class="container-fluid py-4">
+    <main class="container-fluid py-4" id="mainContent">
         <!-- Welcome -->
         <div class="row mb-4">
             <div class="col-12">
@@ -535,32 +520,36 @@ function statusLabel($status) {
         <!-- Statistics Cards -->
         <div class="row mb-4">
             <div class="col-md-3 mb-3">
-                <div class="card stats-card" style="background: linear-gradient(135deg, #007bff, #6f42c1);">
+                <div class="card stats-card" style="background: linear-gradient(135deg, #ef4444, #b71c1c);">
                     <div class="card-body text-center">
+                        <i class="fas fa-file-invoice fa-lg mb-2 opacity-75"></i>
                         <div class="stats-number"><?= number_format($totalQuotations) ?></div>
                         <div><?= $isAdmin ? 'Cotizaciones' : 'Mis Cotizaciones' ?></div>
                     </div>
                 </div>
             </div>
             <div class="col-md-3 mb-3">
-                <div class="card stats-card bg-success">
+                <div class="card stats-card" style="background: linear-gradient(135deg, #10b981, #047857);">
                     <div class="card-body text-center">
+                        <i class="fas fa-users fa-lg mb-2 opacity-75"></i>
                         <div class="stats-number"><?= number_format($totalCustomers) ?></div>
                         <div><?= $isAdmin ? 'Clientes' : 'Mis Clientes' ?></div>
                     </div>
                 </div>
             </div>
             <div class="col-md-3 mb-3">
-                <div class="card stats-card bg-warning">
+                <div class="card stats-card" style="background: linear-gradient(135deg, #f59e0b, #b45309);">
                     <div class="card-body text-center">
+                        <i class="fas fa-box fa-lg mb-2 opacity-75"></i>
                         <div class="stats-number"><?= number_format($totalProducts) ?></div>
                         <div><?= $isAdmin ? 'Productos' : 'Mis Productos' ?></div>
                     </div>
                 </div>
             </div>
             <div class="col-md-3 mb-3">
-                <div class="card stats-card" style="background: linear-gradient(135deg, #20c997, #0d6efd);">
+                <div class="card stats-card" style="background: linear-gradient(135deg, #334155, #0f172a);">
                     <div class="card-body text-center">
+                        <i class="fas fa-chart-line fa-lg mb-2 opacity-75"></i>
                         <div class="stats-number"><?= number_format($conversionRate, 1) ?>%</div>
                         <div><?= $isAdmin ? 'Tasa de Conversión' : 'Mi Conversión' ?></div>
                     </div>
@@ -703,71 +692,81 @@ function statusLabel($status) {
                         <h5 class="mb-0"><i class="fas fa-bolt"></i> Acciones Rápidas</h5>
                     </div>
                     <div class="card-body">
-                        <div class="row">
+                        <div class="row g-3">
                             <?php if (Permissions::userCan($auth, 'manage_quotations')): ?>
-                            <div class="col mb-2">
-                                <a href="<?= BASE_URL ?>/quotations/create.php" class="btn btn-primary btn-lg w-100">
-                                    <i class="fas fa-plus"></i><br>Nueva Cotización
+                            <div class="col-6 col-sm-4 col-lg-3 col-xl-2">
+                                <a href="<?= BASE_URL ?>/quotations/create.php" class="quick-action">
+                                    <span class="qa-icon"><i class="fas fa-plus"></i></span>
+                                    <span class="qa-label">Nueva Cotización</span>
                                 </a>
                             </div>
                             <?php endif; ?>
                             <?php if (Permissions::userCan($auth, 'manage_customers')): ?>
-                            <div class="col mb-2">
-                                <a href="<?= BASE_URL ?>/customers/create.php" class="btn btn-success btn-lg w-100">
-                                    <i class="fas fa-user-plus"></i><br>Nuevo Cliente
+                            <div class="col-6 col-sm-4 col-lg-3 col-xl-2">
+                                <a href="<?= BASE_URL ?>/customers/create.php" class="quick-action">
+                                    <span class="qa-icon"><i class="fas fa-user-plus"></i></span>
+                                    <span class="qa-label">Nuevo Cliente</span>
                                 </a>
                             </div>
                             <?php endif; ?>
                             <?php if (Permissions::userCan($auth, 'view_products') || Permissions::userCan($auth, 'manage_products')): ?>
-                            <div class="col mb-2">
-                                <a href="<?= BASE_URL ?>/products/index.php" class="btn btn-info btn-lg w-100">
-                                    <i class="fas fa-search"></i><br>Consultar Stock
+                            <div class="col-6 col-sm-4 col-lg-3 col-xl-2">
+                                <a href="<?= BASE_URL ?>/products/index.php" class="quick-action">
+                                    <span class="qa-icon"><i class="fas fa-search"></i></span>
+                                    <span class="qa-label">Consultar Stock</span>
                                 </a>
                             </div>
                             <?php endif; ?>
                             <?php if (Permissions::userCan($auth, 'billing_panel') || Permissions::userCan($auth, 'process_billing')): ?>
-                            <div class="col mb-2">
-                                <a href="<?= BASE_URL ?>/billing/pending.php" class="btn btn-warning btn-lg w-100">
-                                    <i class="fas fa-file-invoice-dollar"></i><br>Facturación
+                            <div class="col-6 col-sm-4 col-lg-3 col-xl-2">
+                                <a href="<?= BASE_URL ?>/billing/pending.php" class="quick-action">
+                                    <span class="qa-icon"><i class="fas fa-file-invoice-dollar"></i></span>
+                                    <span class="qa-label">Facturación</span>
                                 </a>
                             </div>
                             <?php endif; ?>
                             <?php if (Permissions::userCan($auth, 'credits_panel') || Permissions::userCan($auth, 'process_credits')): ?>
-                            <div class="col mb-2">
-                                <a href="<?= BASE_URL ?>/credits/pending.php" class="btn btn-danger btn-lg w-100">
-                                    <i class="fas fa-credit-card"></i><br>Créditos
+                            <div class="col-6 col-sm-4 col-lg-3 col-xl-2">
+                                <a href="<?= BASE_URL ?>/credits/pending.php" class="quick-action">
+                                    <span class="qa-icon"><i class="fas fa-credit-card"></i></span>
+                                    <span class="qa-label">Créditos</span>
                                 </a>
                             </div>
                             <?php endif; ?>
                             <?php if (Permissions::canAccessInventoryPanel($auth)): ?>
-                            <div class="col mb-2">
-                                <a href="<?= BASE_URL ?>/inventario/index.php" class="btn btn-secondary btn-lg w-100">
-                                    <i class="fas fa-warehouse"></i><br>Inventario
+                            <div class="col-6 col-sm-4 col-lg-3 col-xl-2">
+                                <a href="<?= BASE_URL ?>/inventario/index.php" class="quick-action">
+                                    <span class="qa-icon"><i class="fas fa-warehouse"></i></span>
+                                    <span class="qa-label">Inventario</span>
                                 </a>
                             </div>
                             <?php endif; ?>
                             <?php if (Permissions::canAccessCostAnalysis($auth)): ?>
-                            <div class="col mb-2">
-                                <a href="<?= BASE_URL ?>/cost-analysis/index.php" class="btn btn-outline-info btn-lg w-100">
-                                    <i class="fas fa-calculator"></i><br>Análisis de Costos
+                            <div class="col-6 col-sm-4 col-lg-3 col-xl-2">
+                                <a href="<?= BASE_URL ?>/cost-analysis/index.php" class="quick-action">
+                                    <span class="qa-icon"><i class="fas fa-calculator"></i></span>
+                                    <span class="qa-label">Análisis de Costos</span>
                                 </a>
                             </div>
                             <?php endif; ?>
                             <?php if (Permissions::canAccessAdminPanel($auth)): ?>
-                            <div class="col mb-2">
-                                <a href="<?= BASE_URL ?>/admin/exchange_rate.php" class="btn btn-outline-success btn-lg w-100">
-                                    <i class="fas fa-money-bill-transfer"></i><br>Tipo de Cambio
+                            <div class="col-6 col-sm-4 col-lg-3 col-xl-2">
+                                <a href="<?= BASE_URL ?>/admin/exchange_rate.php" class="quick-action">
+                                    <span class="qa-icon"><i class="fas fa-money-bill-transfer"></i></span>
+                                    <span class="qa-label">Tipo de Cambio</span>
                                 </a>
                             </div>
-                            <div class="col mb-2">
-                                <a href="<?= BASE_URL ?>/admin/index.php" class="btn btn-dark btn-lg w-100">
-                                    <i class="fas fa-cog"></i><br>Administración
+                            <div class="col-6 col-sm-4 col-lg-3 col-xl-2">
+                                <a href="<?= BASE_URL ?>/admin/index.php" class="quick-action">
+                                    <span class="qa-icon"><i class="fas fa-cog"></i></span>
+                                    <span class="qa-label">Administración</span>
                                 </a>
                             </div>
                             <?php endif; ?>
-                            <div class="col mb-2">
-                                <a href="<?= BASE_URL ?>/reports/index.php" class="btn btn-outline-primary btn-lg w-100">
-                                    <i class="fas fa-chart-bar"></i><br>Reportes
+                            <div class="col-6 col-sm-4 col-lg-3 col-xl-2">
+                                <a href="<?= BASE_URL ?>/reports/index.php" class="quick-action">
+                                    <span class="qa-icon"><i class="fas fa-chart-bar"></i></span>
+                                    <span class="qa-label">Reportes</span>
                                 </a>
                             </div>
                         </div>
@@ -869,7 +868,7 @@ function statusLabel($status) {
                 .catch(function(error) { console.log('Error checking notifications:', error); });
         }, 30000);
     </script>
-    <script src="<?= BASE_URL ?>/assets/js/theme.js"></script>
+    <script src="<?= BASE_URL ?>/assets/js/theme-pro.js"></script>
     <script src="<?= BASE_URL ?>/assets/js/pwa.js"></script>
 
     <button id="pwa-install-btn" onclick="installPWA()"

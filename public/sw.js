@@ -1,12 +1,13 @@
 // Service Worker para Sistema de Cotizaciones PWA
-const CACHE_NAME = 'cotizaciones-v7';
+const CACHE_NAME = 'cotizaciones-v9';
 const OFFLINE_URL = '/public/offline.html';
 
 // Archivos a cachear para funcionamiento offline básico
 const STATIC_CACHE = [
     '/public/assets/css/style.css',
+    '/public/assets/css/theme-pro.css',
     '/public/assets/js/main.js',
-    '/public/assets/js/theme.js',
+    '/public/assets/js/theme-pro.js',
     '/public/assets/icons/icon-192x192.png',
     '/public/assets/icons/icon-512x512.png',
     '/public/offline.html',
@@ -92,22 +93,29 @@ self.addEventListener('fetch', (event) => {
                             )) {
                                 cache.put(request, responseClone);
                             }
-                        });
+                        })
+                        .catch(() => {});
                 }
                 return response;
             })
-            .catch(() => {
+            .catch(async () => {
                 // Si falla la red, buscar en cache
-                return caches.match(request)
-                    .then((cachedResponse) => {
-                        if (cachedResponse) {
-                            return cachedResponse;
-                        }
-                        // Si es una página HTML, mostrar página offline
-                        if (request.headers.get('accept').includes('text/html')) {
-                            return caches.match(OFFLINE_URL);
-                        }
-                    });
+                const cachedResponse = await caches.match(request);
+                if (cachedResponse) {
+                    return cachedResponse;
+                }
+                // Si es una página HTML, mostrar página offline
+                const accept = request.headers.get('accept') || '';
+                if (accept.includes('text/html')) {
+                    const offline = await caches.match(OFFLINE_URL);
+                    if (offline) return offline;
+                }
+                // Fallback: respuesta vacía válida — nunca retornar undefined
+                return new Response('', {
+                    status: 504,
+                    statusText: 'Gateway Timeout',
+                    headers: { 'Content-Type': 'text/plain;charset=UTF-8' }
+                });
             })
     );
 });

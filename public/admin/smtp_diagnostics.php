@@ -191,7 +191,7 @@ function testSmtpProtocol($host, $port, $encryption) {
         ];
 
     } catch (Exception $e) {
-        if (isset($socket)) {
+        if (isset($socket) && is_resource($socket)) {
             fclose($socket);
         }
 

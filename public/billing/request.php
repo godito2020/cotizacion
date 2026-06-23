@@ -53,8 +53,11 @@ $pageTitle = 'Solicitar Facturación';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $pageTitle ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tema profesional COTI (no-flash + marca) -->
+    <script>(function(){var t=localStorage.getItem('coti-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-bs-theme',t);})();</script>
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/theme-pro.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/theme-pro.css") ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/style.css") ?>">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg bg-primary">
@@ -200,6 +203,6 @@ $pageTitle = 'Solicitar Facturación';
             });
         });
     </script>
-    <script src="<?= BASE_URL ?>/assets/js/theme.js"></script>
+    <script src="<?= BASE_URL ?>/assets/js/theme-pro.js"></script>
 </body>
 </html>

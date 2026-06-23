@@ -25,8 +25,11 @@ $isMobile = !isset($_GET['desktop']) && preg_match('/(android|webos|iphone|ipad|
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $pageTitle ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tema profesional COTI (no-flash + marca) -->
+    <script>(function(){var t=localStorage.getItem('coti-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-bs-theme',t);})();</script>
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/theme-pro.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/theme-pro.css") ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/style.css") ?>">
     <style>
         /* Search dropdown */
         .search-wrapper { position: relative; }
@@ -38,8 +41,8 @@ $isMobile = !isset($_GET['desktop']) && preg_match('/(android|webos|iphone|ipad|
             z-index: 1050;
             max-height: 400px;
             overflow-y: auto;
-            background: #fff;
-            border: 1px solid #dee2e6;
+            background: var(--surface);
+            border: 1px solid var(--bs-border-color);
             border-top: none;
             border-radius: 0 0 8px 8px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
@@ -47,14 +50,14 @@ $isMobile = !isset($_GET['desktop']) && preg_match('/(android|webos|iphone|ipad|
         .search-item {
             padding: 10px 16px;
             cursor: pointer;
-            border-bottom: 1px solid #f0f0f0;
+            border-bottom: 1px solid var(--bs-border-color);
             display: flex;
             align-items: center;
             gap: 12px;
             transition: background 0.15s;
         }
         .search-item:hover, .search-item.active {
-            background: #e8f0fe;
+            background: rgba(var(--brand-rgb), .10);
         }
         .search-item:last-child { border-bottom: none; }
         .search-item-thumb {
@@ -62,26 +65,26 @@ $isMobile = !isset($_GET['desktop']) && preg_match('/(android|webos|iphone|ipad|
             height: 40px;
             object-fit: contain;
             border-radius: 4px;
-            background: #f8f9fa;
+            background: var(--surface-2);
             flex-shrink: 0;
         }
         .search-item-thumb-placeholder {
             width: 40px;
             height: 40px;
             border-radius: 4px;
-            background: #f8f9fa;
+            background: var(--surface-2);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #ccc;
+            color: var(--bs-secondary-color);
             flex-shrink: 0;
             font-size: 0.8rem;
         }
         .search-item-code {
             font-family: monospace;
             font-size: 0.8rem;
-            color: #6c757d;
-            background: #e9ecef;
+            color: var(--bs-secondary-color);
+            background: var(--surface-2);
             padding: 1px 6px;
             border-radius: 3px;
         }
@@ -93,7 +96,7 @@ $isMobile = !isset($_GET['desktop']) && preg_match('/(android|webos|iphone|ipad|
 
         /* Detail card */
         .detail-card {
-            border-left: 4px solid #0d6efd;
+            border-left: 4px solid var(--brand);
             transition: all 0.2s ease;
         }
         .product-image-lg {
@@ -101,24 +104,24 @@ $isMobile = !isset($_GET['desktop']) && preg_match('/(android|webos|iphone|ipad|
             height: 160px;
             object-fit: contain;
             border-radius: 8px;
-            background: #f8f9fa;
+            background: var(--surface-2);
             cursor: pointer;
         }
         .product-image-lg-placeholder {
             width: 160px;
             height: 160px;
             border-radius: 8px;
-            background: #f8f9fa;
+            background: var(--surface-2);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #adb5bd;
+            color: var(--bs-secondary-color);
         }
         .margin-bar {
             height: 28px;
             border-radius: 14px;
             overflow: hidden;
-            background: #e9ecef;
+            background: var(--surface-2);
         }
         .margin-bar-fill {
             height: 100%;
@@ -153,7 +156,7 @@ $isMobile = !isset($_GET['desktop']) && preg_match('/(android|webos|iphone|ipad|
         }
         .info-label {
             font-size: 0.8rem;
-            color: #6c757d;
+            color: var(--bs-secondary-color);
             margin-bottom: 2px;
         }
         .info-value {
@@ -166,7 +169,7 @@ $isMobile = !isset($_GET['desktop']) && preg_match('/(android|webos|iphone|ipad|
 
         /* Mobile header (matches dashboard_mobile.php) */
         .mobile-header {
-            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
             color: white;
             padding: 16px;
             position: sticky;
@@ -382,7 +385,11 @@ $isMobile = !isset($_GET['desktop']) && preg_match('/(android|webos|iphone|ipad|
 
             if (!data.success) {
                 console.error('Search failed:', data.message);
-                hideDropdown();
+                searchDropdown.innerHTML = `
+                    <div class="p-3 text-center text-danger small">
+                        <i class="fas fa-exclamation-triangle me-1"></i> ${escHtml(data.message || 'Error en la búsqueda')}
+                    </div>`;
+                searchDropdown.classList.remove('d-none');
                 return;
             }
 
@@ -395,7 +402,11 @@ $isMobile = !isset($_GET['desktop']) && preg_match('/(android|webos|iphone|ipad|
 
         } catch (err) {
             console.error('Search error:', err);
-            hideDropdown();
+            searchDropdown.innerHTML = `
+                <div class="p-3 text-center text-danger small">
+                    <i class="fas fa-exclamation-triangle me-1"></i> Error de conexión o respuesta inválida del servidor
+                </div>`;
+            searchDropdown.classList.remove('d-none');
         } finally {
             searchSpinner.classList.add('d-none');
         }

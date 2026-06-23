@@ -12,6 +12,10 @@ error_reporting(E_ERROR | E_PARSE);
 ob_start();
 require_once __DIR__ . '/../../includes/init.php';
 ob_clean();
+// init.php (via config.php) reactiva display_errors/E_ALL; volver a suprimir
+// para que ningun warning se imprima dentro del JSON y lo corrompa.
+error_reporting(E_ERROR | E_PARSE);
+ini_set('display_errors', '0');
 header('Content-Type: application/json');
 
 $auth = new Auth();
@@ -162,7 +166,10 @@ try {
         'exchangeRate' => $exchangeRate
     ]);
 
-} catch (Exception $e) {
-    error_log("cost_analysis_search API error: " . $e->getMessage());
-    echo json_encode(['success' => false, 'message' => 'Error al consultar productos']);
+} catch (Throwable $e) {
+    error_log("cost_analysis_search API error: " . $e->getMessage() . " @ " . $e->getFile() . ":" . $e->getLine());
+    echo json_encode([
+        'success' => false,
+        'message' => 'Error al consultar productos: ' . $e->getMessage()
+    ]);
 }

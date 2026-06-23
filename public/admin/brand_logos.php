@@ -140,44 +140,23 @@ require_once __DIR__ . '/../../includes/init.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $pageTitle ?> - Admin</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Tema profesional COTI (no-flash + marca) -->
+    <script>(function(){var t=localStorage.getItem('coti-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-bs-theme',t);})();</script>
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/theme-pro.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/theme-pro.css") ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 <?php include __DIR__ . '/../../includes/notification_bell.php'; ?>
 
-<div class="container-fluid">
+<div class="container-fluid py-4">
     <div class="row">
         <!-- Sidebar -->
-        <div class="col-md-3 col-lg-2 bg-light border-end min-vh-100 py-3">
-            <h5 class="mb-0 px-2"><i class="fas fa-cog"></i> Configuración</h5>
-            <hr>
-            <div class="list-group list-group-flush">
-                <a href="<?= BASE_URL ?>/admin/settings.php" class="list-group-item list-group-item-action">
-                    <i class="fas fa-building"></i> Empresa
-                </a>
-                <a href="<?= BASE_URL ?>/admin/exchange_rate.php" class="list-group-item list-group-item-action">
-                    <i class="fas fa-dollar-sign"></i> Tipo de Cambio
-                </a>
-                <a href="<?= BASE_URL ?>/admin/email_settings.php" class="list-group-item list-group-item-action">
-                    <i class="fas fa-envelope"></i> Correo Electrónico
-                </a>
-                <a href="<?= BASE_URL ?>/admin/bank_accounts.php" class="list-group-item list-group-item-action">
-                    <i class="fas fa-university"></i> Cuentas Bancarias
-                </a>
-                <a href="<?= BASE_URL ?>/admin/brand_logos.php" class="list-group-item list-group-item-action active">
-                    <i class="fas fa-tags"></i> Logos de Marcas
-                </a>
-                <a href="<?= BASE_URL ?>/admin/api_settings.php" class="list-group-item list-group-item-action">
-                    <i class="fas fa-plug"></i> API / Integraciones
-                </a>
-                <a href="<?= BASE_URL ?>/admin/users.php" class="list-group-item list-group-item-action">
-                    <i class="fas fa-users"></i> Usuarios
-                </a>
-            </div>
+        <div class="col-md-3">
+            <?php include __DIR__ . '/../../includes/admin_sidebar.php'; ?>
         </div>
 
         <!-- Main content -->
-        <div class="col-md-9 col-lg-10 py-4 px-4">
+        <div class="col-md-9">
             <div class="mb-3">
                 <a href="<?= BASE_URL ?>/admin/index.php" class="btn btn-outline-secondary btn-sm">
                     <i class="fas fa-arrow-left me-1"></i>Volver al Panel Admin

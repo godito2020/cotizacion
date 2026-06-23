@@ -114,6 +114,9 @@ $pageTitle = 'Plantillas CotiRapi';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $pageTitle ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tema profesional COTI (no-flash + marca) -->
+    <script>(function(){var t=localStorage.getItem('coti-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-bs-theme',t);})();</script>
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/theme-pro.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/theme-pro.css") ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -128,19 +131,7 @@ $pageTitle = 'Plantillas CotiRapi';
     <main class="container-fluid py-4">
         <div class="row">
             <div class="col-md-3">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-cog"></i> Configuración</h5>
-                    </div>
-                    <div class="list-group list-group-flush">
-                        <a href="<?= BASE_URL ?>/admin/settings.php" class="list-group-item list-group-item-action">
-                            <i class="fas fa-building"></i> Empresa
-                        </a>
-                        <a href="<?= BASE_URL ?>/admin/cotirapi_templates.php" class="list-group-item list-group-item-action active">
-                            <i class="fas fa-bolt"></i> Plantillas CotiRapi
-                        </a>
-                    </div>
-                </div>
+                <?php include __DIR__ . '/../../includes/admin_sidebar.php'; ?>
             </div>
 
             <div class="col-md-9">

@@ -1,7 +1,7 @@
-/* Custom Styles for Cotizacion System */
+﻿/* Custom Styles for Cotizacion System */
 
 :root {
-    --primary-color: #0d6efd;
+    --primary-color: var(--brand);
     --secondary-color: #6c757d;
     --success-color: #198754;
     --danger-color: #dc3545;
@@ -19,14 +19,14 @@
     --table-hover: #f5f5f5;
     --input-bg: #ffffff;
     --sidebar-bg: #f8f9fa;
-    --navbar-bg: #0d6efd;
+    --navbar-bg: var(--brand);
     --navbar-text: #ffffff;
     --shadow: rgba(0, 0, 0, 0.1);
     --modal-bg: #ffffff;
     --modal-text: #212529;
 }
 
-html[data-theme="dark"] {
+html[data-bs-theme="dark"] {
     /* Dark theme variables */
     --bg-color: #121212;
     --text-color: #e0e0e0;
@@ -48,7 +48,7 @@ html[data-theme="dark"] {
     --bs-border-color: #404040;
 }
 
-html[data-theme="dark"] body {
+html[data-bs-theme="dark"] body {
     background-color: var(--bg-color) !important;
     color: var(--text-color) !important;
 }
@@ -66,140 +66,140 @@ body {
 /* Override any dark styles unless explicitly in dark mode */
 
 /* Force body styles to override any inherited dark styles */
-body:not([data-theme="dark"]) {
+html:not([data-bs-theme="dark"]) {
     background-color: #ffffff !important;
     color: #212529 !important;
 }
 
 /* Force all major components to light theme by default */
-body:not([data-theme="dark"]) .card,
-body:not([data-theme="dark"]) .modal-content,
-body:not([data-theme="dark"]) .modal-body,
-body:not([data-theme="dark"]) .modal-footer,
-body:not([data-theme="dark"]) .modal-header {
+html:not([data-bs-theme="dark"]) .card,
+html:not([data-bs-theme="dark"]) .modal-content,
+html:not([data-bs-theme="dark"]) .modal-body,
+html:not([data-bs-theme="dark"]) .modal-footer,
+html:not([data-bs-theme="dark"]) .modal-header {
     background-color: #ffffff !important;
     color: #212529 !important;
     border-color: #dee2e6 !important;
 }
 
 /* Force form elements to light theme */
-body:not([data-theme="dark"]) .form-control,
-body:not([data-theme="dark"]) .form-select,
-body:not([data-theme="dark"]) textarea.form-control {
-    background-color: #bcbcbc !important;
+html:not([data-bs-theme="dark"]) .form-control,
+html:not([data-bs-theme="dark"]) .form-select,
+html:not([data-bs-theme="dark"]) textarea.form-control {
+    background-color: #ffffff !important;
     color: #000000 !important;
     border-color: #dee2e6 !important;
 }
 
-/* Checkboxes - solo aplicar fondo blanco cuando NO está marcado */
-body:not([data-theme="dark"]) .form-check-input:not(:checked) {
+/* Checkboxes - solo aplicar fondo blanco cuando NO estÃ¡ marcado */
+html:not([data-bs-theme="dark"]) .form-check-input:not(:checked) {
     background-color: #ffffff !important;
     border-color: #dee2e6 !important;
 }
 
-body:not([data-theme="dark"]) .form-control:focus,
-body:not([data-theme="dark"]) .form-select:focus {
+html:not([data-bs-theme="dark"]) .form-control:focus,
+html:not([data-bs-theme="dark"]) .form-select:focus {
     background-color: #ffffff !important;
     color: #212529 !important;
-    border-color: #0d6efd !important;
-    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25) !important;
+    border-color: var(--brand) !important;
+    box-shadow: 0 0 0 0.2rem rgba(var(--brand-rgb), 0.25) !important;
 }
 
 /* Force table elements to light theme */
-body:not([data-theme="dark"]) .table,
-body:not([data-theme="dark"]) .table td,
-body:not([data-theme="dark"]) .table th,
-body:not([data-theme="dark"]) .table-responsive {
+html:not([data-bs-theme="dark"]) .table,
+html:not([data-bs-theme="dark"]) .table td,
+html:not([data-bs-theme="dark"]) .table th,
+html:not([data-bs-theme="dark"]) .table-responsive {
     background-color: #ffffff !important;
     color: #212529 !important;
     border-color: #dee2e6 !important;
 }
 
-body:not([data-theme="dark"]) .table-hover tbody tr:hover td {
+html:not([data-bs-theme="dark"]) .table-hover tbody tr:hover td {
     background-color: #f5f5f5 !important;
 }
 
-body:not([data-theme="dark"]) .table thead th {
+html:not([data-bs-theme="dark"]) .table thead th {
     background-color: #f8f9fa !important;
     color: #212529 !important;
     border-color: #dee2e6 !important;
 }
 
 /* Force dropdown menus to light theme */
-body:not([data-theme="dark"]) .dropdown-menu {
+html:not([data-bs-theme="dark"]) .dropdown-menu {
     background-color: #ffffff !important;
     border-color: #dee2e6 !important;
 }
 
-body:not([data-theme="dark"]) .dropdown-item {
+html:not([data-bs-theme="dark"]) .dropdown-item {
     color: #212529 !important;
 }
 
-body:not([data-theme="dark"]) .dropdown-item:hover,
-body:not([data-theme="dark"]) .dropdown-item:focus {
+html:not([data-bs-theme="dark"]) .dropdown-item:hover,
+html:not([data-bs-theme="dark"]) .dropdown-item:focus {
     background-color: #f8f9fa !important;
     color: #212529 !important;
 }
 
 /* Force list group to light theme */
-body:not([data-theme="dark"]) .list-group-item {
+html:not([data-bs-theme="dark"]) .list-group-item {
     background-color: #ffffff !important;
     color: #212529 !important;
     border-color: #dee2e6 !important;
 }
 
 /* Force pagination to light theme */
-body:not([data-theme="dark"]) .page-link {
+html:not([data-bs-theme="dark"]) .page-link {
     background-color: #ffffff !important;
-    color: #0d6efd !important;
+    color: var(--brand) !important;
     border-color: #dee2e6 !important;
 }
 
-body:not([data-theme="dark"]) .page-item.active .page-link {
-    background-color: #0d6efd !important;
+html:not([data-bs-theme="dark"]) .page-item.active .page-link {
+    background-color: var(--brand) !important;
     color: #ffffff !important;
-    border-color: #0d6efd !important;
+    border-color: var(--brand) !important;
 }
 
 /* Force breadcrumb to light theme */
-body:not([data-theme="dark"]) .breadcrumb {
+html:not([data-bs-theme="dark"]) .breadcrumb {
     background-color: #f8f9fa !important;
 }
 
-body:not([data-theme="dark"]) .breadcrumb-item a {
-    color: #0d6efd !important;
+html:not([data-bs-theme="dark"]) .breadcrumb-item a {
+    color: var(--brand) !important;
 }
 
 /* Force accordion to light theme */
-body:not([data-theme="dark"]) .accordion-item {
+html:not([data-bs-theme="dark"]) .accordion-item {
     background-color: #ffffff !important;
     border-color: #dee2e6 !important;
 }
 
-body:not([data-theme="dark"]) .accordion-button {
+html:not([data-bs-theme="dark"]) .accordion-button {
     background-color: #ffffff !important;
     color: #212529 !important;
 }
 
-body:not([data-theme="dark"]) .accordion-button:focus {
-    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25) !important;
+html:not([data-bs-theme="dark"]) .accordion-button:focus {
+    box-shadow: 0 0 0 0.2rem rgba(var(--brand-rgb), 0.25) !important;
 }
 
 /* Force offcanvas to light theme */
-body:not([data-theme="dark"]) .offcanvas {
+html:not([data-bs-theme="dark"]) .offcanvas {
     background-color: #ffffff !important;
     color: #212529 !important;
 }
 
 /* Force toast to light theme */
-body:not([data-theme="dark"]) .toast {
+html:not([data-bs-theme="dark"]) .toast {
     background-color: #ffffff !important;
     color: #212529 !important;
     border-color: #dee2e6 !important;
 }
 
 /* Force input group text to light theme */
-body:not([data-theme="dark"]) .input-group-text {
+html:not([data-bs-theme="dark"]) .input-group-text {
     background-color: #f8f9fa !important;
     color: #212529 !important;
     border-color: #dee2e6 !important;
@@ -237,7 +237,7 @@ body:not([data-theme="dark"]) .input-group-text {
     background-color: var(--input-bg);
     border-color: var(--primary-color);
     color: var(--text-color);
-    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    box-shadow: 0 0 0 0.2rem rgba(var(--brand-rgb), 0.25);
 }
 
 .navbar {
@@ -365,7 +365,7 @@ body:not([data-theme="dark"]) .input-group-text {
 .card-header {
     color: rgb(255 255 255);
     border-bottom: none;
-    background: #0d6efd !important;
+    background: var(--brand) !important;
 }
 
 /* Stats Cards */
@@ -395,7 +395,7 @@ body:not([data-theme="dark"]) .input-group-text {
 }
 
 .form-control:focus, .form-select:focus {
-    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    box-shadow: 0 0 0 0.2rem rgba(var(--brand-rgb), 0.25);
     border-color: var(--primary-color);
 }
 
@@ -457,7 +457,7 @@ body:not([data-theme="dark"]) .input-group-text {
 }
 
 .table tbody tr:hover {
-    background-color: rgba(13, 110, 253, 0.05);
+    background-color: rgba(var(--brand-rgb), 0.05);
 }
 
 /* Alert Styles */
@@ -492,25 +492,25 @@ body:not([data-theme="dark"]) .input-group-text {
 }
 
 /* Dark theme alert overrides */
-html[data-theme="dark"] .alert-success {
+html[data-bs-theme="dark"] .alert-success {
     background-color: #1c4532;
     color: #a3cfbb;
     border-color: #2d5a3d;
 }
 
-html[data-theme="dark"] .alert-danger {
+html[data-bs-theme="dark"] .alert-danger {
     background-color: #4a1e24;
     color: #f1aeb5;
     border-color: #5a2d32;
 }
 
-html[data-theme="dark"] .alert-warning {
+html[data-bs-theme="dark"] .alert-warning {
     background-color: #4a3728;
     color: #f7dc6f;
     border-color: #5a4533;
 }
 
-html[data-theme="dark"] .alert-info {
+html[data-bs-theme="dark"] .alert-info {
     background-color: #1a3a4a;
     color: #a3cdf1;
     border-color: #2d4a5a;
@@ -688,7 +688,7 @@ html[data-theme="dark"] .alert-info {
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     }
 
-    /* Mejorar tipografía en mobile */
+    /* Mejorar tipografÃ­a en mobile */
     body {
         font-size: 16px;
         line-height: 1.5;
@@ -729,7 +729,7 @@ html[data-theme="dark"] .alert-info {
         margin-bottom: 8px;
     }
 
-    /* Mejorar inputs de búsqueda */
+    /* Mejorar inputs de bÃºsqueda */
     .search-box .form-control {
         min-height: 44px;
         font-size: 16px;
@@ -778,7 +778,7 @@ html[data-theme="dark"] .alert-info {
         padding: 10px 8px;
     }
 
-    /* Mejorar navegación en mobile */
+    /* Mejorar navegaciÃ³n en mobile */
     .navbar {
         padding: 8px 12px;
     }
@@ -816,7 +816,7 @@ html[data-theme="dark"] .alert-info {
     }
 }
 
-/* Estilos específicos para pantallas muy pequeñas */
+/* Estilos especÃ­ficos para pantallas muy pequeÃ±as */
 @media (max-width: 480px) {
     .container-fluid {
         padding-left: 8px;
@@ -850,13 +850,13 @@ html[data-theme="dark"] .alert-info {
         padding: 8px 6px;
     }
 
-    /* Ocultar columnas menos importantes en móviles muy pequeños */
+    /* Ocultar columnas menos importantes en mÃ³viles muy pequeÃ±os */
     .table .d-none-xs {
         display: none !important;
     }
 }
 
-/* Estilos para navegación inferior mobile (bottom nav) */
+/* Estilos para navegaciÃ³n inferior mobile (bottom nav) */
 .mobile-bottom-nav {
     position: fixed;
     bottom: 0;
@@ -902,12 +902,12 @@ html[data-theme="dark"] .alert-info {
     }
 
     .mobile-bottom-nav .nav-link:active {
-        background-color: rgba(13, 110, 253, 0.1);
+        background-color: rgba(var(--brand-rgb), 0.1);
         border-radius: 8px;
     }
 }
 
-/* Botón flotante de acción (FAB) para mobile */
+/* BotÃ³n flotante de acciÃ³n (FAB) para mobile */
 .fab-button {
     position: fixed;
     bottom: 80px;
@@ -915,7 +915,7 @@ html[data-theme="dark"] .alert-info {
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary-color) 0%, #0a58ca 100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--brand-dark) 100%);
     color: white;
     border: none;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -944,14 +944,14 @@ html[data-theme="dark"] .alert-info {
     }
 }
 
-/* Mejorar áreas de toque para elementos interactivos en mobile */
+/* Mejorar Ã¡reas de toque para elementos interactivos en mobile */
 @media (max-width: 768px) {
     a, button, .btn, input[type="checkbox"], input[type="radio"], select {
         min-height: 44px;
         min-width: 44px;
     }
 
-    /* Asegurar que los links tengan buen tamaño de toque */
+    /* Asegurar que los links tengan buen tamaÃ±o de toque */
     .table td a,
     .table th a,
     .dropdown-item,
@@ -983,7 +983,7 @@ html[data-theme="dark"] .alert-info {
     }
 }
 
-/* Optimización para scroll horizontal en tablas mobile */
+/* OptimizaciÃ³n para scroll horizontal en tablas mobile */
 @media (max-width: 768px) {
     .table-responsive {
         display: block;
@@ -1009,12 +1009,12 @@ html[data-theme="dark"] .alert-info {
     }
 
     .table-responsive::-webkit-scrollbar-thumb:hover {
-        background: #0a58ca;
+        background: var(--brand-dark);
     }
 
-    /* Añadir indicador visual de scroll */
+    /* AÃ±adir indicador visual de scroll */
     .table-responsive::after {
-        content: '→';
+        content: 'â†’';
         position: absolute;
         right: 0;
         top: 50%;
@@ -1033,7 +1033,7 @@ html[data-theme="dark"] .alert-info {
     }
 }
 
-/* Mejorar accesibilidad táctil para iconos de acción */
+/* Mejorar accesibilidad tÃ¡ctil para iconos de acciÃ³n */
 @media (max-width: 768px) {
     .btn-group-sm > .btn,
     .btn-sm {
@@ -1041,12 +1041,12 @@ html[data-theme="dark"] .alert-info {
         font-size: 15px;
     }
 
-    /* Espaciado entre botones de acción en tablas */
+    /* Espaciado entre botones de acciÃ³n en tablas */
     .table .btn + .btn {
         margin-left: 8px;
     }
 
-    /* Mejorar botones de acción en cards */
+    /* Mejorar botones de acciÃ³n en cards */
     .card .btn-group {
         display: flex;
         gap: 8px;
@@ -1109,7 +1109,7 @@ html[data-theme="dark"] .alert-info {
     }
 }
 
-/* Estilos para paginación mejorada en mobile */
+/* Estilos para paginaciÃ³n mejorada en mobile */
 @media (max-width: 768px) {
     .pagination {
         flex-wrap: wrap;
@@ -1131,7 +1131,7 @@ html[data-theme="dark"] .alert-info {
         font-size: 16px;
     }
 
-    /* Ocultar algunos números de página en móviles muy pequeños */
+    /* Ocultar algunos nÃºmeros de pÃ¡gina en mÃ³viles muy pequeÃ±os */
     .pagination .page-item:not(.active):not(.disabled):not(:first-child):not(:last-child):not(:nth-child(2)):not(:nth-last-child(2)) {
         display: none;
     }
@@ -1153,7 +1153,7 @@ html[data-theme="dark"] .alert-info {
     }
 }
 
-/* Estilos para barra de búsqueda sticky en mobile */
+/* Estilos para barra de bÃºsqueda sticky en mobile */
 @media (max-width: 768px) {
     .mobile-search-bar {
         position: sticky;
@@ -1236,7 +1236,7 @@ html[data-theme="dark"] .alert-info {
     }
 }
 
-/* Mejoras para menú hamburguesa y navegación móvil */
+/* Mejoras para menÃº hamburguesa y navegaciÃ³n mÃ³vil */
 @media (max-width: 768px) {
     /* Mejorar toggler button */
     .navbar-toggler {
@@ -1334,7 +1334,7 @@ html[data-theme="dark"] .alert-info {
     }
 }
 
-/* Offcanvas mejorado para menú lateral */
+/* Offcanvas mejorado para menÃº lateral */
 @media (max-width: 768px) {
     .offcanvas,
     .offcanvas-start,
@@ -1345,7 +1345,7 @@ html[data-theme="dark"] .alert-info {
 
     .offcanvas-header {
         padding: 20px;
-        background: linear-gradient(135deg, var(--primary-color) 0%, #0a58ca 100%);
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--brand-dark) 100%);
         color: white;
     }
 
@@ -1395,7 +1395,7 @@ html[data-theme="dark"] .alert-info {
         color: white;
     }
 
-    /* Botón de cerrar offcanvas */
+    /* BotÃ³n de cerrar offcanvas */
     .btn-close {
         min-width: 44px;
         min-height: 44px;
@@ -1408,7 +1408,7 @@ html[data-theme="dark"] .alert-info {
     }
 }
 
-/* Menú de contexto mejorado (action sheets) */
+/* MenÃº de contexto mejorado (action sheets) */
 @media (max-width: 768px) {
     .action-sheet {
         position: fixed;

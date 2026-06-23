@@ -418,8 +418,22 @@ function sendEmailWithAttachment($to, $subject, $message, $pdfContent, $pdfFilen
                 return false;
             }
 
-            // Upgrade to TLS
-            if (!stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
+            // Upgrade to TLS.
+            // STREAM_CRYPTO_METHOD_TLS_CLIENT equivale SOLO a TLS 1.0 (gotcha de PHP);
+            // los servidores Exim/cPanel modernos exigen TLS 1.2 y rechazan el handshake.
+            // Hay que añadir TLS 1.1/1.2 al bitmask para que negocie la mejor versión.
+            $cryptoMethod = STREAM_CRYPTO_METHOD_TLS_CLIENT;
+            if (defined('STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT')) {
+                $cryptoMethod |= STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
+            }
+            // En hosting compartido el certificado suele ser el del servidor
+            // (whm01.mgdhosting.com), no el del dominio del correo; relajar la
+            // verificación evita que el handshake falle por mismatch de nombre/IP.
+            stream_context_set_option($socket, 'ssl', 'verify_peer', false);
+            stream_context_set_option($socket, 'ssl', 'verify_peer_name', false);
+            stream_context_set_option($socket, 'ssl', 'allow_self_signed', true);
+
+            if (!stream_socket_enable_crypto($socket, true, $cryptoMethod)) {
                 error_log("TLS upgrade failed");
                 fclose($socket);
                 return false;

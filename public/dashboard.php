@@ -326,89 +326,12 @@ $userData = $user;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $pageTitle ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tema profesional COTI (no-flash + marca) -->
+    <script>(function(){var t=localStorage.getItem('coti-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-bs-theme',t);})();</script>
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/theme-pro.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/theme-pro.css") ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css">
-    <style>
-    /* EMERGENCY LIGHT THEME ENFORCEMENT - Override ANY dark styles */
-    html, body {
-        background-color: #ffffff !important;
-        color: #212529 !important;
-    }
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/style.css") ?>">
 
-    html[data-theme="dark"] body {
-        background-color: #121212 !important;
-        color: #e0e0e0 !important;
-    }
-
-    /* Force all components to light theme unless in dark mode */
-    body:not([data-theme="dark"]) * {
-        --bs-body-bg: #ffffff !important;
-        --bs-body-color: #212529 !important;
-        --bs-border-color: #dee2e6 !important;
-    }
-
-    /* Ultra-specific overrides for stubborn dark elements */
-    body:not([data-theme="dark"]) .card,
-    body:not([data-theme="dark"]) .modal-content,
-    body:not([data-theme="dark"]) .form-control,
-    body:not([data-theme="dark"]) .form-select,
-    body:not([data-theme="dark"]) .table,
-    body:not([data-theme="dark"]) .table td,
-    body:not([data-theme="dark"]) .table th,
-    body:not([data-theme="dark"]) .dropdown-menu,
-    body:not([data-theme="dark"]) .list-group-item,
-    body:not([data-theme="dark"]) .page-link,
-    body:not([data-theme="dark"]) .breadcrumb,
-    body:not([data-theme="dark"]) .accordion-item,
-    body:not([data-theme="dark"]) .offcanvas,
-    body:not([data-theme="dark"]) .toast {
-        background-color: #ffffff !important;
-        color: #212529 !important;
-        border-color: #dee2e6 !important;
-    }
-
-    /* Force navbar to be blue with white text */
-    .navbar,
-    .navbar-dark,
-    .navbar-light {
-        background-color: #0d6efd !important;
-    }
-
-    .navbar .navbar-brand,
-    .navbar .navbar-nav .nav-link,
-    .navbar-dark .navbar-brand,
-    .navbar-dark .navbar-nav .nav-link,
-    .navbar-light .navbar-brand,
-    .navbar-light .navbar-nav .nav-link {
-        color: #ffffff !important;
-    }
-    </style>
-
-    <script>
-    // Emergency theme enforcement
-    (function() {
-        // Remove any dark theme attributes on page load
-        document.documentElement.removeAttribute('data-theme');
-
-        // Set light theme in localStorage if not explicitly dark
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme !== 'dark') {
-            localStorage.setItem('theme', 'light');
-            document.documentElement.removeAttribute('data-theme');
-        } else {
-            document.documentElement.setAttribute('data-theme', 'dark');
-        }
-
-        // Force body styles
-        document.addEventListener('DOMContentLoaded', function() {
-            const currentTheme = localStorage.getItem('theme') || 'light';
-            if (currentTheme === 'light') {
-                document.body.style.backgroundColor = '#ffffff';
-                document.body.style.color = '#212529';
-            }
-        });
-    })();
-    </script>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg bg-primary">
@@ -442,7 +365,7 @@ $userData = $user;
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="<?= BASE_URL ?>/assets/js/theme.js"></script>
+    <script src="<?= BASE_URL ?>/assets/js/theme-pro.js"></script>
 </body>
 </html><?php
 

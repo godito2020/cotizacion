@@ -293,7 +293,17 @@ function sendQuotationViaSmtp($to, $subject, $message, $emailSettings, $attachme
             file_put_contents($logFile, "Starting TLS:\n", FILE_APPEND);
             fputs($smtp, "STARTTLS\r\n");
             $response = $readResponse($smtp, $logFile);
-            stream_socket_enable_crypto($smtp, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+            // STREAM_CRYPTO_METHOD_TLS_CLIENT = solo TLS 1.0; añadir 1.1/1.2 para
+            // servidores Exim/cPanel modernos. Relajar verificación por certs de
+            // hosting compartido que no coinciden con el dominio del correo.
+            $cryptoMethod = STREAM_CRYPTO_METHOD_TLS_CLIENT;
+            if (defined('STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT')) {
+                $cryptoMethod |= STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT | STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
+            }
+            stream_context_set_option($smtp, 'ssl', 'verify_peer', false);
+            stream_context_set_option($smtp, 'ssl', 'verify_peer_name', false);
+            stream_context_set_option($smtp, 'ssl', 'allow_self_signed', true);
+            stream_socket_enable_crypto($smtp, true, $cryptoMethod);
             file_put_contents($logFile, "Sending EHLO after TLS:\n", FILE_APPEND);
             fputs($smtp, "EHLO $hostname\r\n");
             $response = $readResponse($smtp, $logFile);

@@ -46,92 +46,100 @@ $mesActual = $meses[(int)date('n')];
 // Búsqueda optimizada
 $dbCobol = getCobolConnection();
 
-$whereConditions = [];
+$whereConditions = ["s.{$mesActual} > 0"];
 $params = [];
 
 if (!empty($search)) {
     $words = preg_split('/\s+/', trim($search));
     $words = array_values(array_filter($words, fn($w) => strlen($w) >= 2));
 
-    $i = 0;
-    foreach ($words as $word) {
+    foreach ($words as $i => $word) {
         $paramCodigo = ":wc{$i}";
         $paramDesc = ":wd{$i}";
         $whereConditions[] = "(LOWER(p.codigo) LIKE LOWER({$paramCodigo}) OR LOWER(p.descripcion) LIKE LOWER({$paramDesc}))";
         $searchTerm = '%' . $word . '%';
         $params[$paramCodigo] = $searchTerm;
         $params[$paramDesc] = $searchTerm;
-        $i++;
     }
 }
 
-if (!empty($warehouseFilter)) {
+if ($warehouseFilter !== '') {
     $whereConditions[] = "s.almacen = :warehouse";
-    $params[':warehouse'] = $warehouseFilter;
+    $params[':warehouse'] = (int)$warehouseFilter;
 }
 
-$whereConditions[] = "s.{$mesActual} > 0";
-$whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
+$whereClause = 'WHERE ' . implode(' AND ', $whereConditions);
 
-$sql = "SELECT
-            p.codigo,
-            p.descripcion,
-            p.precio,
-            s.almacen as numero_almacen,
-            s.{$mesActual} as stock_actual
-        FROM vista_productos p
-        INNER JOIN vista_almacenes_anual s ON p.codigo = s.codigo
-        {$whereClause}
-        ORDER BY p.descripcion ASC, s.almacen ASC
-        LIMIT 2000";
-
-$stmt = $dbCobol->prepare($sql);
+// Conteo de productos distintos que coinciden (para paginación correcta)
+$countSql = "SELECT COUNT(DISTINCT p.codigo) as total
+             FROM vista_productos p
+             INNER JOIN vista_almacenes_anual s ON p.codigo = s.codigo
+             {$whereClause}";
+$stmtCount = $dbCobol->prepare($countSql);
 foreach ($params as $param => $value) {
-    $stmt->bindValue($param, $value);
+    $stmtCount->bindValue($param, $value);
 }
-$stmt->execute();
-$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Agrupar por producto
-$groupedProducts = [];
-$warehousesWithStock = [];
-
-foreach ($results as $row) {
-    $codigo = $row['codigo'];
-    $numAlmacen = $row['numero_almacen'];
-    $stockActual = (float)$row['stock_actual'];
-    $nombreAlmacen = $warehouseNames[$numAlmacen] ?? 'Almacén ' . $numAlmacen;
-
-    if (!isset($warehousesWithStock[$numAlmacen])) {
-        $warehousesWithStock[$numAlmacen] = [
-            'numero_almacen' => $numAlmacen,
-            'nombre' => $nombreAlmacen
-        ];
-    }
-
-    if (!isset($groupedProducts[$codigo])) {
-        $groupedProducts[$codigo] = [
-            'codigo' => $codigo,
-            'descripcion' => $row['descripcion'],
-            'precio' => (float)$row['precio'],
-            'total_stock' => 0,
-            'warehouses' => [] // Stock por almacén
-        ];
-    }
-    $groupedProducts[$codigo]['total_stock'] += $stockActual;
-    $groupedProducts[$codigo]['warehouses'][$nombreAlmacen] = $stockActual;
-}
-
-// Si hay filtro de almacén, el total_stock ya es solo de ese almacén
-// Si NO hay filtro, total_stock es la suma de todos los almacenes
-
-uasort($warehousesWithStock, fn($a, $b) => strcmp($a['nombre'], $b['nombre']));
+$stmtCount->execute();
+$totalProducts = (int)($stmtCount->fetch(PDO::FETCH_ASSOC)['total'] ?? 0);
 
 // Paginación
-$totalProducts = count($groupedProducts);
-$totalPages = ceil($totalProducts / $perPage);
+$totalPages = (int)max(1, ceil($totalProducts / $perPage));
+if ($page > $totalPages) {
+    $page = $totalPages;
+}
 $offset = ($page - 1) * $perPage;
-$products = array_slice($groupedProducts, $offset, $perPage, true);
+
+// Productos distintos para la página actual (paginación a nivel SQL)
+$pageSql = "SELECT DISTINCT p.codigo, p.descripcion, p.precio
+            FROM vista_productos p
+            INNER JOIN vista_almacenes_anual s ON p.codigo = s.codigo
+            {$whereClause}
+            ORDER BY p.descripcion ASC
+            LIMIT :pgLimit OFFSET :pgOffset";
+$stmtPage = $dbCobol->prepare($pageSql);
+foreach ($params as $param => $value) {
+    $stmtPage->bindValue($param, $value);
+}
+$stmtPage->bindValue(':pgLimit', $perPage, PDO::PARAM_INT);
+$stmtPage->bindValue(':pgOffset', $offset, PDO::PARAM_INT);
+$stmtPage->execute();
+$pageRows = $stmtPage->fetchAll(PDO::FETCH_ASSOC);
+
+$products = [];
+foreach ($pageRows as $row) {
+    $products[$row['codigo']] = [
+        'codigo' => $row['codigo'],
+        'descripcion' => $row['descripcion'],
+        'precio' => (float)$row['precio'],
+        'total_stock' => 0,
+        'warehouses' => []
+    ];
+}
+
+// Stock por almacén solo para los productos de esta página
+if (!empty($products)) {
+    $codigos = array_keys($products);
+    $ph = str_repeat('?,', count($codigos) - 1) . '?';
+    $stockSql = "SELECT codigo, almacen, {$mesActual} as stock_actual
+                 FROM vista_almacenes_anual
+                 WHERE codigo IN ($ph) AND {$mesActual} > 0";
+    $stockParams = $codigos;
+    if ($warehouseFilter !== '') {
+        $stockSql .= " AND almacen = ?";
+        $stockParams[] = (int)$warehouseFilter;
+    }
+    $stmtStock = $dbCobol->prepare($stockSql);
+    $stmtStock->execute($stockParams);
+    while ($row = $stmtStock->fetch(PDO::FETCH_ASSOC)) {
+        $codigo = $row['codigo'];
+        if (!isset($products[$codigo])) continue;
+        $stockActual = (float)$row['stock_actual'];
+        $numAlmacen = $row['almacen'];
+        $nombreAlmacen = $warehouseNames[$numAlmacen] ?? 'Almacén ' . $numAlmacen;
+        $products[$codigo]['total_stock'] += $stockActual;
+        $products[$codigo]['warehouses'][$nombreAlmacen] = $stockActual;
+    }
+}
 
 // Obtener imágenes de los productos mostrados
 $dbLocal = getDBConnection();
@@ -159,6 +167,9 @@ unset($_SESSION['error_message']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Productos - Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tema profesional COTI (no-flash + marca) -->
+    <script>(function(){var t=localStorage.getItem('coti-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-bs-theme',t);})();</script>
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/theme-pro.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/theme-pro.css") ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .product-image { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
@@ -223,7 +234,7 @@ unset($_SESSION['error_message']);
                         <select class="form-select" name="warehouse" onchange="this.form.submit()">
                             <option value="">Todos los almacenes</option>
                             <?php foreach ($allWarehouses as $w): ?>
-                                <option value="<?= $w['numero_almacen'] ?>" <?= $warehouseFilter == $w['numero_almacen'] ? 'selected' : '' ?>><?= htmlspecialchars($w['nombre']) ?></option>
+                                <option value="<?= htmlspecialchars((string)$w['numero_almacen']) ?>" <?= (string)$warehouseFilter === (string)$w['numero_almacen'] ? 'selected' : '' ?>><?= htmlspecialchars($w['nombre']) ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -261,7 +272,7 @@ unset($_SESSION['error_message']);
                                     <tr>
                                         <td>
                                             <?php if (!empty($productImages[$codigo])): ?>
-                                                <img src="<?= htmlspecialchars($productImages[$codigo]) ?>" class="product-image">
+                                                <img src="<?= htmlspecialchars($productImages[$codigo]) ?>" class="product-image" alt="<?= htmlspecialchars($product['descripcion']) ?>">
                                             <?php else: ?>
                                                 <div class="product-image-placeholder"><i class="fas fa-image"></i></div>
                                             <?php endif; ?>
@@ -466,6 +477,11 @@ unset($_SESSION['error_message']);
         const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
         const stockModal = new bootstrap.Modal(document.getElementById('stockModal'));
 
+        function escapeHtml(s) {
+            if (s == null) return '';
+            return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+
         function openImageModal(codigo, descripcion) {
             document.getElementById('modalProductCode').textContent = codigo;
             document.getElementById('modalProductDesc').textContent = descripcion;
@@ -485,11 +501,12 @@ unset($_SESSION['error_message']);
                 .then(data => {
                     if (data.success && data.images.length > 0) {
                         let html = '<div class="row g-2">';
+                        const codigoEsc = encodeURIComponent(codigo).replace(/'/g, '%27');
                         data.images.forEach(img => {
                             html += `<div class="col-3"><div class="position-relative">
-                                <img src="${img.imagen_url}" class="img-fluid rounded" style="height: 80px; object-fit: cover; width: 100%;">
+                                <img src="${escapeHtml(img.imagen_url)}" class="img-fluid rounded" style="height: 80px; object-fit: cover; width: 100%;" alt="">
                                 ${img.imagen_principal == 1 ? '<span class="badge bg-primary position-absolute top-0 start-0" style="font-size:0.6rem">Principal</span>' : ''}
-                                <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0" style="padding:0 4px" onclick="deleteImage(${img.id}, '${codigo}')"><i class="fas fa-times"></i></button>
+                                <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0" style="padding:0 4px" onclick="deleteImage(${parseInt(img.id, 10)}, decodeURIComponent('${codigoEsc}'))"><i class="fas fa-times"></i></button>
                             </div></div>`;
                         });
                         container.innerHTML = html + '</div>';
@@ -500,46 +517,98 @@ unset($_SESSION['error_message']);
         }
 
         function viewStock(codigo) {
-            document.getElementById('stockContent').innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
+            const stockContent = document.getElementById('stockContent');
+            stockContent.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
             stockModal.show();
             fetch('<?= BASE_URL ?>/api/product_stock.php?codigo=' + encodeURIComponent(codigo))
                 .then(r => r.json())
                 .then(data => {
                     if (data.success) {
-                        let html = `<h6>${data.producto.descripcion}</h6><p><code>${data.producto.codigo}</code></p>
+                        let html = `<h6>${escapeHtml(data.producto.descripcion)}</h6><p><code>${escapeHtml(data.producto.codigo)}</code></p>
                             <table class="table table-sm"><thead><tr><th>Almacén</th><th class="text-end">Stock</th></tr></thead><tbody>`;
                         if (data.stock.length > 0) {
-                            data.stock.forEach(s => html += `<tr><td>${s.nombre_almacen || 'Almacén ' + s.numero_almacen}</td><td class="text-end">${parseFloat(s.stock_actual).toFixed(0)}</td></tr>`);
+                            data.stock.forEach(s => {
+                                const nombre = s.nombre_almacen || ('Almacén ' + s.numero_almacen);
+                                html += `<tr><td>${escapeHtml(nombre)}</td><td class="text-end">${parseFloat(s.stock_actual).toFixed(0)}</td></tr>`;
+                            });
                         } else {
                             html += '<tr><td colspan="2" class="text-center text-muted">Sin stock</td></tr>';
                         }
-                        document.getElementById('stockContent').innerHTML = html + '</tbody></table>';
+                        stockContent.innerHTML = html + '</tbody></table>';
+                    } else {
+                        stockContent.innerHTML = `<div class="alert alert-danger">${escapeHtml(data.message || 'No se pudo cargar el stock')}</div>`;
                     }
+                })
+                .catch(err => {
+                    stockContent.innerHTML = '<div class="alert alert-danger">Error de conexión al cargar el stock</div>';
+                    console.error('viewStock error:', err);
                 });
+        }
+
+        async function postFormJson(url, formEl) {
+            const res = await fetch(url, { method: 'POST', body: new FormData(formEl) });
+            const text = await res.text();
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                throw new Error(`HTTP ${res.status}: respuesta no es JSON. ${text.substring(0, 200)}`);
+            }
         }
 
         document.getElementById('uploadImageForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            fetch('<?= BASE_URL ?>/api/upload_product_image.php', { method: 'POST', body: new FormData(this) })
-                .then(r => r.json())
+            const fileInput = document.getElementById('imagenFile');
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert('Seleccione una imagen antes de subir.');
+                return;
+            }
+            const btn = this.querySelector('button[type=submit]');
+            btn.disabled = true;
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Subiendo...';
+            postFormJson('<?= BASE_URL ?>/api/upload_product_image.php', this)
                 .then(data => {
                     if (data.success) {
                         loadProductImages(document.getElementById('imageProductCode').value);
-                        document.getElementById('imagenFile').value = '';
-                    } else alert('Error: ' + data.message);
+                        fileInput.value = '';
+                        document.getElementById('imagenPrincipal').checked = false;
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(err => {
+                    alert('Error de conexión: ' + (err.message || err));
+                    console.error('uploadImage error:', err);
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = originalHtml;
                 });
         });
 
         document.getElementById('uploadUrlForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            const formData = new FormData(this);
-            fetch('<?= BASE_URL ?>/api/save_image_url.php', { method: 'POST', body: formData })
-                .then(r => r.json())
+            const btn = this.querySelector('button[type=submit]');
+            btn.disabled = true;
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Guardando...';
+            postFormJson('<?= BASE_URL ?>/api/save_image_url.php', this)
                 .then(data => {
                     if (data.success) {
                         loadProductImages(document.getElementById('imageProductCodeUrl').value);
                         document.getElementById('imagenUrl').value = '';
-                    } else alert('Error: ' + data.message);
+                        document.getElementById('imagenPrincipalUrl').checked = false;
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(err => {
+                    alert('Error de conexión: ' + (err.message || err));
+                    console.error('saveImageUrl error:', err);
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = originalHtml;
                 });
         });
 
@@ -622,17 +691,18 @@ unset($_SESSION['error_message']);
                 .then(data => {
                     if (data.success && data.fichas.length > 0) {
                         let html = '<div class="list-group">';
+                        const codigoEsc = encodeURIComponent(codigo).replace(/'/g, '%27');
                         data.fichas.forEach(f => {
-                            const ext = f.ficha_url.split('.').pop().toLowerCase();
+                            const ext = String(f.ficha_url || '').split('.').pop().toLowerCase();
                             const icon = ext === 'pdf' ? 'fa-file-pdf text-danger' : 'fa-file-image text-primary';
-                            const nombre = f.nombre_archivo || 'Ficha ' + f.id;
+                            const nombre = f.nombre_archivo || ('Ficha ' + f.id);
                             html += `<div class="list-group-item d-flex justify-content-between align-items-center">
                                 <div>
                                     <i class="fas ${icon} me-2"></i>
-                                    <a href="${f.ficha_url}" target="_blank" class="text-decoration-none">${nombre}.${ext}</a>
-                                    <small class="text-muted ms-2">${f.created_at}</small>
+                                    <a href="${escapeHtml(f.ficha_url)}" target="_blank" class="text-decoration-none">${escapeHtml(nombre)}.${escapeHtml(ext)}</a>
+                                    <small class="text-muted ms-2">${escapeHtml(f.created_at)}</small>
                                 </div>
-                                <button type="button" class="btn btn-danger btn-sm" onclick="deleteFicha(${f.id}, '${codigo}')">
+                                <button type="button" class="btn btn-danger btn-sm" onclick="deleteFicha(${parseInt(f.id, 10)}, decodeURIComponent('${codigoEsc}'))">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>`;

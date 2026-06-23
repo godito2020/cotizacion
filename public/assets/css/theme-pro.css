@@ -1,0 +1,376 @@
+/* =====================================================================
+   COTI · Sistema de diseño profesional (theme-pro)
+   ---------------------------------------------------------------------
+   Capa sobre Bootstrap 5.3. Rebrandea toda la app con tokens de marca
+   (rojo + carbón, identidad Llanta San Martín) y soporta modo claro/oscuro
+   nativo de Bootstrap (data-bs-theme). Pensado para cargarse DESPUÉS de
+   bootstrap.min.css en cada página, sin reescribir el HTML existente.
+
+   Para re-tematizar por empresa, basta con sobreescribir las variables
+   --brand-* en un bloque <style> por página (ej. dorado para tullantaonline).
+   ===================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    /* --- Tokens de marca (rojo San Martín, accesible AA sobre blanco) --- */
+    --brand:        #d32f2f;   /* primario */
+    --brand-dark:   #b71c1c;   /* hover / activo */
+    --brand-light:  #ef5350;   /* acentos / modo oscuro */
+    --brand-rgb:    211, 47, 47;
+    --brand-on:     #ffffff;   /* texto sobre el primario */
+
+    /* --- Superficies de marca (carbón) --- */
+    --ink-900: #0f1115;
+    --ink-800: #15181d;
+    --ink-700: #1f2329;
+    --ink-600: #2b3038;
+
+    /* --- Superficies neutras adaptables (para estilos de pagina) --- */
+    --surface:   #ffffff;   /* tarjetas, dropdowns, cabeceras */
+    --surface-2: #f1f3f5;   /* fondos sutiles, thumbs, chips */
+
+    /* --- Radios / sombras / transiciones --- */
+    --radius-sm: 8px;
+    --radius:    12px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 2px rgba(16, 24, 40, .06), 0 1px 3px rgba(16, 24, 40, .10);
+    --shadow:    0 4px 12px rgba(16, 24, 40, .08), 0 2px 4px rgba(16, 24, 40, .06);
+    --shadow-lg: 0 12px 32px rgba(16, 24, 40, .14);
+    --speed: .18s;
+
+    /* --- Override de variables Bootstrap (modo claro) --- */
+    --bs-primary: var(--brand);
+    --bs-primary-rgb: var(--brand-rgb);
+    --bs-link-color: var(--brand-dark);
+    --bs-link-color-rgb: var(--brand-rgb);
+    --bs-link-hover-color: var(--brand-dark);
+    --bs-body-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --bs-body-bg: #f4f5f7;
+    --bs-body-color: #1f2937;
+    --bs-border-color: #e5e7eb;
+}
+
+/* --- Ajustes para modo oscuro (Bootstrap data-bs-theme="dark") --- */
+[data-bs-theme="dark"] {
+    --brand: #ef5350;          /* rojo más claro para contraste sobre oscuro */
+    --brand-dark: #e53935;
+    --brand-rgb: 239, 83, 80;
+    --bs-primary: var(--brand);
+    --bs-primary-rgb: var(--brand-rgb);
+    --bs-link-color: #ff8a80;
+    --bs-link-hover-color: #ffb4ab;
+    --bs-body-bg: #0f1115;
+    --bs-body-color: #e6e8ec;
+    --bs-border-color: #2b3038;
+    --bs-tertiary-bg: #15181d;
+    --bs-secondary-bg: #1f2329;
+    --surface:   #1b1e24;
+    --surface-2: #2b3038;
+}
+
+/* =====================================================================
+   Base / tipografía
+   ===================================================================== */
+body {
+    font-family: var(--bs-body-font-family);
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    letter-spacing: .1px;
+}
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5 {
+    font-weight: 700;
+    letter-spacing: -.2px;
+}
+h1, .h1 { font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem); }
+
+.lead { font-weight: 400; }
+
+/* =====================================================================
+   Accesibilidad: anillo de foco visible y consistente (solo teclado)
+   ===================================================================== */
+:focus-visible {
+    outline: 3px solid rgba(var(--brand-rgb), .45);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+.btn:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible,
+.form-check-input:focus-visible {
+    outline: 3px solid rgba(var(--brand-rgb), .45);
+    outline-offset: 2px;
+    box-shadow: none;
+}
+/* Enlace para saltar al contenido (lectores de pantalla / teclado) */
+.skip-link {
+    position: absolute; left: -999px; top: 0; z-index: 2000;
+    background: var(--brand); color: #fff; padding: .6rem 1rem;
+    border-radius: 0 0 var(--radius-sm) 0; font-weight: 600;
+}
+.skip-link:focus { left: 0; }
+
+/* =====================================================================
+   Marca: variables Bootstrap → componentes
+   ===================================================================== */
+.bg-primary { background-color: var(--brand) !important; }
+.text-primary { color: var(--brand) !important; }
+.border-primary { border-color: var(--brand) !important; }
+.link-primary { color: var(--brand) !important; }
+.badge.text-bg-primary, .badge.bg-primary { background-color: var(--brand) !important; color: var(--brand-on) !important; }
+
+.btn-primary {
+    --bs-btn-bg: var(--brand); --bs-btn-border-color: var(--brand);
+    --bs-btn-hover-bg: var(--brand-dark); --bs-btn-hover-border-color: var(--brand-dark);
+    --bs-btn-active-bg: var(--brand-dark); --bs-btn-active-border-color: var(--brand-dark);
+    --bs-btn-disabled-bg: var(--brand); --bs-btn-disabled-border-color: var(--brand);
+    --bs-btn-color: var(--brand-on); --bs-btn-hover-color: var(--brand-on); --bs-btn-active-color: var(--brand-on);
+}
+.btn-outline-primary {
+    --bs-btn-color: var(--brand); --bs-btn-border-color: var(--brand);
+    --bs-btn-hover-bg: var(--brand); --bs-btn-hover-border-color: var(--brand);
+    --bs-btn-active-bg: var(--brand-dark); --bs-btn-active-border-color: var(--brand-dark);
+    --bs-btn-hover-color: var(--brand-on); --bs-btn-active-color: var(--brand-on);
+}
+
+/* =====================================================================
+   Botones
+   ===================================================================== */
+.btn {
+    --bs-btn-border-radius: var(--radius-sm);
+    font-weight: 600;
+    transition: transform var(--speed) ease, box-shadow var(--speed) ease, background-color var(--speed) ease;
+}
+.btn:hover { box-shadow: var(--shadow-sm); }
+.btn:active { transform: translateY(1px); }
+.btn-lg { --bs-btn-border-radius: var(--radius); font-weight: 700; }
+
+/* =====================================================================
+   Tarjetas
+   ===================================================================== */
+.card {
+    --bs-card-border-radius: var(--radius);
+    --bs-card-border-color: var(--bs-border-color);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--speed) ease, transform var(--speed) ease;
+    /* NO usar overflow:hidden aqui: recorta dropdowns/tooltips absolutos
+       que floten fuera de la tarjeta (ej. buscador de Analisis de Costos). */
+}
+.card:hover { box-shadow: var(--shadow); }
+.card-header {
+    background-color: transparent;
+    border-bottom: 1px solid var(--bs-border-color);
+    font-weight: 600;
+    padding-top: 1rem; padding-bottom: 1rem;
+}
+
+/* Tarjetas de estadística del dashboard */
+.stats-card {
+    border: none !important;
+    border-radius: var(--radius) !important;
+    box-shadow: var(--shadow);
+}
+.stats-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.stats-card .stats-number { letter-spacing: -1px; }
+
+/* =====================================================================
+   Formularios
+   ===================================================================== */
+.form-control, .form-select {
+    border-radius: var(--radius-sm);
+    border-color: var(--bs-border-color);
+    transition: border-color var(--speed) ease, box-shadow var(--speed) ease;
+}
+.form-control:focus, .form-select:focus {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 .2rem rgba(var(--brand-rgb), .18);
+}
+.form-label { font-weight: 600; font-size: .9rem; }
+
+/* =====================================================================
+   Tablas
+   ===================================================================== */
+.table { --bs-table-border-color: var(--bs-border-color); }
+.table > thead {
+    text-transform: uppercase;
+    font-size: .76rem;
+    letter-spacing: .4px;
+}
+.table > thead th { font-weight: 700; color: var(--bs-secondary-color); }
+.table-hover > tbody > tr { transition: background-color var(--speed) ease; }
+
+/* =====================================================================
+   Badges / píldoras
+   ===================================================================== */
+.badge { font-weight: 600; letter-spacing: .2px; border-radius: 999px; padding: .38em .7em; }
+
+/* =====================================================================
+   Barra de navegación de marca (carbón + acento rojo)
+   Aplica a cualquier <nav class="navbar navbar-brandbar"> y, por
+   compatibilidad, también reestiliza .navbar.bg-primary existentes.
+   ===================================================================== */
+.navbar-brandbar,
+.navbar.bg-primary {
+    background: linear-gradient(180deg, var(--ink-700) 0%, var(--ink-800) 100%) !important;
+    border-bottom: 3px solid var(--brand);
+    box-shadow: var(--shadow-sm);
+}
+.navbar-brandbar .navbar-brand,
+.navbar-brandbar .nav-link,
+.navbar.bg-primary .navbar-brand,
+.navbar.bg-primary .nav-link {
+    color: rgba(255, 255, 255, .88) !important;
+    font-weight: 600;
+}
+.navbar-brandbar .navbar-brand { font-weight: 800; letter-spacing: -.3px; }
+.navbar-brandbar .nav-link:hover,
+.navbar.bg-primary .nav-link:hover { color: #fff !important; }
+.navbar-brandbar .nav-link.active,
+.navbar-brandbar .nav-link:focus-visible { color: #fff !important; }
+.navbar-brandbar .navbar-toggler { border-color: rgba(255,255,255,.25); }
+/* Ícono del toggler en blanco (la navbar es oscura en cualquier tema) */
+.navbar-brandbar .navbar-toggler-icon,
+.navbar.bg-primary .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255,255,255,0.9%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+.navbar.bg-primary .navbar-toggler { border-color: rgba(255,255,255,.25); }
+
+/* Botón de cambio de tema en la navbar */
+.theme-toggle-btn {
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.18);
+    color: #fff;
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: background var(--speed) ease;
+    cursor: pointer;
+}
+.theme-toggle-btn:hover { background: rgba(255,255,255,.22); }
+
+/* =====================================================================
+   Acciones rápidas (tiles uniformes)
+   Reemplazan los botones multicolor por un grid coherente: superficie
+   neutra, ícono en acento de marca, y resalte de marca al pasar el mouse.
+   ===================================================================== */
+.quick-action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .65rem;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    text-decoration: none;
+    padding: 1.15rem .65rem;
+    background-color: var(--bs-card-bg, #fff);
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--radius);
+    color: var(--bs-body-color);
+    font-weight: 600;
+    transition: transform var(--speed) ease, box-shadow var(--speed) ease, border-color var(--speed) ease;
+}
+.quick-action:hover,
+.quick-action:focus-visible {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+    border-color: var(--brand);
+    color: var(--bs-body-color);
+}
+.quick-action .qa-icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 1.35rem;
+    background: rgba(var(--brand-rgb), .12);
+    color: var(--brand);
+    transition: background var(--speed) ease, color var(--speed) ease, transform var(--speed) ease;
+}
+.quick-action:hover .qa-icon {
+    background: var(--brand);
+    color: var(--brand-on);
+    transform: scale(1.06);
+}
+.quick-action .qa-label { font-size: .88rem; line-height: 1.25; }
+
+/* =====================================================================
+   Dropdowns
+   ===================================================================== */
+.dropdown-menu {
+    --bs-dropdown-border-radius: var(--radius);
+    border-color: var(--bs-border-color);
+    box-shadow: var(--shadow-lg);
+    padding: .4rem;
+}
+.dropdown-item { border-radius: var(--radius-sm); padding: .5rem .75rem; }
+.dropdown-item:active { background-color: var(--brand); }
+
+/* =====================================================================
+   Scrollbar discreta
+   ===================================================================== */
+* { scrollbar-width: thin; scrollbar-color: var(--bs-border-color) transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb { background: var(--bs-border-color); border-radius: 999px; border: 2px solid transparent; background-clip: content-box; }
+
+/* =====================================================================
+   Ajustes de utilidades en modo oscuro
+   Evita parches claros con texto oscuro ilegibles (bg-light/text-dark)
+   en componentes que no se re-tematizan solos.
+   ===================================================================== */
+[data-bs-theme="dark"] .bg-light { background-color: var(--bs-tertiary-bg) !important; }
+[data-bs-theme="dark"] .bg-white { background-color: var(--bs-secondary-bg) !important; }
+[data-bs-theme="dark"] .text-dark { color: var(--bs-body-color) !important; }
+[data-bs-theme="dark"] .badge.bg-light { color: var(--bs-body-color) !important; }
+[data-bs-theme="dark"] .text-muted { color: #9aa1ac !important; }
+[data-bs-theme="dark"] .table-light,
+[data-bs-theme="dark"] .table-light > th,
+[data-bs-theme="dark"] .table-light > td { background-color: var(--bs-tertiary-bg) !important; color: var(--bs-body-color) !important; }
+[data-bs-theme="dark"] .list-group-item { background-color: transparent; }
+
+/* --- Neutralizar fondos claros y texto oscuro HARDCODEADOS (style inline) --- */
+/* Sin estos, en modo oscuro quedan parches blancos / texto negro ilegibles. */
+[data-bs-theme="dark"] [style*="background:#fff"],
+[data-bs-theme="dark"] [style*="background: #fff"],
+[data-bs-theme="dark"] [style*="background:#FFF"],
+[data-bs-theme="dark"] [style*="background-color:#fff"],
+[data-bs-theme="dark"] [style*="background-color: #fff"],
+[data-bs-theme="dark"] [style*="background:white"],
+[data-bs-theme="dark"] [style*="background: white"],
+[data-bs-theme="dark"] [style*="background-color:white"],
+[data-bs-theme="dark"] [style*="background-color: white"],
+[data-bs-theme="dark"] [style*="background:#f8f9fa"],
+[data-bs-theme="dark"] [style*="background: #f8f9fa"],
+[data-bs-theme="dark"] [style*="background-color:#f8f9fa"],
+[data-bs-theme="dark"] [style*="background-color: #f8f9fa"],
+[data-bs-theme="dark"] [style*="background:#f4f4f4"],
+[data-bs-theme="dark"] [style*="background:#f0f0f0"],
+[data-bs-theme="dark"] [style*="background:#fafafa"],
+[data-bs-theme="dark"] [style*="background:#f5f5f5"] {
+    background-color: var(--bs-secondary-bg) !important;
+    color: var(--bs-body-color) !important;
+}
+[data-bs-theme="dark"] [style*="color:#212529"],
+[data-bs-theme="dark"] [style*="color: #212529"],
+[data-bs-theme="dark"] [style*="color:#333"],
+[data-bs-theme="dark"] [style*="color: #333"],
+[data-bs-theme="dark"] [style*="color:#000"],
+[data-bs-theme="dark"] [style*="color: #000"],
+[data-bs-theme="dark"] [style*="color:black"],
+[data-bs-theme="dark"] [style*="color: black"] {
+    color: var(--bs-body-color) !important;
+}
+
+/* =====================================================================
+   Respeto a "reduce motion" (accesibilidad)
+   ===================================================================== */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+    }
+}

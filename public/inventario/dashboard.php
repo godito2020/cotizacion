@@ -103,11 +103,14 @@ $pageTitle = 'Inventario';
 
     <!-- Styles -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tema profesional COTI (no-flash + marca) -->
+    <script>(function(){var t=localStorage.getItem('coti-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-bs-theme',t);})();</script>
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/theme-pro.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/theme-pro.css") ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         :root {
-            --primary-color: #0d6efd;
+            --primary-color: var(--brand);
             --success-color: #198754;
             --danger-color: #dc3545;
             --warning-color: #ffc107;
@@ -132,7 +135,7 @@ $pageTitle = 'Inventario';
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #f0f2f5;
+            background: var(--bs-body-bg);
             padding-top: calc(44px + var(--safe-area-top));
             padding-bottom: calc(65px + var(--safe-area-bottom));
             padding-left: var(--safe-area-left);
@@ -232,7 +235,7 @@ $pageTitle = 'Inventario';
         }
 
         .stat-card {
-            background: white;
+            background: var(--surface);
             border-radius: 16px;
             padding: 7px;
             text-align: center;
@@ -248,7 +251,7 @@ $pageTitle = 'Inventario';
 
         .stat-card .stat-label {
             font-size: 13px;
-            color: #6c757d;
+            color: var(--bs-secondary-color);
         }
 
         .stat-card.primary .stat-value { color: var(--primary-color); }
@@ -288,7 +291,7 @@ $pageTitle = 'Inventario';
 
         /* Búsqueda */
         .search-container {
-            background: white;
+            background: var(--surface);
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
@@ -322,7 +325,7 @@ $pageTitle = 'Inventario';
             left: 16px;
             top: 50%;
             transform: translateY(-50%);
-            color: #6c757d;
+            color: var(--bs-secondary-color);
             font-size: 18px;
         }
 
@@ -343,7 +346,7 @@ $pageTitle = 'Inventario';
         }
 
         .product-item:active {
-            background: #f8f9fa;
+            background: var(--surface-2);
         }
 
         .product-item:last-child {
@@ -358,12 +361,12 @@ $pageTitle = 'Inventario';
         .product-code {
             font-weight: 600;
             font-size: 15px;
-            color: #212529;
+            color: var(--bs-body-color);
         }
 
         .product-desc {
             font-size: 13px;
-            color: #6c757d;
+            color: var(--bs-secondary-color);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -375,7 +378,7 @@ $pageTitle = 'Inventario';
         }
 
         .stock-badge {
-            background: #e9ecef;
+            background: var(--surface-2);
             padding: 4px 10px;
             border-radius: 8px;
             font-size: 13px;
@@ -413,7 +416,7 @@ $pageTitle = 'Inventario';
         .empty-state {
             padding: 40px 20px;
             text-align: center;
-            color: #6c757d;
+            color: var(--bs-secondary-color);
         }
 
         .empty-state i {
@@ -430,7 +433,7 @@ $pageTitle = 'Inventario';
             right: 0;
             height: calc(65px + var(--safe-area-bottom));
             padding-bottom: var(--safe-area-bottom);
-            background: white;
+            background: var(--surface);
             display: flex;
             justify-content: space-around;
             align-items: center;
@@ -444,7 +447,7 @@ $pageTitle = 'Inventario';
             align-items: center;
             justify-content: center;
             padding: 8px 12px;
-            color: #6c757d;
+            color: var(--bs-secondary-color);
             text-decoration: none;
             font-size: 10px;
             transition: color 0.2s;
@@ -519,7 +522,7 @@ $pageTitle = 'Inventario';
         }
 
         .product-display {
-            background: #f8f9fa;
+            background: var(--surface-2);
             border-radius: 12px;
             padding: 16px;
             margin-bottom: 20px;
@@ -532,7 +535,7 @@ $pageTitle = 'Inventario';
         }
 
         .product-display .desc {
-            color: #6c757d;
+            color: var(--bs-secondary-color);
             font-size: 14px;
         }
 
@@ -544,7 +547,7 @@ $pageTitle = 'Inventario';
 
         .stock-display .stock-item {
             flex: 1;
-            background: #f8f9fa;
+            background: var(--surface-2);
             border-radius: 12px;
             padding: 12px;
             text-align: center;
@@ -557,7 +560,7 @@ $pageTitle = 'Inventario';
 
         .stock-display .stock-label {
             font-size: 12px;
-            color: #6c757d;
+            color: var(--bs-secondary-color);
         }
 
         .btn-save {
@@ -642,7 +645,7 @@ $pageTitle = 'Inventario';
             bottom: calc(70px + var(--safe-area-bottom));
             left: 16px;
             right: 16px;
-            background: white;
+            background: var(--surface);
             padding: 16px;
             border-radius: 16px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
@@ -661,7 +664,7 @@ $pageTitle = 'Inventario';
 
         /* Selector de zonas */
         .zone-selector {
-            background: white;
+            background: var(--surface);
             border-radius: 16px;
             padding: 16px;
             margin-bottom: 16px;
@@ -671,7 +674,7 @@ $pageTitle = 'Inventario';
         .zone-selector-title {
             font-size: 14px;
             font-weight: 600;
-            color: #6c757d;
+            color: var(--bs-secondary-color);
             margin-bottom: 12px;
         }
 
@@ -687,7 +690,7 @@ $pageTitle = 'Inventario';
             font-size: 10px;
             font-weight: 500;
             border: 2px solid #e9ecef;
-            background: white;
+            background: var(--surface);
             cursor: pointer;
             transition: all 0.2s;
         }
