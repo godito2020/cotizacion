@@ -4,5 +4,7 @@
 # *.log
 *.db
 
+/config/local.php
+
 .DS_Store
 Thumbs.db

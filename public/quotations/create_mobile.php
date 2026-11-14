@@ -560,6 +560,17 @@ $pageTitle = 'Nueva Cotización (Móvil)';
             <!-- Hidden input for selected customer ID -->
             <input type="hidden" id="customer_id" name="customer_id" required>
 
+            <div id="customerReferenceContainer" class="mb-3" style="display: none;">
+                <label for="customer_reference" class="form-label">Identificación del cliente *</label>
+                <input type="text"
+                       class="form-control"
+                       id="customer_reference"
+                       name="customer_reference"
+                       maxlength="100"
+                       placeholder="Ingrese el nombre del cliente">
+                <div class="form-text">Máximo 100 caracteres.</div>
+            </div>
+
             <button type="button" class="btn btn-outline-primary btn-block-mobile" data-bs-toggle="modal" data-bs-target="#newCustomerModal">
                 <i class="fas fa-plus"></i> Nuevo Cliente
             </button>
@@ -1793,6 +1804,15 @@ $pageTitle = 'Nueva Cotización (Móvil)';
             document.getElementById('selectedCustomerName').textContent = customer.name;
             document.getElementById('selectedCustomerDetails').textContent = details.join(' • ');
 
+            const customerReferenceContainer = document.getElementById('customerReferenceContainer');
+            const customerReferenceInput = document.getElementById('customer_reference');
+            const isMultipleCustomer = customer.name.trim().toLocaleUpperCase() === 'CLIENTES VARIOS';
+            customerReferenceContainer.style.display = isMultipleCustomer ? 'block' : 'none';
+            customerReferenceInput.required = isMultipleCustomer;
+            if (!isMultipleCustomer) {
+                customerReferenceInput.value = '';
+            }
+
             // Show selected, hide search
             document.getElementById('selectedCustomerDisplay').classList.add('active');
             document.getElementById('customerSearchContainer').style.display = 'none';
@@ -1811,6 +1831,9 @@ $pageTitle = 'Nueva Cotización (Móvil)';
             // Clear selection
             document.getElementById('customer_id').value = '';
             selectedCustomer = null;
+            document.getElementById('customerReferenceContainer').style.display = 'none';
+            document.getElementById('customer_reference').required = false;
+            document.getElementById('customer_reference').value = '';
 
             // Focus on search input
             setTimeout(() => {

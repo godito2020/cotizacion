@@ -1,29 +1,36 @@
 <?php
 // Database Configuration - Sistema de Cotizaciones
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'cotizacion'); // Base de datos del sistema de cotizaciones
-define('DB_USER', 'admin');
-define('DB_PASS', 'Sistemas*2025');
-define('DB_CHARSET', 'utf8mb4');
+$localConfig = __DIR__ . '/local.php';
+if (is_file($localConfig)) {
+    require_once $localConfig;
+}
+
+if (!defined('DB_HOST')) define('DB_HOST', 'localhost');
+if (!defined('DB_NAME')) define('DB_NAME', 'cotizacion');
+if (!defined('DB_USER')) define('DB_USER', 'admin');
+if (!defined('DB_PASS')) define('DB_PASS', 'Sistemas*2025');
+if (!defined('DB_CHARSET')) define('DB_CHARSET', 'utf8mb4');
 
 // Database Configuration - COBOL (para productos y stock)
-define('COBOL_DB_HOST', 'localhost');
-define('COBOL_DB_NAME', 'cobol'); // Base de datos COBOL con vistas de productos
-define('COBOL_DB_USER', 'admin');
-define('COBOL_DB_PASS', 'Sistemas*2025');
-define('COBOL_DB_CHARSET', 'utf8mb4');
+if (!defined('COBOL_DB_HOST')) define('COBOL_DB_HOST', 'localhost');
+if (!defined('COBOL_DB_NAME')) define('COBOL_DB_NAME', 'cobol');
+if (!defined('COBOL_DB_USER')) define('COBOL_DB_USER', 'admin');
+if (!defined('COBOL_DB_PASS')) define('COBOL_DB_PASS', 'Sistemas*2025');
+if (!defined('COBOL_DB_CHARSET')) define('COBOL_DB_CHARSET', 'utf8mb4');
 
 
 // Base URL
 // Adjust this if your project is in a subdirectory or on a different domain
 
 // Detectar automáticamente el entorno (local vs producción)
-if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['HTTP_HOST'] === '127.0.0.1') {
-    // Para desarrollo local en IIS:
-    define('BASE_URL', 'http://localhost/coti/public');
-} else {
-    // Para producción (incluir /public porque IIS no tiene URL Rewrite):
-    define('BASE_URL', 'https://coti.gsm.pe/public');
+if (!defined('BASE_URL')) {
+    if (($_SERVER['HTTP_HOST'] ?? '') === 'localhost' || ($_SERVER['HTTP_HOST'] ?? '') === '127.0.0.1') {
+        // Para desarrollo local en IIS:
+        define('BASE_URL', 'http://localhost/coti/public');
+    } else {
+        // Para producción (incluir /public porque IIS no tiene URL Rewrite):
+        define('BASE_URL', 'https://coti.gsm.pe/public');
+    }
 }
 
 // Application Paths

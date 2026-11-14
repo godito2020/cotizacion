@@ -7,8 +7,7 @@ require_once __DIR__ . '/../../includes/init.php';
 
 header('Content-Type: application/json');
 
-// Log para debug
-error_log("save_quotation.php called - POST data: " . print_r($_POST, true));
+error_log("save_quotation.php called");
 
 $auth = new Auth();
 if (!$auth->isLoggedIn()) {
@@ -28,6 +27,24 @@ $errors = [];
 // Validation
 if (empty($data['customer_id']) || !is_numeric($data['customer_id']) || (int)$data['customer_id'] <= 0) {
     $errors['customer_id'] = 'Debe seleccionar un cliente válido';
+} else {
+    $customerReference = trim($data['customer_reference'] ?? '');
+    if (mb_strlen($customerReference, 'UTF-8') > 100) {
+        $errors['customer_reference'] = 'La identificación no puede superar los 100 caracteres';
+    } else {
+        $db = getDBConnection();
+        $customerStmt = $db->prepare('SELECT name FROM customers WHERE id = ? AND company_id = ?');
+        $customerStmt->execute([(int)$data['customer_id'], $companyId]);
+        $selectedCustomerName = $customerStmt->fetchColumn();
+        $isMultipleCustomer = is_string($selectedCustomerName)
+            && mb_strtoupper(trim($selectedCustomerName), 'UTF-8') === 'CLIENTES VARIOS';
+
+        if ($isMultipleCustomer && $customerReference === '') {
+            $errors['customer_reference'] = 'Ingrese la identificación del cliente';
+        } elseif (!$isMultipleCustomer) {
+            $customerReference = '';
+        }
+    }
 }
 
 if (empty($data['quotation_date'])) {
@@ -115,7 +132,8 @@ try {
         $currency,
         $paymentCondition,
         $creditDays,
-        $igvMode
+        $igvMode,
+        $customerReference !== '' ? $customerReference : null
     );
 
     if ($quotationId) {

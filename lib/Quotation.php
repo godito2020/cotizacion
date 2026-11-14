@@ -176,11 +176,12 @@ class Quotation {
                 $params['status'] = $filters['status'];
             }
 
-            // Search filter (quotation number or customer name)
+            // Search filter (quotation number or customer name/identification)
             if (!empty($filters['search'])) {
-                $where[] = '(q.quotation_number LIKE :search1 OR c.name LIKE :search2)';
+                $where[] = '(q.quotation_number LIKE :search1 OR c.name LIKE :search2 OR q.customer_reference LIKE :search3)';
                 $params['search1'] = '%' . $filters['search'] . '%';
                 $params['search2'] = '%' . $filters['search'] . '%';
+                $params['search3'] = '%' . $filters['search'] . '%';
             }
 
             // Date filters
@@ -223,7 +224,12 @@ class Quotation {
             $offset = ($page - 1) * $perPage;
 
             // Get quotations
-            $sql = "SELECT q.*, c.name as customer_name, u.username as creator_username
+            $sql = "SELECT q.*,
+                           CASE WHEN UPPER(TRIM(c.name)) = 'CLIENTES VARIOS'
+                                THEN COALESCE(NULLIF(TRIM(q.customer_reference), ''), c.name)
+                                ELSE c.name
+                           END as customer_name,
+                           u.username as creator_username
                     FROM quotations q
                     LEFT JOIN customers c ON q.customer_id = c.id
                     LEFT JOIN users u ON q.user_id = u.id
@@ -266,7 +272,12 @@ class Quotation {
     public function getById($id, $companyId) {
         try {
             // Get quotation data
-            $sql = "SELECT q.*, c.name as customer_name, u.first_name as user_first_name, u.last_name as user_last_name
+            $sql = "SELECT q.*,
+                           CASE WHEN UPPER(TRIM(c.name)) = 'CLIENTES VARIOS'
+                                THEN COALESCE(NULLIF(TRIM(q.customer_reference), ''), c.name)
+                                ELSE c.name
+                           END as customer_name,
+                           u.first_name as user_first_name, u.last_name as user_last_name
                     FROM quotations q
                     LEFT JOIN customers c ON q.customer_id = c.id
                     LEFT JOIN users u ON q.user_id = u.id
@@ -517,7 +528,7 @@ class Quotation {
     /**
      * Create new quotation
      */
-    public function create($companyId, $customerId, $userId, $quotationDate, $validUntil, $items, $globalDiscountPercentage, $notes, $terms, $status, $currency, $paymentCondition = 'cash', $creditDays = null, $igvMode = 'included') {
+    public function create($companyId, $customerId, $userId, $quotationDate, $validUntil, $items, $globalDiscountPercentage, $notes, $terms, $status, $currency, $paymentCondition = 'cash', $creditDays = null, $igvMode = 'included', $customerReference = null) {
         try {
             $this->db->beginTransaction();
 
@@ -535,11 +546,11 @@ class Quotation {
 
             // Insert quotation
             $sql = "INSERT INTO quotations
-                    (company_id, user_id, customer_id, quotation_number, quotation_date, valid_until, currency,
+                    (company_id, user_id, customer_id, customer_reference, quotation_number, quotation_date, valid_until, currency,
                      igv_mode, payment_condition, credit_days,
                      subtotal, global_discount_percentage, global_discount_amount, total, status, notes, terms_and_conditions)
                     VALUES
-                    (:company_id, :user_id, :customer_id, :quotation_number, :quotation_date, :valid_until, :currency,
+                    (:company_id, :user_id, :customer_id, :customer_reference, :quotation_number, :quotation_date, :valid_until, :currency,
                      :igv_mode, :payment_condition, :credit_days,
                      :subtotal, :global_discount_percentage, :global_discount_amount, :total, :status, :notes, :terms)";
 
@@ -548,6 +559,7 @@ class Quotation {
                 'company_id' => $companyId,
                 'user_id' => $userId,
                 'customer_id' => $customerId,
+                'customer_reference' => $customerReference,
                 'quotation_number' => $quotationNumber,
                 'quotation_date' => $quotationDate,
                 'valid_until' => $validUntil,
@@ -831,7 +843,10 @@ class Quotation {
                         q.status,
                         q.total,
                         q.currency,
-                        c.name as customer_name,
+                        CASE WHEN UPPER(TRIM(c.name)) = 'CLIENTES VARIOS'
+                             THEN COALESCE(NULLIF(TRIM(q.customer_reference), ''), c.name)
+                             ELSE c.name
+                        END as customer_name,
                         u.first_name,
                         u.last_name
                     FROM quotations q

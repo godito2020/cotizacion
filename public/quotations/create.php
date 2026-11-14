@@ -77,10 +77,25 @@ $formData = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $formData = $_POST;
+    $customerReference = trim($_POST['customer_reference'] ?? '');
 
     // Validation
     if (empty($_POST['customer_id']) || !is_numeric($_POST['customer_id']) || (int)$_POST['customer_id'] <= 0) {
         $errors['customer_id'] = 'Debe seleccionar un cliente válido';
+    } elseif (mb_strlen($customerReference, 'UTF-8') > 100) {
+        $errors['customer_reference'] = 'La identificación no puede superar los 100 caracteres';
+    } else {
+        $customerStmt = $db->prepare('SELECT name FROM customers WHERE id = ? AND company_id = ?');
+        $customerStmt->execute([(int)$_POST['customer_id'], $companyId]);
+        $selectedCustomerName = $customerStmt->fetchColumn();
+        $isMultipleCustomer = is_string($selectedCustomerName)
+            && mb_strtoupper(trim($selectedCustomerName), 'UTF-8') === 'CLIENTES VARIOS';
+
+        if ($isMultipleCustomer && $customerReference === '') {
+            $errors['customer_reference'] = 'Ingrese la identificación del cliente';
+        } elseif (!$isMultipleCustomer) {
+            $customerReference = '';
+        }
     }
 
     if (empty($_POST['quotation_date'])) {
@@ -155,7 +170,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $currency,
             $paymentCondition,
             $creditDays,
-            $igvMode
+            $igvMode,
+            $customerReference !== '' ? $customerReference : null
         );
 
         if ($result) {
@@ -303,6 +319,22 @@ $pageTitle = 'Nueva Cotización';
                                                         <!-- Customer details will be populated here -->
                                                     </div>
                                                 </div>
+                                            </div>
+
+                                            <div id="customer_reference_group" class="mt-3" style="display: none;">
+                                                <label for="customer_reference" class="form-label">Identificación del cliente *</label>
+                                                <input type="text"
+                                                       class="form-control <?= isset($errors['customer_reference']) ? 'is-invalid' : '' ?>"
+                                                       id="customer_reference"
+                                                       name="customer_reference"
+                                                       maxlength="100"
+                                                       value="<?= htmlspecialchars($formData['customer_reference'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                                                       placeholder="Ingrese el nombre del cliente"
+                                                       aria-describedby="customer_reference_help">
+                                                <div id="customer_reference_help" class="form-text">Máximo 100 caracteres.</div>
+                                                <?php if (isset($errors['customer_reference'])): ?>
+                                                    <div class="invalid-feedback"><?= htmlspecialchars($errors['customer_reference'], ENT_QUOTES, 'UTF-8') ?></div>
+                                                <?php endif; ?>
                                             </div>
 
                                             <div id="customer_actions" class="mt-2">
@@ -1492,10 +1524,21 @@ $pageTitle = 'Nueva Cotización';
             // Update hidden input and clear search input
             const customerIdInput = document.getElementById('customer_id');
             const customerSearchInput = document.getElementById('customer_search');
+            const customerReferenceGroup = document.getElementById('customer_reference_group');
+            const customerReferenceInput = document.getElementById('customer_reference');
+            const isMultipleCustomer = customerName.trim().toLocaleUpperCase() === 'CLIENTES VARIOS';
 
             if (customerIdInput) {
                 customerIdInput.value = customerId;
                 console.log('Set customer_id to:', customerId);
+            }
+
+            if (customerReferenceGroup && customerReferenceInput) {
+                customerReferenceGroup.style.display = isMultipleCustomer ? 'block' : 'none';
+                customerReferenceInput.required = isMultipleCustomer;
+                if (!isMultipleCustomer) {
+                    customerReferenceInput.value = '';
+                }
             }
 
             if (customerSearchInput) {
@@ -1594,6 +1637,13 @@ $pageTitle = 'Nueva Cotización';
             // Clear the form
             document.getElementById('customer_id').value = '';
             document.getElementById('customer_search').value = '';
+            const customerReferenceGroup = document.getElementById('customer_reference_group');
+            const customerReferenceInput = document.getElementById('customer_reference');
+            if (customerReferenceGroup && customerReferenceInput) {
+                customerReferenceGroup.style.display = 'none';
+                customerReferenceInput.required = false;
+                customerReferenceInput.value = '';
+            }
 
             // Hide customer display and show actions
             document.getElementById('selected_customer_display').style.display = 'none';
