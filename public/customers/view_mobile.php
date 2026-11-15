@@ -1,17 +1,21 @@
 <?php
+/**
+ * public/customers/view_mobile.php
+ * Ficha de Cliente Móvil — Sistema de Cotizaciones (Notion / Linear Design)
+ * Con perfil completo, acciones directas de WhatsApp/Llamada, KPIs de cotizaciones y navegación fluida.
+ */
 require_once __DIR__ . '/../../includes/init.php';
 
 $auth = new Auth();
-
 if (!$auth->isLoggedIn()) {
-    $auth->redirect(BASE_URL . '/login.php');
+    $auth->redirect(BASE_URL . '/login.php?redirect_to=' . urlencode($_SERVER['REQUEST_URI']));
 }
 
 $user = $auth->getUser();
-$companyId = $auth->getCompanyId();
+$companyId = (int)$auth->getCompanyId();
 
-$customerId = $_GET['id'] ?? 0;
-$isAdmin = $auth->hasRole(['Administrador del Sistema', 'Administrador de Empresa']);
+$customerId = (int)($_GET['id'] ?? 0);
+$isAdmin = $auth->hasRole(['Admin', 'Administrador', 'Administrador del Sistema', 'Administrador de Empresa']);
 
 $customerRepo = new Customer();
 if ($isAdmin) {
@@ -26,66 +30,147 @@ if (!$customer) {
     exit;
 }
 
-$customerCompanyId = $customer['company_id'];
+$customerCompanyId = (int)$customer['company_id'];
 
-// Get date filters
-$dateFrom = $_GET['date_from'] ?? '';
-$dateTo = $_GET['date_to'] ?? '';
-
-// Si no hay filtros de fecha, mostrar solo del mes actual
+// Date Filters
+$dateFrom = trim($_GET['date_from'] ?? '');
+$dateTo   = trim($_GET['date_to'] ?? '');
+$isAllPeriod = isset($_GET['all']) && $_GET['all'] == '1';
 $hasDateFilters = !empty($dateFrom) || !empty($dateTo);
-if (!$hasDateFilters && !isset($_GET['all'])) {
-    $dateFrom = date('Y-m-01'); // Primer día del mes
-    $dateTo = date('Y-m-t');     // Último día del mes
+
+if (!$hasDateFilters && !$isAllPeriod) {
+    $dateFrom = date('Y-m-01');
+    $dateTo   = date('Y-m-t');
 }
 
-// Get customer quotations
+// Fetch Quotations for this customer
 $quotationRepo = new Quotation();
 $filters = array_filter([
     'customer_id' => $customerId,
-    'date_from' => $dateFrom,
-    'date_to' => $dateTo
+    'date_from'   => $dateFrom,
+    'date_to'     => $dateTo
 ]);
-$quotations = $quotationRepo->getQuotationsWithFilters($customerCompanyId, $filters, 1, 50);
+$quotationsResult = $quotationRepo->getQuotationsWithFilters($customerCompanyId, $filters, 1, 100);
+$quotations = $quotationsResult['quotations'] ?? [];
+$totalQuotations = (int)($quotationsResult['total'] ?? count($quotations));
 
-// Calculate stats
-$totalQuotations = $quotations['total'] ?? 0;
-$acceptedQuotations = 0;
-$totalAmount = 0;
+// Calculate Statistics
+$acceptedCount = 0;
+$pendingCount  = 0;
+$totalAmountUSD = 0.0;
+$totalAmountPEN = 0.0;
 
-if (!empty($quotations['quotations'])) {
-    foreach ($quotations['quotations'] as $q) {
-        if ($q['status'] === 'Accepted') {
-            $acceptedQuotations++;
-            $totalAmount += $q['total'];
+foreach ($quotations as $q) {
+    $st = $q['status'] ?? '';
+    $curr = strtoupper($q['currency'] ?? 'PEN');
+    $val = (float)($q['total'] ?? 0);
+
+    if ($st === 'Accepted' || $st === 'Invoiced') {
+        $acceptedCount++;
+        if ($curr === 'USD') {
+            $totalAmountUSD += $val;
+        } else {
+            $totalAmountPEN += $val;
         }
+    } else {
+        $pendingCount++;
     }
 }
 
+// Clean Customer Data
+$taxId = trim($customer['tax_id'] ?? '');
+$taxClean = preg_replace('/\D/', '', $taxId);
+$isRuc = (strlen($taxClean) === 11);
+$isDni = (strlen($taxClean) === 8);
+
+$phone = trim($customer['phone'] ?? '');
+$cleanPhone = preg_replace('/\D/', '', $phone);
+$waNumber = $cleanPhone;
+if (strlen($waNumber) === 9 && str_starts_with($waNumber, '9')) {
+    $waNumber = '51' . $waNumber;
+}
+
+$email = trim($customer['email'] ?? '');
+$emailCc = trim($customer['email_cc'] ?? '');
+$address = trim($customer['address'] ?? '');
+$contact = trim($customer['contact_person'] ?? '');
+
 $pageTitle = $customer['name'];
+
+// Query builder helper for date filters
+function buildCustomerViewQuery($overrides = []) {
+    $params = $_GET;
+    foreach ($overrides as $k => $v) {
+        if ($v === null || $v === '') {
+            unset($params[$k]);
+        } else {
+            $params[$k] = $v;
+        }
+    }
+    return '?' . http_build_query($params);
+}
 ?>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0d6efd">
-    <title><?= $pageTitle ?></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title><?= htmlspecialchars($pageTitle) ?> — Detalle de Cliente</title>
 
-    <!-- Bootstrap CSS -->
+    <script>
+        (function () {
+            var mode = 'system';
+            try {
+                var saved = localStorage.getItem('coti-theme');
+                if (saved === 'light' || saved === 'dark') mode = saved;
+            } catch (e) {}
+            var theme = mode === 'system'
+                ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                : mode;
+            document.documentElement.setAttribute('data-bs-theme', theme);
+            document.documentElement.setAttribute('data-coti-theme-mode', mode);
+        })();
+    </script>
+
+    <!-- Typography: Satoshi, DM Sans & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@700,900&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5.3 & Font Awesome 6 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Core App Stylesheets -->
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/style.css") ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/theme-pro.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/theme-pro.css") ?>">
+
+    <?php if (file_exists(dirname(__DIR__) . '/../includes/pwa_head.php')) include_once dirname(__DIR__) . '/../includes/pwa_head.php'; ?>
 
     <style>
         :root {
-            --primary-color: #0d6efd;
-            --success-color: #198754;
-            --danger-color: #dc3545;
-            --warning-color: #ffc107;
-            --info-color: #0dcaf0;
-            --gray-100: #f8f9fa;
-            --gray-200: #e9ecef;
+            --color-canvas: #09090B;
+            --color-panel: #18181B;
+            --color-panel-card: #202024;
+            --color-rule: #27272A;
+            --color-rule-strong: #3F3F46;
+            --color-ink: #FAFAFA;
+            --color-ink-muted: #A1A1AA;
+            --color-amber: #F59E0B;
+            --color-amber-dim: rgba(245, 158, 11, 0.12);
+        }
+
+        [data-bs-theme="light"] {
+            --color-canvas: #F4F4F5;
+            --color-panel: #FFFFFF;
+            --color-panel-card: #FAFAFA;
+            --color-rule: #E4E4E7;
+            --color-rule-strong: #D4D4D8;
+            --color-ink: #09090B;
+            --color-ink-muted: #71717A;
+            --color-amber: #D97706;
+            --color-amber-dim: rgba(217, 119, 6, 0.1);
         }
 
         * {
@@ -94,541 +179,569 @@ $pageTitle = $customer['name'];
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--gray-100);
-            padding-bottom: 100px;
-            font-size: 16px;
-            overscroll-behavior: contain;
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--color-canvas);
+            color: var(--color-ink);
+            padding-bottom: 96px;
+            font-size: 14.5px;
             margin: 0;
+            overscroll-behavior-y: contain;
         }
 
-        /* Mobile Header */
-        .mobile-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #0a58ca 100%);
-            color: white;
-            padding: 16px;
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Top Sticky Navbar */
+        .mobile-top-navbar {
+            background-color: var(--color-panel);
+            border-bottom: 1px solid var(--color-rule);
             position: sticky;
             top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 1020;
+            padding: 12px 16px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
 
-        .mobile-header h1 {
-            font-size: 18px;
-            margin: 8px 0 0 0;
-            font-weight: 600;
-        }
-
-        .back-btn {
-            color: white;
-            font-size: 20px;
-            text-decoration: none;
-            padding: 8px;
-            margin-right: 8px;
-        }
-
-        .back-btn:active {
-            opacity: 0.7;
-        }
-
-        /* Info Card */
-        .info-card {
-            background: white;
+        /* Profile Hero Card */
+        .profile-card {
+            background-color: var(--color-panel);
+            border: 1px solid var(--color-rule);
             border-radius: 12px;
-            padding: 20px;
-            margin: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
-        .info-row {
+        /* Document Badges */
+        .badge-doc {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.74rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 6px;
+            letter-spacing: 0.02em;
+            display: inline-flex;
+            align-items: center;
+        }
+        .badge-ruc {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--color-amber);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        .badge-dni {
+            background: rgba(59, 130, 246, 0.15);
+            color: #3B82F6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        .badge-doc-other {
+            background: rgba(161, 161, 170, 0.15);
+            color: var(--color-ink-muted);
+            border: 1px solid rgba(161, 161, 170, 0.3);
+        }
+
+        /* Info Item Row */
+        .profile-info-row {
             display: flex;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--gray-200);
+            align-items: flex-start;
+            gap: 10px;
+            padding: 7px 0;
+            border-bottom: 1px solid var(--color-rule);
+            font-size: 0.86rem;
         }
-
-        .info-row:last-child {
+        .profile-info-row:last-child {
             border-bottom: none;
         }
-
-        .info-label {
-            font-weight: 600;
-            color: #6c757d;
-            min-width: 100px;
-            font-size: 14px;
+        .profile-info-label {
+            min-width: 90px;
+            color: var(--color-ink-muted);
+            font-size: 0.78rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
         }
-
-        .info-value {
-            color: #212529;
-            font-size: 15px;
+        .profile-info-val {
+            color: var(--color-ink);
+            word-break: break-word;
             flex: 1;
         }
 
-        .info-value a {
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-
-        .info-value a:active {
-            opacity: 0.7;
-        }
-
-        /* Stats Card */
-        .stats-card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 0 16px 16px 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 16px;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 28px;
-            font-weight: 700;
+        /* Quick Action Communication Pills */
+        .comm-pills-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
             margin-bottom: 4px;
         }
-
-        .stat-label {
-            font-size: 12px;
-            color: #6c757d;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* Section Title */
-        .section-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #212529;
-            padding: 0 16px 12px 16px;
-            margin-top: 24px;
-        }
-
-        /* Quotation Card */
-        .quotation-card {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            margin: 0 16px 12px 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .quotation-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 12px;
-        }
-
-        .quotation-number {
-            font-size: 16px;
-            font-weight: 700;
-            color: #212529;
-        }
-
-        .quotation-status {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
+        .comm-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.78rem;
             font-weight: 600;
-            white-space: nowrap;
+            text-decoration: none;
+            transition: opacity 0.15s ease;
+        }
+        .whatsapp-pill {
+            background-color: rgba(37, 211, 102, 0.15);
+            color: #25D366;
+            border: 1px solid rgba(37, 211, 102, 0.3);
+        }
+        .call-pill {
+            background-color: rgba(59, 130, 246, 0.12);
+            color: #3B82F6;
+            border: 1px solid rgba(59, 130, 246, 0.25);
+        }
+        .email-pill {
+            background-color: rgba(168, 85, 247, 0.12);
+            color: #A855F7;
+            border: 1px solid rgba(168, 85, 247, 0.25);
         }
 
-        .status-draft { background: #6c757d; color: white; }
-        .status-sent { background: #0dcaf0; color: white; }
-        .status-accepted { background: #198754; color: white; }
-        .status-rejected { background: #dc3545; color: white; }
-        .status-invoiced { background: #0d6efd; color: white; }
-
-        .quotation-details {
-            font-size: 14px;
-            color: #6c757d;
-            margin-bottom: 8px;
-        }
-
-        .quotation-amount {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--primary-color);
+        /* Quotation Item Card */
+        .quotation-card {
+            background-color: var(--color-panel);
+            border: 1px solid var(--color-rule);
+            border-radius: 12px;
             margin-bottom: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            transition: border-color 0.12s ease;
+        }
+        .quotation-card:active {
+            border-color: var(--color-amber);
         }
 
-        .quotation-actions {
+        /* Status Badges */
+        .badge-status-draft { background: rgba(161, 161, 170, 0.15); color: #A1A1AA; border: 1px solid rgba(161, 161, 170, 0.3); }
+        .badge-status-sent { background: rgba(59, 130, 246, 0.15); color: #3B82F6; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .badge-status-accepted { background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-status-rejected { background: rgba(239, 68, 68, 0.15); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .badge-status-invoiced { background: rgba(139, 92, 246, 0.15); color: #8B5CF6; border: 1px solid rgba(139, 92, 246, 0.3); }
+
+        .card-actions-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
+            gap: 1px;
+            background-color: var(--color-rule);
+            border-top: 1px solid var(--color-rule);
         }
-
-        .action-btn {
-            padding: 10px;
-            border: 1px solid #dee2e6;
-            background: white;
-            border-radius: 8px;
-            font-size: 13px;
+        .card-action-btn {
+            background-color: var(--color-panel);
+            color: var(--color-ink);
+            padding: 9px 4px;
+            font-size: 0.78rem;
             font-weight: 600;
-            color: #495057;
-            text-align: center;
-            text-decoration: none;
-            transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
+            text-decoration: none;
+            transition: background-color 0.12s ease;
         }
-
-        .action-btn:active {
-            transform: scale(0.95);
-            background: var(--gray-100);
-        }
-
-        .action-btn.primary { border-color: var(--primary-color); color: var(--primary-color); }
-        .action-btn.success { border-color: var(--success-color); color: var(--success-color); }
-
-        /* Action Buttons Fixed Bottom */
-        .bottom-actions {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            padding: 12px 16px;
-            box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-            z-index: 999;
-        }
-
-        .bottom-actions .action-btn {
-            min-height: 48px;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .bottom-actions .action-btn i {
-            font-size: 18px;
-        }
-
-        .bottom-actions .action-btn span {
-            font-size: 11px;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #6c757d;
-            background: white;
-            border-radius: 12px;
-            margin: 0 16px;
-        }
-
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 12px;
-            opacity: 0.3;
+        .card-action-btn:hover, .card-action-btn:active {
+            background-color: var(--color-panel-card);
+            color: var(--color-amber);
         }
     </style>
 </head>
 <body>
-    <!-- Mobile Header -->
-    <div class="mobile-header">
-        <div class="d-flex align-items-center">
-            <a href="<?= BASE_URL ?>/customers/index_mobile.php" class="back-btn">
-                <i class="fas fa-arrow-left"></i>
-            </a>
-            <div>
-                <div style="font-size: 12px; opacity: 0.9;">Cliente</div>
-                <h1><?= htmlspecialchars($customer['name']) ?></h1>
-            </div>
-        </div>
-    </div>
 
-    <!-- Customer Info Card -->
-    <div class="info-card">
-        <?php if ($customer['contact_person']): ?>
-        <div class="info-row">
-            <div class="info-label">
-                <i class="fas fa-user"></i> Contacto
+    <!-- =========================================================
+         1. MOBILE TOP NAVIGATION BAR
+         ========================================================= -->
+    <header class="mobile-top-navbar shadow-sm">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2" style="min-width: 0;">
+                <a href="<?= BASE_URL ?>/customers/index_mobile.php" class="btn btn-sm btn-outline-secondary py-1 px-2 text-decoration-none" title="Volver a Clientes">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div style="min-width: 0;">
+                    <h1 class="h6 fw-bold mb-0 text-body text-truncate" style="letter-spacing: -0.01em; max-width: 190px;">
+                        <?= htmlspecialchars($customer['name']) ?>
+                    </h1>
+                    <span class="text-muted small" style="font-size: 0.7rem;">
+                        <?= $isRuc ? 'RUC ' . $taxId : ($isDni ? 'DNI ' . $taxId : 'Cliente') ?> &bull; Historial
+                    </span>
+                </div>
             </div>
-            <div class="info-value"><?= htmlspecialchars($customer['contact_person']) ?></div>
-        </div>
-        <?php endif; ?>
 
-        <?php if ($customer['email']): ?>
-        <div class="info-row">
-            <div class="info-label">
-                <i class="fas fa-envelope"></i> Email
-            </div>
-            <div class="info-value">
-                <a href="mailto:<?= htmlspecialchars($customer['email']) ?>">
-                    <?= htmlspecialchars($customer['email']) ?>
+            <div class="d-flex align-items-center gap-2">
+                <!-- Theme Toggle -->
+                <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2 mobile-theme-toggle"
+                        data-theme-toggle title="Cambiar tema (Sistema/Claro/Oscuro)">
+                    <i class="fas fa-circle-half-stroke"></i>
+                </button>
+
+                <!-- Desktop switch -->
+                <a href="<?= BASE_URL ?>/customers/view.php?id=<?= $customerId ?>&desktop=1" class="btn btn-sm btn-outline-secondary py-1 px-2" title="Vista Escritorio">
+                    <i class="fas fa-desktop"></i>
+                </a>
+
+                <!-- Edit Button -->
+                <a href="<?= BASE_URL ?>/customers/edit.php?id=<?= $customerId ?>" class="btn btn-sm btn-outline-secondary py-1 px-2" title="Editar Cliente">
+                    <i class="fas fa-pen-to-square"></i>
                 </a>
             </div>
         </div>
-        <?php endif; ?>
+    </header>
 
-        <?php if ($customer['phone']): ?>
-        <div class="info-row">
-            <div class="info-label">
-                <i class="fas fa-phone"></i> Teléfono
-            </div>
-            <div class="info-value">
-                <a href="tel:<?= htmlspecialchars($customer['phone']) ?>">
-                    <?= htmlspecialchars($customer['phone']) ?>
-                </a>
-            </div>
-        </div>
-        <?php endif; ?>
+    <main class="px-3 pt-3">
 
-        <?php if ($customer['tax_id']): ?>
-        <div class="info-row">
-            <div class="info-label">
-                <i class="fas fa-id-card"></i> Documento
-            </div>
-            <div class="info-value"><?= htmlspecialchars($customer['tax_id']) ?></div>
-        </div>
-        <?php endif; ?>
-
-        <?php if ($customer['address']): ?>
-        <div class="info-row">
-            <div class="info-label">
-                <i class="fas fa-map-marker-alt"></i> Dirección
-            </div>
-            <div class="info-value"><?= nl2br(htmlspecialchars($customer['address'])) ?></div>
-        </div>
-        <?php endif; ?>
-
-        <div class="info-row">
-            <div class="info-label">
-                <i class="fas fa-calendar"></i> Registrado
-            </div>
-            <div class="info-value"><?= date('d/m/Y', strtotime($customer['created_at'])) ?></div>
-        </div>
-
-        <?php if (!empty($customer['owner_name'])): ?>
-        <div class="info-row">
-            <div class="info-label">
-                <i class="fas fa-user-tie"></i> Vendedor
-            </div>
-            <div class="info-value"><?= htmlspecialchars($customer['owner_name']) ?></div>
-        </div>
-        <?php endif; ?>
-    </div>
-
-    <!-- Stats Card -->
-    <div class="stats-card">
-        <div class="stats-grid">
-            <div class="stat-item">
-                <div class="stat-value" style="color: var(--primary-color);"><?= $totalQuotations ?></div>
-                <div class="stat-label">Cotizaciones</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" style="color: var(--success-color);"><?= $acceptedQuotations ?></div>
-                <div class="stat-label">Aceptadas</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value" style="color: var(--warning-color);">
-                    <?= $totalQuotations - $acceptedQuotations ?>
-                </div>
-                <div class="stat-label">Pendientes</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Date Filter -->
-    <div style="background: white; border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-        <button class="btn btn-outline-primary w-100" type="button" data-bs-toggle="collapse" data-bs-target="#dateFilterCollapse" style="border-radius: 8px; min-height: 48px; font-size: 16px;">
-            <i class="fas fa-calendar"></i> Filtrar por fecha
-            <?php if ($hasDateFilters): ?>
-                <span class="badge bg-primary">1</span>
-            <?php endif; ?>
-        </button>
-
-        <div class="collapse <?= $hasDateFilters ? 'show' : '' ?>" id="dateFilterCollapse" style="margin-top: 12px;">
-            <form method="GET">
-                <input type="hidden" name="id" value="<?= $customerId ?>">
-                <div class="row mb-3">
-                    <div class="col-6">
-                        <label class="form-label" style="font-size: 14px; font-weight: 600;">Desde</label>
-                        <input type="date" class="form-control" name="date_from" value="<?= htmlspecialchars($dateFrom) ?>"
-                               style="min-height: 48px; font-size: 16px; border-radius: 8px;">
+        <!-- =========================================================
+             2. CUSTOMER PROFILE HERO CARD
+             ========================================================= -->
+        <article class="profile-card">
+            <div class="p-3">
+                <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                    <div>
+                        <h2 class="h5 fw-bold mb-1 text-body" style="font-family: var(--font-display, 'Satoshi', sans-serif);">
+                            <?= htmlspecialchars($customer['name']) ?>
+                        </h2>
+                        <?php if ($customer['company_status']): ?>
+                            <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-25 py-0.5 px-2" style="font-size: 0.68rem;">
+                                <?= htmlspecialchars($customer['company_status']) ?>
+                            </span>
+                        <?php endif; ?>
                     </div>
-                    <div class="col-6">
-                        <label class="form-label" style="font-size: 14px; font-weight: 600;">Hasta</label>
-                        <input type="date" class="form-control" name="date_to" value="<?= htmlspecialchars($dateTo) ?>"
-                               style="min-height: 48px; font-size: 16px; border-radius: 8px;">
+                    <div>
+                        <?php if ($isRuc): ?>
+                            <span class="badge-doc badge-ruc"><i class="fas fa-building me-1"></i>RUC <?= htmlspecialchars($taxId) ?></span>
+                        <?php elseif ($isDni): ?>
+                            <span class="badge-doc badge-dni"><i class="fas fa-id-card me-1"></i>DNI <?= htmlspecialchars($taxId) ?></span>
+                        <?php elseif (!empty($taxId)): ?>
+                            <span class="badge-doc badge-doc-other"><?= htmlspecialchars($taxId) ?></span>
+                        <?php endif; ?>
                     </div>
                 </div>
-                <div style="display: flex; gap: 8px;">
-                    <button type="submit" class="btn btn-primary" style="flex: 1; min-height: 48px; font-size: 16px; border-radius: 8px;">
-                        <i class="fas fa-search"></i> Aplicar
-                    </button>
-                    <a href="?id=<?= $customerId ?>" class="btn btn-outline-secondary" style="flex: 1; min-height: 48px; font-size: 16px; border-radius: 8px;">
-                        <i class="fas fa-times"></i> Limpiar
+
+                <!-- Info rows -->
+                <div class="mt-3">
+                    <?php if (!empty($contact)): ?>
+                        <div class="profile-info-row">
+                            <span class="profile-info-label"><i class="fas fa-user-circle"></i> Contacto</span>
+                            <span class="profile-info-val fw-semibold"><?= htmlspecialchars($contact) ?></span>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($address)): ?>
+                        <div class="profile-info-row">
+                            <span class="profile-info-label"><i class="fas fa-location-dot text-warning"></i> Dirección</span>
+                            <span class="profile-info-val"><?= htmlspecialchars($address) ?></span>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($email)): ?>
+                        <div class="profile-info-row">
+                            <span class="profile-info-label"><i class="fas fa-envelope"></i> Email</span>
+                            <span class="profile-info-val">
+                                <a href="mailto:<?= htmlspecialchars($email) ?>" class="text-info text-decoration-none">
+                                    <?= htmlspecialchars($email) ?>
+                                </a>
+                            </span>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($emailCc)): ?>
+                        <div class="profile-info-row">
+                            <span class="profile-info-label"><i class="fas fa-at"></i> CC</span>
+                            <span class="profile-info-val small text-muted"><?= htmlspecialchars($emailCc) ?></span>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($customer['owner_name'])): ?>
+                        <div class="profile-info-row">
+                            <span class="profile-info-label"><i class="fas fa-user-tie"></i> Vendedor</span>
+                            <span class="profile-info-val"><?= htmlspecialchars($customer['owner_name']) ?></span>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if ($isAdmin && !empty($customer['company_name'])): ?>
+                        <div class="profile-info-row">
+                            <span class="profile-info-label"><i class="fas fa-store"></i> Empresa</span>
+                            <span class="profile-info-val"><?= htmlspecialchars($customer['company_name']) ?></span>
+                        </div>
+                    <?php endif; ?>
+
+                    <div class="profile-info-row">
+                        <span class="profile-info-label"><i class="fas fa-calendar"></i> Alta</span>
+                        <span class="profile-info-val font-mono small text-muted"><?= date('d/m/Y', strtotime($customer['created_at'])) ?></span>
+                    </div>
+                </div>
+
+                <!-- One-click communication pills -->
+                <?php if (!empty($phone) || !empty($email)): ?>
+                    <div class="comm-pills-row">
+                        <?php if (!empty($phone)): ?>
+                            <a href="https://wa.me/<?= $waNumber ?>" target="_blank" rel="noopener noreferrer" class="comm-pill whatsapp-pill">
+                                <i class="fab fa-whatsapp fs-6"></i> WhatsApp
+                            </a>
+                            <a href="tel:<?= htmlspecialchars($phone) ?>" class="comm-pill call-pill">
+                                <i class="fas fa-phone"></i> <?= htmlspecialchars($phone) ?>
+                            </a>
+                        <?php endif; ?>
+                        <?php if (!empty($email)): ?>
+                            <a href="mailto:<?= htmlspecialchars($email) ?>" class="comm-pill email-pill">
+                                <i class="fas fa-envelope"></i> Enviar Correo
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
+
+                <!-- Customer Primary Actions -->
+                <div class="d-flex flex-wrap gap-2 pt-3 mt-2 border-top" style="border-color: var(--color-rule) !important;">
+                    <a href="<?= BASE_URL ?>/quotations/create.php?customer_id=<?= $customerId ?>" class="btn btn-warning text-dark fw-bold btn-sm flex-fill d-inline-flex align-items-center justify-content-center gap-1.5 py-2 shadow-sm">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Nueva Cotización</span>
                     </a>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Info message if showing only current month -->
-    <?php if (!$hasDateFilters && !isset($_GET['all'])): ?>
-        <?php
-        $meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-        $mesActual = $meses[date('n', strtotime($dateFrom)) - 1];
-        $anioActual = date('Y', strtotime($dateFrom));
-        ?>
-        <div class="alert alert-info" style="margin-bottom: 16px; border-radius: 12px; font-size: 14px;">
-            <i class="fas fa-info-circle"></i> Mostrando cotizaciones de <strong><?= $mesActual ?> <?= $anioActual ?></strong>
-            <a href="?id=<?= $customerId ?>&all=1" class="btn btn-sm btn-outline-primary" style="float: right; font-size: 12px;">
-                <i class="fas fa-list"></i> Ver todas
-            </a>
-        </div>
-    <?php endif; ?>
-
-    <!-- Quotations Section -->
-    <?php if (!empty($quotations['quotations'])): ?>
-        <div class="section-title">
-            <i class="fas fa-file-invoice"></i> Cotizaciones (<?= count($quotations['quotations']) ?>)
-        </div>
-
-        <?php foreach ($quotations['quotations'] as $quotation): ?>
-            <?php
-            $statusClasses = [
-                'Draft' => 'status-draft',
-                'Sent' => 'status-sent',
-                'Accepted' => 'status-accepted',
-                'Rejected' => 'status-rejected',
-                'Invoiced' => 'status-invoiced'
-            ];
-            $statusNames = [
-                'Draft' => 'Borrador',
-                'Sent' => 'Enviada',
-                'Accepted' => 'Aceptada',
-                'Rejected' => 'Rechazada',
-                'Invoiced' => 'Facturada'
-            ];
-            $statusClass = $statusClasses[$quotation['status']] ?? 'status-draft';
-            $statusName = $statusNames[$quotation['status']] ?? $quotation['status'];
-            ?>
-            <div class="quotation-card">
-                <div class="quotation-header">
-                    <div class="quotation-number">
-                        #<?= htmlspecialchars($quotation['quotation_number']) ?>
-                    </div>
-                    <div class="quotation-status <?= $statusClass ?>">
-                        <?= $statusName ?>
-                    </div>
-                </div>
-
-                <div class="quotation-details">
-                    <i class="fas fa-calendar"></i> <?= date('d/m/Y', strtotime($quotation['quotation_date'])) ?>
-                    <?php if ($quotation['valid_until']): ?>
-                        • Válida hasta: <?= date('d/m/Y', strtotime($quotation['valid_until'])) ?>
+                    <a href="<?= BASE_URL ?>/customers/edit.php?id=<?= $customerId ?>" class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center justify-content-center gap-1.5 py-2 px-3">
+                        <i class="fas fa-pen-to-square"></i>
+                        <span>Editar</span>
+                    </a>
+                    <?php if ($isAdmin): ?>
+                        <button type="button" class="btn btn-outline-danger btn-sm d-inline-flex align-items-center justify-content-center gap-1.5 py-2 px-3"
+                                onclick="confirmDeleteThisCustomer()">
+                            <i class="fas fa-trash-can"></i>
+                            <span>Eliminar</span>
+                        </button>
                     <?php endif; ?>
                 </div>
+            </div>
+        </article>
 
-                <div class="quotation-amount">
-                    <?= $quotation['currency'] === 'USD' ? '$' : 'S/' ?>
-                    <?= number_format($quotation['total'], 2) ?>
-                </div>
-
-                <div class="quotation-actions">
-                    <a href="<?= BASE_URL ?>/quotations/view_mobile.php?id=<?= $quotation['id'] ?>"
-                       class="action-btn primary">
-                        <i class="fas fa-eye"></i> Ver Detalles
-                    </a>
-                    <a href="<?= BASE_URL ?>/quotations/pdf.php?id=<?= $quotation['id'] ?>"
-                       class="action-btn success" target="_blank">
-                        <i class="fas fa-file-pdf"></i> Ver PDF
-                    </a>
+        <!-- =========================================================
+             3. STATS STRIP (4 COMPACT TILES)
+             ========================================================= -->
+        <div class="row g-2 mb-3">
+            <div class="col-6 col-sm-3">
+                <div class="p-2.5 rounded-3 text-center" style="background-color: var(--color-panel); border: 1px solid var(--color-rule);">
+                    <span class="text-muted small d-block" style="font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em;">Cotizaciones</span>
+                    <span class="font-mono fw-bold fs-5 text-body"><?= number_format($totalQuotations) ?></span>
                 </div>
             </div>
-        <?php endforeach; ?>
+            <div class="col-6 col-sm-3">
+                <div class="p-2.5 rounded-3 text-center" style="background-color: var(--color-panel); border: 1px solid var(--color-rule);">
+                    <span class="text-muted small d-block" style="font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em;">Aceptadas</span>
+                    <span class="font-mono fw-bold fs-5 text-success"><?= number_format($acceptedCount) ?></span>
+                </div>
+            </div>
+            <div class="col-6 col-sm-3">
+                <div class="p-2.5 rounded-3 text-center" style="background-color: var(--color-panel); border: 1px solid var(--color-rule);">
+                    <span class="text-muted small d-block" style="font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em;">Pendientes</span>
+                    <span class="font-mono fw-bold fs-5 text-warning"><?= number_format($pendingCount) ?></span>
+                </div>
+            </div>
+            <div class="col-6 col-sm-3">
+                <div class="p-2.5 rounded-3 text-center" style="background-color: var(--color-panel); border: 1px solid var(--color-rule);">
+                    <span class="text-muted small d-block" style="font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em;">Total Aceptado</span>
+                    <span class="font-mono fw-bold fs-6 text-primary">
+                        <?= $totalAmountUSD > 0 ? '$ ' . number_format($totalAmountUSD, 2) : 'S/ ' . number_format($totalAmountPEN, 2) ?>
+                    </span>
+                </div>
+            </div>
+        </div>
 
-        <?php if ($quotations['total_pages'] > 1): ?>
-            <div style="text-align: center; padding: 16px; color: #6c757d; font-size: 14px;">
-                Mostrando <?= count($quotations['quotations']) ?> de <?= $quotations['total'] ?> cotizaciones
+        <!-- =========================================================
+             4. DATE FILTER ACCORDION
+             ========================================================= -->
+        <div class="card border-0 mb-3" style="background-color: var(--color-panel); border: 1px solid var(--color-rule) !important; border-radius: 10px;">
+            <div class="card-body p-2.5">
+                <div class="d-flex justify-content-between align-items-center">
+                    <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1.5 border-0 px-2 text-body"
+                            type="button" data-bs-toggle="collapse" data-bs-target="#dateFilterCollapse">
+                        <i class="fas fa-calendar-days text-warning"></i>
+                        <span class="fw-semibold small">Filtrar por período</span>
+                        <i class="fas fa-chevron-down ms-1 text-muted" style="font-size: 0.7rem;"></i>
+                    </button>
+                    <div>
+                        <?php if ($isAllPeriod): ?>
+                            <span class="badge bg-secondary bg-opacity-25 text-body small">Histórico completo</span>
+                        <?php elseif (!$hasDateFilters): ?>
+                            <span class="badge bg-secondary bg-opacity-25 text-body small"><?= date('M Y') ?></span>
+                        <?php else: ?>
+                            <a href="<?= buildCustomerViewQuery(['all' => null, 'date_from' => null, 'date_to' => null]) ?>" class="text-warning small text-decoration-none">
+                                <i class="fas fa-rotate-left me-1"></i>Mes actual
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <div class="collapse <?= $hasDateFilters ? 'show' : '' ?> pt-2 mt-2 border-top" id="dateFilterCollapse" style="border-color: var(--color-rule) !important;">
+                    <form method="GET" action="">
+                        <input type="hidden" name="id" value="<?= $customerId ?>">
+                        <div class="row g-2 mb-2">
+                            <div class="col-6">
+                                <label class="text-muted small d-block mb-1" style="font-size: 0.72rem;">Desde</label>
+                                <input type="date" class="form-control form-control-sm font-mono" name="date_from" value="<?= htmlspecialchars($dateFrom) ?>"
+                                       style="background-color: var(--color-canvas); border-color: var(--color-rule); color: var(--color-ink);">
+                            </div>
+                            <div class="col-6">
+                                <label class="text-muted small d-block mb-1" style="font-size: 0.72rem;">Hasta</label>
+                                <input type="date" class="form-control form-control-sm font-mono" name="date_to" value="<?= htmlspecialchars($dateTo) ?>"
+                                       style="background-color: var(--color-canvas); border-color: var(--color-rule); color: var(--color-ink);">
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-sm btn-primary flex-fill fw-semibold">
+                                <i class="fas fa-filter me-1"></i> Aplicar
+                            </button>
+                            <a href="?id=<?= $customerId ?>&all=1" class="btn btn-sm btn-outline-secondary flex-fill">
+                                <i class="fas fa-globe me-1"></i> Ver Todas
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- =========================================================
+             5. QUOTATIONS SECTION
+             ========================================================= -->
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h3 class="h6 fw-bold mb-0 text-body d-flex align-items-center gap-1.5" style="letter-spacing: -0.01em;">
+                <i class="fas fa-file-invoice text-warning"></i>
+                <span>Cotizaciones</span>
+                <span class="badge rounded-pill bg-secondary bg-opacity-25 ms-1"><?= count($quotations) ?></span>
+            </h3>
+            <a href="<?= BASE_URL ?>/quotations/create.php?customer_id=<?= $customerId ?>" class="text-warning small text-decoration-none fw-semibold">
+                <i class="fas fa-plus me-1"></i>Nueva
+            </a>
+        </div>
+
+        <?php if (!empty($quotations)): ?>
+            <?php foreach ($quotations as $q): ?>
+                <?php
+                    $qStatus = $q['status'] ?? 'Draft';
+                    $badgeClass = match ($qStatus) {
+                        'Draft'    => 'badge-status-draft',
+                        'Sent'     => 'badge-status-sent',
+                        'Accepted' => 'badge-status-accepted',
+                        'Rejected' => 'badge-status-rejected',
+                        'Invoiced' => 'badge-status-invoiced',
+                        default    => 'badge-status-draft'
+                    };
+                    $labelStatus = match ($qStatus) {
+                        'Draft'    => 'Borrador',
+                        'Sent'     => 'Enviada',
+                        'Accepted' => 'Aceptada',
+                        'Rejected' => 'Rechazada',
+                        'Invoiced' => 'Facturada',
+                        default    => $qStatus
+                    };
+                    $currencySymbol = ($q['currency'] === 'USD') ? '$' : 'S/';
+                ?>
+                <article class="quotation-card">
+                    <div class="p-3">
+                        <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                            <div>
+                                <span class="font-mono fw-bold text-body" style="font-size: 0.95rem;">
+                                    <?= htmlspecialchars($q['quotation_number']) ?>
+                                </span>
+                                <div class="text-muted small font-mono" style="font-size: 0.72rem;">
+                                    <i class="fas fa-calendar-day me-1"></i><?= date('d/m/Y', strtotime($q['quotation_date'])) ?>
+                                    <?php if (!empty($q['valid_until'])): ?>
+                                        &bull; Vence: <?= date('d/m/Y', strtotime($q['valid_until'])) ?>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="badge rounded-pill <?= $badgeClass ?> px-2 py-1 fw-semibold" style="font-size: 0.72rem;">
+                                    <?= $labelStatus ?>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-baseline pt-1">
+                            <span class="text-muted small" style="font-size: 0.76rem;">Monto Total</span>
+                            <span class="font-mono fw-bold fs-5 text-body">
+                                <?= $currencySymbol ?> <?= number_format((float)($q['total'] ?? 0), 2) ?>
+                            </span>
+                        </div>
+                    </div>
+
+                    <footer class="card-actions-grid">
+                        <a href="<?= BASE_URL ?>/quotations/view_mobile.php?id=<?= $q['id'] ?>" class="card-action-btn">
+                            <i class="fas fa-eye text-info"></i>
+                            <span>Ver Detalles</span>
+                        </a>
+                        <a href="<?= BASE_URL ?>/quotations/pdf.php?id=<?= $q['id'] ?>" class="card-action-btn" target="_blank" rel="noopener noreferrer">
+                            <i class="fas fa-file-pdf text-danger"></i>
+                            <span>Ver PDF</span>
+                        </a>
+                    </footer>
+                </article>
+            <?php endforeach; ?>
+
+        <?php else: ?>
+            <div class="text-center py-5 px-3 rounded-3 mt-2" style="background-color: var(--color-panel); border: 1px solid var(--color-rule);">
+                <i class="fas fa-file-circle-question fa-3x text-muted opacity-50 mb-3 d-block"></i>
+                <h6 class="fw-bold text-body mb-1">Sin cotizaciones en este período</h6>
+                <p class="text-muted small mb-3">
+                    <?php if ($hasDateFilters || !$isAllPeriod): ?>
+                        No hay cotizaciones para el rango de fechas seleccionado.
+                    <?php else: ?>
+                        Este cliente aún no registra cotizaciones en el sistema.
+                    <?php endif; ?>
+                </p>
+                <div class="d-flex justify-content-center gap-2">
+                    <?php if ($hasDateFilters || !$isAllPeriod): ?>
+                        <a href="?id=<?= $customerId ?>&all=1" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-globe me-1"></i> Ver Todas
+                        </a>
+                    <?php endif; ?>
+                    <a href="<?= BASE_URL ?>/quotations/create.php?customer_id=<?= $customerId ?>" class="btn btn-sm btn-warning text-dark fw-bold">
+                        <i class="fas fa-plus me-1"></i> Crear Cotización
+                    </a>
+                </div>
             </div>
         <?php endif; ?>
+    </main>
 
-    <?php else: ?>
-        <div class="section-title">
-            <i class="fas fa-file-invoice"></i> Cotizaciones
-        </div>
-        <div class="empty-state">
-            <i class="fas fa-file-invoice"></i>
-            <h3>Sin cotizaciones</h3>
-            <p>Este cliente aún no tiene cotizaciones registradas</p>
-        </div>
-    <?php endif; ?>
+    <!-- Universal Mobile Bottom Navigation Bar -->
+    <?php include __DIR__ . '/../../includes/mobile_bottom_nav.php'; ?>
 
-    <!-- Bottom Actions -->
-    <div class="bottom-actions">
-        <a href="<?= BASE_URL ?>/customers/edit.php?id=<?= $customer['id'] ?>"
-           class="action-btn primary">
-            <i class="fas fa-edit"></i>
-            <span>Editar</span>
-        </a>
-        <a href="<?= BASE_URL ?>/quotations/create_mobile.php?customer_id=<?= $customer['id'] ?>"
-           class="action-btn success">
-            <i class="fas fa-plus"></i>
-            <span>Cotizar</span>
-        </a>
-        <button onclick="deleteCustomer()" class="action-btn danger">
-            <i class="fas fa-trash"></i>
-            <span>Eliminar</span>
-        </button>
-    </div>
-
-    <!-- Bootstrap JS -->
+    <!-- Bootstrap 5.3 Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
     <script>
         const BASE_URL = '<?= BASE_URL ?>';
-        const customerId = <?= $customer['id'] ?>;
-        const totalQuotations = <?= $totalQuotations ?>;
+        const customerId = <?= $customerId ?>;
 
-        function deleteCustomer() {
-            let confirmMessage = '¿Está seguro de eliminar este cliente?';
-
-            if (totalQuotations > 0) {
-                confirmMessage += `\n\n⚠️ Este cliente tiene ${totalQuotations} cotización${totalQuotations > 1 ? 'es' : ''} asociada${totalQuotations > 1 ? 's' : ''} que también ${totalQuotations > 1 ? 'serán eliminadas' : 'será eliminada'}.`;
+        <?php if ($isAdmin): ?>
+        function confirmDeleteThisCustomer() {
+            if (!confirm('¿Está seguro de eliminar este cliente?\n\nNota: Solo se puede eliminar si no cuenta con cotizaciones asociadas.')) {
+                return;
             }
 
-            if (confirm(confirmMessage)) {
-                fetch(`${BASE_URL}/api/delete_customer.php`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ id: customerId })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('✓ Cliente eliminado exitosamente');
-                        window.location.href = `${BASE_URL}/customers/index_mobile.php`;
-                    } else {
-                        alert('❌ Error: ' + (data.message || 'No se pudo eliminar el cliente'));
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('❌ Error al eliminar el cliente');
-                });
-            }
+            const formData = new FormData();
+            formData.append('id', customerId);
+
+            fetch(`${BASE_URL}/customers/delete.php`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✓ Cliente eliminado exitosamente');
+                    window.location.href = `${BASE_URL}/customers/index_mobile.php`;
+                } else {
+                    alert('❌ Error: ' + (data.message || 'No se pudo eliminar el cliente'));
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('❌ Error de conexión al eliminar el cliente');
+            });
         }
+        <?php endif; ?>
     </script>
+    <script src="<?= BASE_URL ?>/assets/js/pwa.js"></script>
+    <script src="<?= BASE_URL ?>/assets/js/theme-pro.js?v=<?= @filemtime(APP_ROOT . "/public/assets/css/theme-pro.css") ?>"></script>
 </body>
 </html>

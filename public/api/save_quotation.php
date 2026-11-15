@@ -59,7 +59,7 @@ if (empty($data['items']) || !is_array($data['items'])) {
         // Solo procesar items que tengan al menos descripción
         if (!empty(trim($item['description']))) {
             // Si no tiene cantidad o precio, usar valores por defecto
-            $quantity = isset($item['quantity']) && $item['quantity'] !== '' ? (float)$item['quantity'] : 1;
+            $quantity = isset($item['quantity']) && $item['quantity'] !== '' ? max(1, (int)$item['quantity']) : 1;
             $unitPrice = isset($item['unit_price']) && $item['unit_price'] !== '' ? (float)$item['unit_price'] : 0;
 
             // product_id puede ser código COBOL (string) o ID local (int)
@@ -117,6 +117,44 @@ try {
 
     // IGV mode
     $igvMode = $data['price_includes_igv'] ?? 'included';
+
+    $existingQuotationId = !empty($data['quotation_id']) ? (int)$data['quotation_id'] : null;
+
+    if ($existingQuotationId) {
+        $existingQuote = $quotationRepo->getById($existingQuotationId, $companyId);
+        if (!$existingQuote) {
+            throw new Exception('Cotización no encontrada');
+        }
+        $totalsData = $quotationRepo->calculateTotals($validItems, (float)($data['global_discount_percentage'] ?? 0));
+        $updateData = [
+            'customer_id' => (int)$data['customer_id'],
+            'customer_reference' => $customerReference !== '' ? $customerReference : null,
+            'quotation_date' => $data['quotation_date'],
+            'valid_until' => $data['valid_until'] ?: null,
+            'currency' => $currency,
+            'payment_condition' => $paymentCondition,
+            'credit_days' => $creditDays,
+            'igv_mode' => $igvMode,
+            'subtotal' => $totalsData['subtotal'],
+            'global_discount_percentage' => (float)($data['global_discount_percentage'] ?? 0),
+            'global_discount_amount' => $totalsData['global_discount_amount'],
+            'total' => $totalsData['total'],
+            'notes' => $data['notes'] ?: null,
+            'terms_and_conditions' => $data['terms_and_conditions'] ?: null,
+            'items' => $totalsData['items']
+        ];
+        $updateSuccess = $quotationRepo->update($existingQuotationId, $companyId, $updateData);
+        if ($updateSuccess) {
+            echo json_encode([
+                'success' => true,
+                'message' => 'Cotización actualizada exitosamente',
+                'quotation_id' => $existingQuotationId
+            ]);
+            exit;
+        } else {
+            throw new Exception('Error al actualizar la cotización');
+        }
+    }
 
     $quotationId = $quotationRepo->create(
         $companyId,

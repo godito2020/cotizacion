@@ -482,5 +482,6 @@ $pageTitle = 'Seleccionar Almacén';
                 .catch(err => console.log('Error SW:', err));
         }
     </script>
+<script src="<?= BASE_URL ?>/assets/js/theme-pro.js?v=<?= @filemtime(APP_ROOT . "/public/assets/js/theme-pro.js") ?>"></script>
 </body>
 </html>

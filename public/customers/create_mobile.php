@@ -72,9 +72,22 @@ $pageTitle = 'Nuevo Cliente';
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0d6efd">
     <title><?= $pageTitle ?></title>
+    <script>
+        (function () {
+            var mode = 'system';
+            try {
+                var saved = localStorage.getItem('coti-theme');
+                if (saved === 'light' || saved === 'dark') mode = saved;
+            } catch (e) {}
+            var theme = mode === 'system'
+                ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                : mode;
+            document.documentElement.setAttribute('data-bs-theme', theme);
+        })();
+    </script>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -253,6 +266,7 @@ $pageTitle = 'Nuevo Cliente';
             margin-bottom: 12px;
         }
     </style>
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/theme-pro.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/theme-pro.css") ?>">
 </head>
 <body>
     <!-- Mobile Header -->
@@ -519,5 +533,9 @@ $pageTitle = 'Nuevo Cliente';
         }
     });
     </script>
+    <script src="<?= BASE_URL ?>/assets/js/theme-pro.js?v=<?= @filemtime(APP_ROOT . "/public/assets/js/theme-pro.js") ?>"></script>
+
+    <!-- Universal Mobile Bottom Navigation -->
+    <?php include __DIR__ . "/../../includes/mobile_bottom_nav.php"; ?>
 </body>
 </html>

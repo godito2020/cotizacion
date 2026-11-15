@@ -7,6 +7,17 @@ if (!$auth->isLoggedIn()) {
     $auth->redirect(BASE_URL . '/login.php');
 }
 
+// Redirect to mobile version if on mobile device
+if (!isset($_GET['desktop'])) {
+    $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+    $isMobile = preg_match('/(android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini)/i', $userAgent);
+    if ($isMobile) {
+        $queryString = $_SERVER['QUERY_STRING'] ?? '';
+        header('Location: ' . BASE_URL . '/customers/edit_mobile.php' . ($queryString ? '?' . $queryString : ''));
+        exit;
+    }
+}
+
 $user = $auth->getUser();
 $companyId = $auth->getCompanyId();
 
@@ -122,82 +133,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $pageTitle = 'Editar Cliente';
+$activePage = 'customers';
+require_once __DIR__ . '/../../includes/app_header.php';
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $pageTitle ?></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Tema profesional COTI (no-flash + marca) -->
-    <script>(function(){var t=localStorage.getItem('coti-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-bs-theme',t);})();</script>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/theme-pro.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/theme-pro.css") ?>">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/style.css") ?>">
-    <script>
-        // Apply theme immediately to prevent flash
-        (function() {
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            if (savedTheme === 'dark') {
-                document.documentElement.setAttribute('data-theme', 'dark');
-            }
-        })();
-    </script>
 
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg bg-primary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="<?= BASE_URL ?>/dashboard_simple.php">
-                <i class="fas fa-chart-line"></i> Sistema de Cotizaciones
-            </a>
-            <div class="navbar-nav ms-auto">
-                <button class="theme-toggle me-3" id="themeToggle" title="Cambiar tema">
-                    <i class="fas fa-moon" id="themeIcon"></i>
-                </button>
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user"></i> <?= htmlspecialchars($user['username']) ?>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/dashboard_simple.php">Dashboard</a></li>
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/customers/index.php">Clientes</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/logout.php">Cerrar Sesión</a></li>
-                    </ul>
-                </div>
+<div class="content-body" style="padding: 1.25rem 1.5rem; max-width: 1100px; margin: 0 auto;">
+    <!-- Breadcrumb & Top Bar -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4 pb-2 border-bottom">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <a href="<?= BASE_URL ?>/customers/index.php" class="btn btn-sm btn-outline-secondary py-0.5 px-2">
+                    <i class="fas fa-arrow-left me-1"></i> Clientes
+                </a>
+                <span class="text-muted small">/ Editar</span>
             </div>
+            <h1 class="h4 fw-bold mb-0 text-body" style="font-family: var(--font-display, 'Satoshi', sans-serif);">
+                <?= htmlspecialchars($formData['name'] ?? 'Editar Cliente') ?>
+            </h1>
         </div>
-    </nav>
+        <div class="d-flex align-items-center gap-2">
+            <a href="<?= BASE_URL ?>/customers/view.php?id=<?= $customerId ?>" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1.5">
+                <i class="fas fa-eye text-info"></i> <span>Ver Perfil</span>
+            </a>
+            <a href="<?= BASE_URL ?>/customers/index.php" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-list me-1"></i> Directorio
+            </a>
+        </div>
+    </div>
 
-    <main class="container-fluid py-4">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h1><i class="fas fa-user-edit"></i> <?= $pageTitle ?></h1>
-                    <div>
-                        <a href="<?= BASE_URL ?>/customers/view.php?id=<?= $customerId ?>" class="btn btn-outline-info me-2">
-                            <i class="fas fa-eye"></i> Ver Cliente
-                        </a>
-                        <a href="<?= BASE_URL ?>/customers/index.php" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left"></i> Volver
-                        </a>
-                    </div>
-                </div>
+    <?php if (!empty($errors['general'])): ?>
+        <div class="alert alert-danger d-flex align-items-center gap-2 py-2 px-3 mb-3 rounded-3" style="font-size: 0.88rem;">
+            <i class="fas fa-triangle-exclamation"></i>
+            <span><?= htmlspecialchars($errors['general']) ?></span>
+        </div>
+    <?php endif; ?>
 
-                <?php if (!empty($errors['general'])): ?>
-                    <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-circle"></i> <?= htmlspecialchars($errors['general']) ?>
-                    </div>
-                <?php endif; ?>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Información del Cliente</h5>
-                    </div>
-                    <div class="card-body">
-                        <form method="POST" class="customer-form">
+    <div class="card border-0 shadow-sm mb-4" style="background-color: var(--color-panel); border: 1px solid var(--color-rule) !important; border-radius: 12px;">
+        <div class="card-header bg-body-tertiary border-bottom py-2.5 px-3 d-flex align-items-center justify-content-between">
+            <h5 class="h6 fw-bold mb-0 text-body d-flex align-items-center gap-2">
+                <i class="fas fa-user-pen text-warning"></i>
+                <span>Información del Cliente</span>
+            </h5>
+            <span class="text-muted small font-mono">#<?= $customerId ?></span>
+        </div>
+        <div class="card-body p-3 p-md-4">
+<form method="POST" class="customer-form">
                             <div class="row">
                                 <!-- Lookup Section -->
                                 <div class="col-12 mb-4">
@@ -345,16 +325,14 @@ $pageTitle = 'Editar Cliente';
                                 <a href="<?= BASE_URL ?>/customers/view.php?id=<?= $customerId ?>" class="btn btn-secondary">
                                     <i class="fas fa-times"></i> Cancelar
                                 </a>
-                                <button type="submit" class="btn btn-success">
+                                <button type="submit" class="btn btn-warning text-dark fw-bold shadow-sm">
                                     <i class="fas fa-save"></i> Actualizar Cliente
                                 </button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            </div>
         </div>
-    </main>
+    </div>
+</div>
 
     <!-- JSON Preview Modal -->
     <div class="modal fade" id="jsonPreviewModal" tabindex="-1" aria-labelledby="jsonPreviewModalLabel" aria-hidden="true">
@@ -394,9 +372,7 @@ $pageTitle = 'Editar Cliente';
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="<?= BASE_URL ?>/assets/js/main.js"></script>
-    <script src="<?= BASE_URL ?>/assets/js/theme-pro.js"></script>
+    
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -755,5 +731,6 @@ $pageTitle = 'Editar Cliente';
         });
     });
     </script>
-</body>
-</html>
+<?php
+require_once __DIR__ . '/../../includes/app_footer.php';
+?>

@@ -89,23 +89,73 @@ $pageTitle = 'Nueva Cotización (Móvil)';
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0d6efd">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#09090B">
     <title><?= $pageTitle ?></title>
+    <script>
+        (function () {
+            var mode = 'system';
+            try {
+                var saved = localStorage.getItem('coti-theme');
+                if (saved === 'light' || saved === 'dark') mode = saved;
+            } catch (e) {}
+            var theme = mode === 'system'
+                ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                : mode;
+            document.documentElement.setAttribute('data-bs-theme', theme);
+        })();
+    </script>
 
     <!-- Bootstrap CSS -->
+    
+    <!-- Typography: Satoshi, DM Sans & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@700,900&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         :root {
-            --primary-color: #0d6efd;
-            --danger-color: #dc3545;
-            --success-color: #198754;
-            --warning-color: #ffc107;
-            --gray-100: #f8f9fa;
-            --gray-200: #e9ecef;
+            --color-canvas: #09090B;
+            --color-panel: #18181B;
+            --color-panel-card: #202024;
+            --color-rule: #27272A;
+            --color-rule-strong: #3F3F46;
+            --color-ink: #FAFAFA;
+            --color-ink-muted: #A1A1AA;
+            --color-ink-subtle: #71717A;
+            --color-amber: #F59E0B;
+            --color-amber-dim: rgba(245, 158, 11, 0.12);
+            --primary-color: #F59E0B;
+            --danger-color: #EF4444;
+            --success-color: #10B981;
+            --warning-color: #F59E0B;
+            --info-color: #3B82F6;
+            --gray-100: #18181B;
+            --gray-200: #27272A;
+        }
+
+        [data-bs-theme="light"] {
+            --color-canvas: #F4F4F5;
+            --color-panel: #FFFFFF;
+            --color-panel-card: #FAFAFA;
+            --color-rule: #E4E4E7;
+            --color-rule-strong: #D4D4D8;
+            --color-ink: #09090B;
+            --color-ink-muted: #71717A;
+            --color-ink-subtle: #A1A1AA;
+            --color-amber: #D97706;
+            --color-amber-dim: rgba(217, 119, 6, 0.1);
+            --primary-color: #D97706;
+            --danger-color: #DC2626;
+            --success-color: #16A34A;
+            --warning-color: #D97706;
+            --info-color: #2563EB;
+            --gray-100: #F4F4F5;
+            --gray-200: #E4E4E7;
         }
 
         * {
@@ -114,90 +164,135 @@ $pageTitle = 'Nueva Cotización (Móvil)';
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: #cfcfcf;
-            padding-bottom: 80px;
-            font-size: 16px;
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--color-canvas) !important;
+            color: var(--color-ink) !important;
+            padding-bottom: calc(140px + env(safe-area-inset-bottom, 0px));
+            font-size: 15px;
             overscroll-behavior: contain;
             margin: 0;
         }
 
-        .container-mobile {
-            padding: 16px;
-            background: #ebebeb;
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace !important;
         }
 
-        /* Mobile Header */
+        .container-mobile {
+            padding: 14px;
+            background-color: var(--color-canvas);
+        }
+
+        /* Modern Sticky Header */
         .mobile-header {
             position: sticky;
             top: 0;
-            z-index: 1000;
-            background: linear-gradient(135deg, var(--primary-color) 0%, #0b5ed7 100%);
-            color: white;
-            padding: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1020;
+            background-color: var(--color-panel) !important;
+            border-bottom: 1px solid var(--color-rule) !important;
+            color: var(--color-ink) !important;
+            padding: 12px 16px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
 
         .mobile-header h1 {
-            font-size: 20px;
+            font-size: 1.05rem;
             margin: 0;
-            font-weight: 600;
+            font-weight: 700;
+            color: var(--color-ink) !important;
+            letter-spacing: -0.01em;
         }
 
         .mobile-header .back-btn {
-            color: white;
+            color: var(--color-ink) !important;
             text-decoration: none;
-            font-size: 24px;
-            margin-right: 15px;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid var(--color-rule);
+            background-color: var(--color-panel-card);
+            margin-right: 12px;
+            transition: all 0.15s ease;
+        }
+        .mobile-header .back-btn:active {
+            opacity: 0.7;
+            transform: scale(0.95);
         }
 
         /* Form Sections */
         .form-section {
-            background: white;
-            margin: 10px;
-            padding: 15px;
+            background-color: var(--color-panel) !important;
+            border: 1px solid var(--color-rule) !important;
+            color: var(--color-ink) !important;
+            margin: 12px 10px;
+            padding: 16px;
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
 
         .section-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 15px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            font-family: var(--font-display, 'Satoshi', sans-serif);
+            color: var(--color-ink) !important;
+            margin-bottom: 14px;
             padding-bottom: 10px;
-            border-bottom: 2px solid var(--gray-200);
+            border-bottom: 1px solid var(--color-rule) !important;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title i {
+            color: var(--color-amber) !important;
         }
 
         /* Form Controls */
         .form-label {
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 0.8rem !important;
+            font-weight: 600;
             margin-bottom: 6px;
-            color: #495057;
+            color: var(--color-ink-muted) !important;
+            display: block;
         }
 
         .form-control, .form-select {
-            font-size: 16px !important; /* Prevent zoom on iOS */
-            padding: 12px;
+            font-size: 15px !important;
+            padding: 10px 12px;
             border-radius: 8px;
-            border: 1px solid var(--gray-200);
-            min-height: 48px; /* Touch-friendly */
+            border: 1px solid var(--color-rule) !important;
+            background-color: var(--color-canvas) !important;
+            color: var(--color-ink) !important;
+            min-height: 46px;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
         }
 
         .form-control:focus, .form-select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+            border-color: var(--color-amber) !important;
+            box-shadow: 0 0 0 3px var(--color-amber-dim) !important;
+            background-color: var(--color-canvas) !important;
+            color: var(--color-ink) !important;
+        }
+
+        .form-control::placeholder, textarea.form-control::placeholder {
+            color: var(--color-ink-subtle) !important;
+            opacity: 0.7;
         }
 
         /* Product Item Card */
         .product-item {
-            background: white;
+            background-color: var(--color-panel) !important;
+            border: 1px solid var(--color-rule) !important;
+            border-left: 4px solid var(--color-amber) !important;
+            color: var(--color-ink) !important;
             margin: 10px;
-            padding: 15px;
+            padding: 16px;
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
 
         .product-item-header {
@@ -206,13 +301,14 @@ $pageTitle = 'Nueva Cotización (Móvil)';
             align-items: center;
             margin-bottom: 12px;
             padding-bottom: 10px;
-            border-bottom: 1px solid var(--gray-200);
+            border-bottom: 1px solid var(--color-rule) !important;
         }
 
         .product-number {
-            font-weight: 600;
-            color: var(--primary-color);
-            font-size: 16px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--color-amber) !important;
+            font-size: 0.95rem;
         }
 
         .product-item .mb-3 {
@@ -221,16 +317,16 @@ $pageTitle = 'Nueva Cotización (Móvil)';
 
         /* Buttons */
         .btn {
-            font-size: 16px;
-            padding: 12px 20px;
+            font-size: 15px;
+            padding: 10px 18px;
             border-radius: 8px;
-            font-weight: 500;
-            min-height: 48px;
+            font-weight: 600;
+            min-height: 46px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            transition: all 0.2s;
+            transition: all 0.15s ease;
         }
 
         .btn:active {
@@ -238,13 +334,22 @@ $pageTitle = 'Nueva Cotización (Móvil)';
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #0b5ed7 100%);
-            border: none;
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%) !important;
+            border: none !important;
+            color: #09090B !important;
+            font-weight: 700;
+        }
+
+        .btn-warning {
+            background-color: var(--color-amber) !important;
+            border-color: var(--color-amber) !important;
+            color: #09090B !important;
+            font-weight: 700;
         }
 
         .btn-danger {
-            padding: 8px 16px;
-            min-height: 40px;
+            padding: 8px 14px;
+            min-height: 38px;
         }
 
         .btn-block-mobile {
@@ -255,47 +360,52 @@ $pageTitle = 'Nueva Cotización (Móvil)';
         /* Floating Action Buttons */
         .fab-container {
             position: fixed;
-            bottom: 90px;
+            bottom: 95px;
             right: 20px;
-            z-index: 999;
+            z-index: 1030;
         }
 
         .fab {
             width: 56px;
             height: 56px;
             border-radius: 50%;
-            background: var(--success-color);
-            color: white;
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%) !important;
+            color: #09090B !important;
             border: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            font-size: 24px;
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4);
+            font-size: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 12px;
-            transition: all 0.3s;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
 
         .fab:active {
-            transform: scale(0.9);
+            transform: scale(0.92);
+            color: #09090B;
         }
 
         .fab.primary {
-            background: var(--primary-color);
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%) !important;
         }
 
-        /* Bottom Fixed Bar */
+        /* Bottom Fixed Action Bar */
         .bottom-bar {
             position: fixed;
-            bottom: 0;
+            bottom: calc(60px + env(safe-area-inset-bottom, 0px));
             left: 0;
             right: 0;
-            background: white;
-            padding: 12px 15px;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-            z-index: 998;
+            background-color: var(--color-panel) !important;
+            border-top: 1px solid var(--color-rule) !important;
+            color: var(--color-ink) !important;
+            padding: 10px 14px;
+            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.35);
+            z-index: 1025;
             display: flex;
             gap: 10px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
 
         .bottom-bar .btn {
@@ -304,67 +414,112 @@ $pageTitle = 'Nueva Cotización (Móvil)';
 
         /* Totals Display */
         .totals-card {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            background-color: var(--color-panel) !important;
+            border: 1px solid var(--color-rule) !important;
+            color: var(--color-ink) !important;
             border-radius: 12px;
-            padding: 15px;
+            padding: 16px;
             margin: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
 
         .total-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 0;
-            font-size: 15px;
+            padding: 6px 0;
+            font-size: 0.88rem;
+            color: var(--color-ink-muted);
+        }
+
+        .total-row span:last-child {
+            color: var(--color-ink);
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
         }
 
         .total-row.grand-total {
-            font-size: 20px;
+            font-size: 1.05rem;
             font-weight: 700;
-            color: var(--primary-color);
-            border-top: 2px solid var(--gray-200);
+            color: var(--color-ink) !important;
+            border-top: 1px solid var(--color-rule) !important;
             padding-top: 12px;
             margin-top: 8px;
         }
 
-        /* Customer Modal */
+        .total-row.grand-total span:last-child {
+            color: var(--color-amber) !important;
+            font-size: 1.35rem;
+            font-weight: 800;
+        }
+
+        /* Modals */
         .modal-content {
             border-radius: 12px;
+            background-color: var(--color-panel) !important;
+            border: 1px solid var(--color-rule) !important;
+            color: var(--color-ink) !important;
         }
 
         .modal-header {
-            background: var(--primary-color);
-            color: white;
+            background-color: var(--color-panel-card) !important;
+            border-bottom: 1px solid var(--color-rule) !important;
+            color: var(--color-ink) !important;
             border-radius: 12px 12px 0 0;
+        }
+
+        .modal-header .modal-title {
+            color: var(--color-ink) !important;
+            font-weight: 700;
+        }
+
+        .modal-body {
+            background-color: var(--color-panel) !important;
+            color: var(--color-ink) !important;
+        }
+
+        .modal-footer {
+            background-color: var(--color-panel-card) !important;
+            border-top: 1px solid var(--color-rule) !important;
+            color: var(--color-ink) !important;
         }
 
         /* Empty State */
         .empty-state {
             text-align: center;
             padding: 40px 20px;
-            color: #6c757d;
+            color: var(--color-ink-muted);
         }
 
         .empty-state i {
             font-size: 48px;
             margin-bottom: 15px;
-            opacity: 0.5;
+            opacity: 0.4;
+            color: var(--color-amber);
         }
 
-        /* Product Search */
+        /* Product Search Results in Modal */
         .product-search-result {
             padding: 12px;
-            border-bottom: 1px solid var(--gray-200);
+            border-bottom: 1px solid var(--color-rule);
+            background-color: var(--color-panel);
+            color: var(--color-ink);
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background 0.15s ease;
         }
 
+        .product-search-result:hover,
         .product-search-result:active {
-            background: var(--gray-100);
+            background-color: var(--color-panel-card) !important;
         }
 
         .product-search-result:last-child {
             border-bottom: none;
+        }
+
+        .product-search-result strong {
+            color: var(--color-amber);
+            font-family: 'JetBrains Mono', monospace;
         }
 
         /* Customer Search Autocomplete */
@@ -377,15 +532,15 @@ $pageTitle = 'Nueva Cotización (Móvil)';
             top: 100%;
             left: 0;
             right: 0;
-            background: white;
-            border: 1px solid var(--gray-200);
+            background-color: var(--color-panel) !important;
+            border: 1px solid var(--color-rule-strong) !important;
             border-radius: 8px;
             max-height: 300px;
             overflow-y: auto;
-            z-index: 1000;
+            z-index: 1050;
             display: none;
             margin-top: 4px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
         }
 
         .customer-search-results.active {
@@ -394,9 +549,11 @@ $pageTitle = 'Nueva Cotización (Móvil)';
 
         .customer-search-item {
             padding: 12px 16px;
-            border-bottom: 1px solid var(--gray-200);
+            border-bottom: 1px solid var(--color-rule);
+            background-color: var(--color-panel);
+            color: var(--color-ink);
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background 0.15s ease;
         }
 
         .customer-search-item:last-child {
@@ -405,35 +562,37 @@ $pageTitle = 'Nueva Cotización (Móvil)';
 
         .customer-search-item:active,
         .customer-search-item:hover {
-            background: var(--gray-100);
+            background-color: var(--color-panel-card) !important;
         }
 
         .customer-search-item .customer-name {
-            font-weight: 600;
+            font-weight: 700;
             font-size: 15px;
-            color: #212529;
+            color: var(--color-ink) !important;
             margin-bottom: 2px;
         }
 
         .customer-search-item .customer-details {
             font-size: 13px;
-            color: #6c757d;
+            color: var(--color-ink-muted) !important;
         }
 
         .no-results {
             padding: 20px;
             text-align: center;
-            color: #6c757d;
+            color: var(--color-ink-muted);
             font-size: 14px;
         }
 
+        /* Selected Customer */
         .selected-customer {
             display: none;
-            background: var(--gray-100);
-            border: 1px solid var(--primary-color);
+            background-color: var(--color-panel-card) !important;
+            border: 1px solid var(--color-amber) !important;
             border-radius: 8px;
-            padding: 12px;
+            padding: 12px 14px;
             margin-bottom: 12px;
+            color: var(--color-ink);
         }
 
         .selected-customer.active {
@@ -441,26 +600,29 @@ $pageTitle = 'Nueva Cotización (Móvil)';
         }
 
         .selected-customer .customer-name {
-            font-weight: 600;
+            font-weight: 700;
             font-size: 16px;
-            color: #212529;
+            color: var(--color-ink) !important;
             margin-bottom: 4px;
         }
 
         .selected-customer .customer-details {
-            font-size: 14px;
-            color: #6c757d;
+            font-size: 13px;
+            color: var(--color-ink-muted) !important;
         }
 
         .change-customer-btn {
             float: right;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         /* Input Group */
         .input-group-text {
-            min-width: 48px;
+            min-width: 46px;
             justify-content: center;
+            background-color: var(--color-panel-card) !important;
+            border-color: var(--color-rule) !important;
+            color: var(--color-ink-muted) !important;
         }
 
         /* Loading Overlay */
@@ -470,7 +632,7 @@ $pageTitle = 'Nueva Cotización (Móvil)';
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.7);
             display: none;
             align-items: center;
             justify-content: center;
@@ -482,25 +644,29 @@ $pageTitle = 'Nueva Cotización (Móvil)';
         }
 
         .loading-spinner {
-            background: white;
+            background-color: var(--color-panel) !important;
+            border: 1px solid var(--color-rule) !important;
+            color: var(--color-ink) !important;
             padding: 30px;
             border-radius: 12px;
             text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
         }
 
         /* Responsive adjustments */
         @media (max-width: 576px) {
             .form-section {
-                margin: 8px;
-                padding: 12px;
+                margin: 10px 8px;
+                padding: 14px;
             }
 
             .product-item {
-                margin: 8px;
-                padding: 12px;
+                margin: 10px 8px;
+                padding: 14px;
             }
         }
     </style>
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/theme-pro.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/theme-pro.css") ?>">
 </head>
 <body>
     <!-- Loading Overlay -->
@@ -515,11 +681,25 @@ $pageTitle = 'Nueva Cotización (Móvil)';
 
     <!-- Mobile Header -->
     <div class="mobile-header">
-        <div class="d-flex align-items-center">
-            <a href="<?= BASE_URL ?>/quotations/index.php" class="back-btn">
-                <i class="fas fa-arrow-left"></i>
-            </a>
-            <h1>Nueva Cotización</h1>
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <a href="<?= BASE_URL ?>/quotations/index_mobile.php" class="back-btn" title="Volver a Cotizaciones">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div>
+                    <h1 class="mb-0">Nueva Cotización</h1>
+                    <span class="text-muted small" style="font-size: 0.68rem;">Móvil &bull; <?= htmlspecialchars($user['username'] ?? '') ?></span>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-1">
+                <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2 mobile-theme-toggle"
+                        data-theme-toggle title="Cambiar tema (Sistema/Claro/Oscuro)">
+                    <i class="fas fa-circle-half-stroke"></i>
+                </button>
+                <a href="<?= BASE_URL ?>/quotations/create.php?desktop=1" class="btn btn-sm btn-outline-secondary py-1 px-2" title="Vista Escritorio">
+                    <i class="fas fa-desktop"></i>
+                </a>
+            </div>
         </div>
     </div>
 
@@ -709,7 +889,7 @@ $pageTitle = 'Nueva Cotización (Móvil)';
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Nuevo Cliente</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="newCustomerForm">
@@ -763,7 +943,7 @@ $pageTitle = 'Nueva Cotización (Móvil)';
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="productModalTitle">Nuevo Item</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="productForm">
@@ -785,7 +965,7 @@ $pageTitle = 'Nueva Cotización (Móvil)';
                         <div class="row">
                             <div class="col-6 mb-3">
                                 <label class="form-label">Cantidad *</label>
-                                <input type="number" class="form-control" id="product_quantity" value="1" step="0.01" min="0.01" required>
+                                <input type="number" class="form-control" id="product_quantity" value="1" step="1" min="1" required>
                             </div>
                             <div class="col-6 mb-3">
                                 <label class="form-label">Precio Unit. *</label>
@@ -799,7 +979,7 @@ $pageTitle = 'Nueva Cotización (Móvil)';
                             </div>
                             <div class="col-6 mb-3">
                                 <label class="form-label">Precio Final</label>
-                                <input type="text" class="form-control bg-light" id="product_final_price" readonly style="font-weight: 600; color: #0d6efd;">
+                                <input type="text" class="form-control font-mono" id="product_final_price" readonly style="font-weight: 700; color: var(--color-amber); background-color: var(--color-canvas); border-color: var(--color-rule);">
                             </div>
                         </div>
                         <div class="mb-3" id="product_image_container" style="display: none;">
@@ -1368,7 +1548,7 @@ $pageTitle = 'Nueva Cotización (Móvil)';
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div>
                                         <strong>${p.codigo || p.code}</strong>${imageButton}${fichaButton}<br>
-                                        <span class="text-dark">${p.descripcion || p.name}</span><br>
+                                        <span class="text-body fw-semibold">${p.descripcion || p.name}</span><br>
                                         <small class="text-primary fw-bold">$ ${parseFloat(p.precio || p.regular_price).toFixed(2)}</small>
                                         ${warehouseInfo}
                                     </div>
@@ -2053,9 +2233,9 @@ $pageTitle = 'Nueva Cotización (Móvil)';
     <div class="modal fade" id="cotiRapiModal" tabindex="-1">
         <div class="modal-dialog modal-fullscreen-sm-down modal-lg">
             <div class="modal-content">
-                <div class="modal-header bg-warning">
-                    <h5 class="modal-title">
-                        <i class="fas fa-bolt"></i> CotiRapi - Cotización Rápida
+                <div class="modal-header">
+                    <h5 class="modal-title text-warning">
+                        <i class="fas fa-bolt text-warning"></i> CotiRapi - Cotización Rápida
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
@@ -2080,5 +2260,9 @@ $pageTitle = 'Nueva Cotización (Móvil)';
             </div>
         </div>
     </div>
+    <script src="<?= BASE_URL ?>/assets/js/theme-pro.js?v=<?= @filemtime(APP_ROOT . "/public/assets/js/theme-pro.js") ?>"></script>
+
+    <!-- Universal Mobile Bottom Navigation -->
+    <?php include __DIR__ . "/../../includes/mobile_bottom_nav.php"; ?>
 </body>
 </html>

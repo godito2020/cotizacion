@@ -697,13 +697,22 @@ try {
     // ── Output ────────────────────────────────────────────────────────────
     $filename = 'Cotizacion_' . $quotation['quotation_number'] . '.pdf';
 
-    if (!empty($GLOBALS['_PDF_RETURN_AS_STRING'])) {
-        // Called from email sender — return PDF binary via echo into caller's buffer
+    $isPrint = !empty($_GET['print']) || (isset($_GET['action']) && $_GET['action'] === 'print');
+    $isDownload = !empty($_GET['download']) || (isset($_GET['action']) && $_GET['action'] === 'download');
+
+    if ($isPrint) {
+        // Auto-trigger browser print dialog for the official PDF document
+        $pdf->IncludeJS("print(true);");
+    }
+
+    if (!empty($GLOBALS['_PDF_RETURN_AS_STRING']) || $isPublicAccess) {
+        // Called from email sender or public viewer — return PDF binary via echo into caller's buffer
         echo $pdf->Output('', 'S');
     } else {
-        // Called directly — discard GD/libpng warnings then send download
+        // Called directly — discard GD/libpng warnings then send download or inline view for printing
         while (ob_get_level()) ob_end_clean();
-        $pdf->Output($filename, 'D');
+        $dest = $isDownload ? 'D' : 'I';
+        $pdf->Output($filename, $dest);
     }
 
 } catch (Exception $e) {

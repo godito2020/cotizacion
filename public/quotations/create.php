@@ -110,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Solo procesar items que tengan al menos descripción
             if (!empty(trim($item['description']))) {
                 // Si no tiene cantidad o precio, usar valores por defecto
-                $quantity = isset($item['quantity']) && $item['quantity'] !== '' ? (float)$item['quantity'] : 1;
+                $quantity = isset($item['quantity']) && $item['quantity'] !== '' ? max(1, (int)$item['quantity']) : 1;
                 $unitPrice = isset($item['unit_price']) && $item['unit_price'] !== '' ? (float)$item['unit_price'] : 0;
 
                 // product_id puede ser código COBOL (string) o ID local (int)
@@ -184,496 +184,454 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $pageTitle = 'Nueva Cotización';
+$activePage = 'new_quotation';
+require_once __DIR__ . '/../../includes/app_header.php';
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $pageTitle ?></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Tema profesional COTI (no-flash + marca) -->
-    <script>(function(){var t=localStorage.getItem('coti-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-bs-theme',t);})();</script>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/theme-pro.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/theme-pro.css") ?>">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/style.css") ?>">
 
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg bg-primary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="<?= BASE_URL ?>/dashboard_simple.php">
-                <i class="fas fa-chart-line"></i> Sistema de Cotizaciones
-            </a>
-            <div class="navbar-nav ms-auto">
-                <button class="theme-toggle me-3" id="themeToggle" title="Cambiar tema">
-                    <i class="fas fa-moon" id="themeIcon"></i>
-                </button>
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user"></i> <?= htmlspecialchars($user['username']) ?>
+        <style>
+        /* Superpuesto Customer Dropdown - Floating Menu */
+        #customer_dropdown {
+            position: relative !important;
+            z-index: 1050;
+        }
+        #customer_dropdown_menu {
+            position: absolute !important;
+            top: 100% !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            z-index: 1060 !important;
+            max-height: 340px;
+            overflow-y: auto !important;
+            background-color: var(--color-panel, #18181B) !important;
+            border: 1px solid var(--color-rule-strong, #3F3F46) !important;
+            border-radius: var(--radius-action, 8px) !important;
+            box-shadow: 0 18px 42px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--color-rule) !important;
+            margin-top: 6px;
+            padding: 4px !important;
+        }
+        #customer_dropdown_menu::-webkit-scrollbar {
+            width: 6px;
+        }
+        #customer_dropdown_menu::-webkit-scrollbar-thumb {
+            background-color: var(--color-rule-strong, #3F3F46);
+            border-radius: 4px;
+        }
+        #customer_dropdown_menu .customer-item {
+            display: block !important;
+            white-space: normal !important;
+            text-decoration: none !important;
+            padding: 10px 14px !important;
+            border-radius: var(--radius-action, 6px);
+            margin-bottom: 2px;
+            border-bottom: 1px solid var(--color-rule-subtle, rgba(255,255,255,0.06));
+            color: var(--color-ink) !important;
+            transition: background-color 0.15s ease, color 0.15s ease;
+            cursor: pointer;
+        }
+        #customer_dropdown_menu .customer-item strong {
+            color: var(--color-ink) !important;
+            font-size: 13.5px;
+            display: block;
+        }
+        #customer_dropdown_menu .customer-item small {
+            font-size: 12px;
+        }
+        #customer_dropdown_menu .customer-item:hover,
+        #customer_dropdown_menu .customer-item:focus {
+            background-color: var(--color-action-subtle, rgba(245, 158, 11, 0.14)) !important;
+            color: var(--color-action) !important;
+        }
+        #customer_dropdown_menu .customer-item:hover strong {
+            color: var(--color-action) !important;
+        }
+        .card-customer-container {
+            overflow: visible !important;
+            position: relative;
+            z-index: 1040;
+        }
+        .card-customer-container .card-body {
+            overflow: visible !important;
+            position: relative;
+        }
+        </style>
+
+        <div class="quotation-builder-container mx-auto" style="max-width: 1100px;">
+            <!-- Master Builder Header / Action Bar -->
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 pb-3 border-bottom">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="live-pulse-dot" title="Editor en tiempo real"></span>
+                        <h1 class="h3 mb-0 fw-bold" style="font-family: var(--font-display);">Nueva Cotización</h1>
+                        <span class="badge bg-secondary-subtle text-secondary border">Borrador</span>
+                    </div>
+                    <p class="text-muted small mb-0">
+                        <i class="fas fa-building text-warning me-1"></i><strong><?= htmlspecialchars($company['name'] ?? 'Empresa') ?></strong>
+                        · RUC: <?= htmlspecialchars($company['tax_id'] ?? 'N/A') ?>
+                        · TC: <span class="badge bg-light text-dark border">USD 1 = S/ <?= number_format($exchangeRate, 3) ?></span>
+                    </p>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="<?= BASE_URL ?>/quotations/index.php" class="btn btn-outline-secondary btn-sm px-3">
+                        <i class="fas fa-arrow-left me-1"></i> Volver
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/dashboard_simple.php">Dashboard</a></li>
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/quotations/index.php">Cotizaciones</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/logout.php">Cerrar Sesión</a></li>
-                    </ul>
+                    <button type="submit" form="quotationForm" class="btn btn-primary btn-sm px-3 shadow-sm fw-bold">
+                        <i class="fas fa-save me-1"></i> Guardar Cotización
+                    </button>
                 </div>
             </div>
-        </div>
-    </nav>
 
-    <main class="container-fluid py-4">
-        <div class="row justify-content-center">
-            <div class="col-xl-10">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <a href="<?= BASE_URL ?>/dashboard_simple.php" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left"></i> Volver
-                    </a>
-                    <a href="<?= BASE_URL ?>/quotations/index.php" class="btn btn-outline-primary">
-                        <i class="fas fa-list"></i> Ver Cotizaciones
-                    </a>
+            <?php if (!empty($errors['general'])): ?>
+                <div class="alert alert-danger alert-dismissible fade show mb-4">
+                    <i class="fas fa-exclamation-circle me-2"></i><?= htmlspecialchars($errors['general']) ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
+            <?php endif; ?>
 
-                <?php if (!empty($errors['general'])): ?>
-                    <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-circle"></i> <?= htmlspecialchars($errors['general']) ?>
+            <form method="POST" id="quotationForm">
+                <!-- =========================================================
+                     1. CUADRO: CLIENTE (Resultados superpuestos)
+                     ========================================================= -->
+                <div class="card mb-4 card-customer-container">
+                    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <span class="fw-bold"><i class="fas fa-user-tag text-warning me-2"></i> Cliente</span>
+                        <div id="customer_actions" class="d-flex gap-1">
+                            <button type="button" class="btn btn-outline-success btn-sm py-1" data-bs-toggle="modal" data-bs-target="#customerModal">
+                                <i class="fas fa-plus-circle me-1"></i> Nuevo Cliente (API)
+                            </button>
+                            <a href="<?= BASE_URL ?>/customers/create.php" class="btn btn-outline-secondary btn-sm py-1">
+                                <i class="fas fa-plus me-1"></i> Manual
+                            </a>
+                        </div>
                     </div>
-                <?php endif; ?>
-
-                <div class="quotation-builder">
-                    <form method="POST" id="quotationForm">
-                        <!-- Company Header -->
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <div class="row align-items-center">
-                                    <div class="col-md-2">
-                                        <?php if (!empty($company['logo_url'])): ?>
-                                            <img src="<?= htmlspecialchars(upload_url($company['logo_url'])) ?>"
-                                                 alt="Logo"
-                                                 class="img-fluid"
-                                                 style="max-height: 80px; max-width: 100%;">
-                                        <?php else: ?>
-                                            <div class="text-center text-muted">
-                                                <i class="fas fa-building fa-3x"></i>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <h3 class="mb-1 text-primary"><?= htmlspecialchars($company['name'] ?? 'Empresa Demo') ?></h3>
-                                        <?php if (!empty($company['address'])): ?>
-                                            <p class="mb-1"><i class="fas fa-map-marker-alt text-muted"></i> <?= htmlspecialchars($company['address']) ?></p>
-                                        <?php endif; ?>
-                                        <?php if (!empty($company['phone'])): ?>
-                                            <p class="mb-1"><i class="fas fa-phone text-muted"></i> <?= htmlspecialchars($company['phone']) ?></p>
-                                        <?php endif; ?>
-                                        <?php if (!empty($company['email'])): ?>
-                                            <p class="mb-0"><i class="fas fa-envelope text-muted"></i> <?= htmlspecialchars($company['email']) ?></p>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="col-md-4 text-end">
-                                        <h2 class="text-primary mb-1">COTIZACIÓN</h2>
-                                        <p class="mb-0"><strong>RUC:</strong> <?= htmlspecialchars($company['tax_id'] ?? 'N/A') ?></p>
-                                        <p class="text-muted mb-0"><small>(Se generará al guardar)</small></p>
-                                    </div>
-                                </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <label for="customer_dropdown" class="form-label small fw-semibold text-muted mb-1">Buscar o Seleccionar Cliente *</label>
+                            <div class="dropdown" id="customer_dropdown">
+                                <input type="text" class="form-control <?= isset($errors['customer_id']) ? 'is-invalid' : '' ?>"
+                                       id="customer_search"
+                                       placeholder="Escriba nombre de cliente, razón social o RUC/DNI..."
+                                       autocomplete="off">
+                                <input type="hidden" id="customer_id" name="customer_id" required>
+                                <ul class="dropdown-menu w-100" id="customer_dropdown_menu">
+                                    <li><span class="dropdown-item-text text-muted small">Escriba para buscar clientes...</span></li>
+                                </ul>
                             </div>
-                        </div>
+                            <?php if (isset($errors['customer_id'])): ?>
+                                <div class="invalid-feedback d-block"><?= $errors['customer_id'] ?></div>
+                            <?php endif; ?>
 
-                        <!-- Header Information -->
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="mb-0">Información General</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="customer_dropdown" class="form-label">Cliente *</label>
-                                            <div class="dropdown" id="customer_dropdown">
-                                                <input type="text" class="form-control <?= isset($errors['customer_id']) ? 'is-invalid' : '' ?>"
-                                                       id="customer_search"
-                                                       placeholder="Buscar cliente por nombre o RUC..."
-                                                       autocomplete="off">
-                                                <input type="hidden" id="customer_id" name="customer_id" required>
-                                                <ul class="dropdown-menu w-100" id="customer_dropdown_menu">
-                                                    <li><span class="dropdown-item-text text-muted">Escriba para buscar clientes...</span></li>
-                                                </ul>
-                                            </div>
-                                            <?php if (isset($errors['customer_id'])): ?>
-                                                <div class="invalid-feedback"><?= $errors['customer_id'] ?></div>
-                                            <?php endif; ?>
-                                            <!-- Selected Customer Display -->
-                                            <div id="selected_customer_display" class="mt-2" style="display: none;">
-                                                <div class="card border-success">
-                                                    <div class="card-header bg-light">
-                                                        <h6 class="mb-0 text-success">
-                                                            <i class="fas fa-user-check"></i> Cliente Seleccionado
-                                                            <button type="button" class="btn btn-sm btn-outline-secondary float-end" onclick="clearCustomerSelection()">
-                                                                <i class="fas fa-times"></i> Cambiar
-                                                            </button>
-                                                        </h6>
-                                                    </div>
-                                                    <div class="card-body" id="customer_details_content">
-                                                        <!-- Customer details will be populated here -->
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div id="customer_reference_group" class="mt-3" style="display: none;">
-                                                <label for="customer_reference" class="form-label">Identificación del cliente *</label>
-                                                <input type="text"
-                                                       class="form-control <?= isset($errors['customer_reference']) ? 'is-invalid' : '' ?>"
-                                                       id="customer_reference"
-                                                       name="customer_reference"
-                                                       maxlength="100"
-                                                       value="<?= htmlspecialchars($formData['customer_reference'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
-                                                       placeholder="Ingrese el nombre del cliente"
-                                                       aria-describedby="customer_reference_help">
-                                                <div id="customer_reference_help" class="form-text">Máximo 100 caracteres.</div>
-                                                <?php if (isset($errors['customer_reference'])): ?>
-                                                    <div class="invalid-feedback"><?= htmlspecialchars($errors['customer_reference'], ENT_QUOTES, 'UTF-8') ?></div>
-                                                <?php endif; ?>
-                                            </div>
-
-                                            <div id="customer_actions" class="mt-2">
-                                                <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#customerModal">
-                                                    <i class="fas fa-plus"></i> Nuevo Cliente (API)
-                                                </button>
-                                                <a href="<?= BASE_URL ?>/customers/create.php" class="btn btn-sm btn-outline-secondary">
-                                                    <i class="fas fa-plus"></i> Nuevo Manual
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-3">
-                                        <div class="mb-3">
-                                            <label for="quotation_date" class="form-label">Fecha de Cotización *</label>
-                                            <input type="date" class="form-control <?= isset($errors['quotation_date']) ? 'is-invalid' : '' ?>"
-                                                   id="quotation_date" name="quotation_date"
-                                                   value="<?= $formData['quotation_date'] ?? date('Y-m-d') ?>" required>
-                                            <?php if (isset($errors['quotation_date'])): ?>
-                                                <div class="invalid-feedback"><?= $errors['quotation_date'] ?></div>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-3">
-                                        <div class="mb-3">
-                                            <label for="valid_until" class="form-label">Válida hasta</label>
-                                            <input type="date" class="form-control" id="valid_until" name="valid_until"
-                                                   value="<?= $formData['valid_until'] ?? date('Y-m-d', strtotime('+7 days')) ?>">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-3">
-                                        <div class="mb-3">
-                                            <label for="currency" class="form-label">Moneda *</label>
-                                            <select class="form-select" id="currency" name="currency" required>
-                                                <option value="USD" <?= ($formData['currency'] ?? 'USD') === 'USD' ? 'selected' : '' ?>>Dólares (USD)</option>
-                                                <option value="PEN" <?= ($formData['currency'] ?? 'USD') === 'PEN' ? 'selected' : '' ?>>Soles (PEN)</option>
-                                            </select>
-                                            <small class="text-muted" id="exchange_rate_info">
-                                                Tipo de cambio: USD 1 = PEN <?= number_format($exchangeRate, 3) ?>
-                                            </small>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="mb-3">
-                                            <label for="price_includes_igv" class="form-label">
-                                                IGV
-                                                <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip"
-                                                   title="INCLUIDO IGV: el precio queda igual. MÁS IGV: se agrega 18% al precio."></i>
-                                            </label>
-                                            <select class="form-select" id="price_includes_igv" name="price_includes_igv">
-                                                <option value="included" <?= ($formData['price_includes_igv'] ?? 'included') === 'included' ? 'selected' : '' ?>>INCLUIDO IGV</option>
-                                                <option value="plus_igv" <?= ($formData['price_includes_igv'] ?? 'included') === 'plus_igv' ? 'selected' : '' ?>>SIN IGV </option>
-                                            </select>
-                                            <small class="text-muted" id="igv_info">
-                                                <span id="igv_status_text">Precio de lista sin cambios</span>
-                                            </small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        <div class="mb-3">
-                                            <label for="payment_condition" class="form-label">Condición de Pago *</label>
-                                            <select class="form-select" id="payment_condition" name="payment_condition" required onchange="toggleCreditDays()">
-                                                <option value="cash" <?= ($formData['payment_condition'] ?? 'cash') === 'cash' ? 'selected' : '' ?>>Efectivo / Contado</option>
-                                                <option value="credit" <?= ($formData['payment_condition'] ?? '') === 'credit' ? 'selected' : '' ?>>Crédito</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3" id="credit_days_container" style="<?= ($formData['payment_condition'] ?? 'cash') === 'credit' ? '' : 'display: none;' ?>">
-                                        <div class="mb-3">
-                                            <label for="credit_days" class="form-label">Plazo de Crédito</label>
-                                            <select class="form-select" id="credit_days" name="credit_days">
-                                                <option value="">Seleccionar...</option>
-                                                <option value="30" <?= ($formData['credit_days'] ?? '') == '30' ? 'selected' : '' ?>>30 días</option>
-                                                <option value="60" <?= ($formData['credit_days'] ?? '') == '60' ? 'selected' : '' ?>>60 días</option>
-                                                <option value="90" <?= ($formData['credit_days'] ?? '') == '90' ? 'selected' : '' ?>>90 días</option>
-                                                <option value="120" <?= ($formData['credit_days'] ?? '') == '120' ? 'selected' : '' ?>>120 días</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Product Search -->
-                        <div class="card mb-3">
-                            <div class="card-header">
-                                <h5 class="mb-0"><i class="fas fa-search"></i> Buscar Productos</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-8">
-                                        <input type="text" class="form-control" id="product_search"
-                                               placeholder="Buscar por código, nombre, descripción o marca...">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <button type="button" class="btn btn-primary" id="search_products_btn" data-bs-toggle="modal" data-bs-target="#productSearchModal">
-                                            <i class="fas fa-search"></i> Buscar
-                                        </button>
-                                        <button type="button" class="btn btn-info ms-2" id="show_date_history_btn" onclick="showProductHistoryByDate()">
-                                            <i class="fas fa-calendar-alt"></i> Historial por Fecha
+                            <!-- Selected Customer Display -->
+                            <div id="selected_customer_display" class="mt-2" style="display: none;">
+                                <div class="card border-success bg-success-subtle mb-0">
+                                    <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center py-2">
+                                        <h6 class="mb-0 text-success fw-bold">
+                                            <i class="fas fa-user-check me-1"></i> Cliente Seleccionado
+                                        </h6>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm py-0" onclick="clearCustomerSelection()">
+                                            <i class="fas fa-times me-1"></i> Cambiar
                                         </button>
                                     </div>
+                                    <div class="card-body pt-0" id="customer_details_content">
+                                        <!-- Customer details will be populated here -->
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Items Section -->
-                        <div class="card mb-4">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">Productos Seleccionados</h5>
-                                <button type="button" class="btn btn-success add-item-btn">
-                                    <i class="fas fa-plus"></i> Agregar Producto Manual
-                                </button>
-                            </div>
-                             <div class="card-body">
-                                 <div class="items-container">
-                                     <!-- Items will be added here dynamically -->
-                                     <div id="empty-items-message" class="text-center py-4 text-muted">
-                                         <i class="fas fa-plus-circle fa-2x mb-3"></i>
-                                         <p>No hay productos agregados</p>
-                                         <p class="small">Haz click en "Agregar Producto Manual" para comenzar</p>
-                                     </div>
-                                 </div>
-                                <?php if (isset($errors['items'])): ?>
-                                    <div class="alert alert-danger mt-3"><?= $errors['items'] ?></div>
+                            <div id="customer_reference_group" class="mt-3" style="display: none;">
+                                <label for="customer_reference" class="form-label small fw-semibold">Identificación / Atención a *</label>
+                                <input type="text"
+                                       class="form-control <?= isset($errors['customer_reference']) ? 'is-invalid' : '' ?>"
+                                       id="customer_reference"
+                                       name="customer_reference"
+                                       maxlength="100"
+                                       value="<?= htmlspecialchars($formData['customer_reference'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                                       placeholder="Ingrese persona de contacto o referencia"
+                                       aria-describedby="customer_reference_help">
+                                <div id="customer_reference_help" class="form-text small">Máximo 100 caracteres.</div>
+                                <?php if (isset($errors['customer_reference'])): ?>
+                                    <div class="invalid-feedback"><?= htmlspecialchars($errors['customer_reference'], ENT_QUOTES, 'UTF-8') ?></div>
                                 <?php endif; ?>
                             </div>
                         </div>
-
-                        <!-- Totals and Notes -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="card" id="notesCard">
-                                    <div class="card-header d-flex justify-content-between align-items-center">
-                                        <h5 class="mb-0">Notas y Condiciones</h5>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary" id="toggleNotesBtn" onclick="toggleNotesCard()">
-                                            <i class="fas fa-chevron-down" id="toggleNotesIcon"></i>
-                                        </button>
-                                    </div>
-                                    <div class="card-body" id="notesCardBody" style="display: none;">
-                                        <div class="mb-3">
-                                            <label for="notes" class="form-label">Notas</label>
-                                            <textarea class="form-control" id="notes" name="notes" rows="3"><?= htmlspecialchars($formData['notes'] ?? '') ?></textarea>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="terms_and_conditions" class="form-label">Términos y Condiciones</label>
-                                            <textarea class="form-control" id="terms_and_conditions" name="terms_and_conditions" rows="8"><?= htmlspecialchars($formData['terms_and_conditions'] ?? '') ?></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="totals-section">
-                                    <h5 class="mb-3">Resumen</h5>
-
-                                    <?php if ($enableDiscounts): ?>
-                                    <div class="row mb-3 discount-percentage-section">
-                                        <div class="col-6">
-                                            <label for="global_discount_percentage" class="form-label">Descuento Global (%)</label>
-                                            <input type="number" class="form-control global-discount" id="global_discount_percentage"
-                                                   name="global_discount_percentage" min="0" max="100" step="0.01"
-                                                   value="<?= $formData['global_discount_percentage'] ?? '0' ?>">
-                                        </div>
-                                    </div>
-                                    <?php else: ?>
-                                    <input type="hidden" name="global_discount_percentage" value="0">
-                                    <?php endif; ?>
-
-                                    <table class="table table-sm">
-                                        <tr>
-                                            <td>Subtotal:</td>
-                                            <td class="text-end"><strong><span class="currency-symbol">$</span> <span class="subtotal-amount">0.00</span></strong></td>
-                                        </tr>
-                                        <?php if ($enableDiscounts): ?>
-                                        <tr>
-                                            <td>Descuento Global:</td>
-                                            <td class="text-end"><strong><span class="currency-symbol">$</span> <span class="global-discount-amount">0.00</span></strong></td>
-                                        </tr>
-                                        <?php endif; ?>
-                                        <tr class="table-light">
-                                            <td>IGV (18%):</td>
-                                            <td class="text-end"><strong><span class="currency-symbol">$</span> <span id="igv_display" class="igv-amount">0.00</span></strong></td>
-                                        </tr>
-                                        <tr class="table-primary">
-                                            <td><strong>Total:</strong></td>
-                                            <td class="text-end"><strong><span class="currency-symbol">$</span> <span id="total_display" class="total-amount">0.00</span></strong></td>
-                                        </tr>
-                                    </table>
-
-                                    <!-- Hidden fields for totals -->
-                                    <input type="hidden" id="subtotal_display" value="0.00">
-
-                                    <!-- Botones Desktop -->
-                                    <div class="d-none d-md-flex justify-content-end gap-2 mt-4">
-                                        <a href="<?= BASE_URL ?>/quotations/index.php" class="btn btn-secondary">
-                                            <i class="fas fa-times"></i> Cancelar
-                                        </a>
-                                        <button type="button" class="btn btn-outline-primary" onclick="downloadPDF()">
-                                            <i class="fas fa-file-pdf"></i> Descargar PDF
-                                        </button>
-                                        <button type="button" class="btn btn-outline-success" onclick="sendByEmail()">
-                                            <i class="fas fa-envelope"></i> Enviar por Correo
-                                        </button>
-                                        <button type="button" class="btn btn-outline-success" onclick="sendByWhatsApp()">
-                                            <i class="fab fa-whatsapp"></i> Enviar por WhatsApp
-                                        </button>
-                                        <button type="button" class="btn btn-info" onclick="window.print()">
-                                            <i class="fas fa-print"></i> Vista Previa / Imprimir
-                                        </button>
-                                        <button type="button" class="btn btn-warning" onclick="generateCotiRapi()" title="Generar texto plano para WhatsApp">
-                                            <i class="fas fa-bolt"></i> CotiRapi
-                                        </button>
-                                        <button type="submit" class="btn btn-success">
-                                            <i class="fas fa-save"></i> Guardar Cotización
-                                        </button>
-                                    </div>
-
-                                    <!-- Botones Móvil -->
-                                    <div class="d-md-none mt-4">
-                                        <div class="row g-2">
-                                            <div class="col-6">
-                                                <a href="<?= BASE_URL ?>/quotations/index.php" class="btn btn-secondary w-100">
-                                                    <i class="fas fa-times"></i> Cancelar
-                                                </a>
-                                            </div>
-                                            <div class="col-6">
-                                                <button type="submit" class="btn btn-success w-100">
-                                                    <i class="fas fa-save"></i> Guardar
-                                                </button>
-                                            </div>
-                                            <div class="col-6">
-                                                <button type="button" class="btn btn-warning w-100" onclick="generateCotiRapi()">
-                                                    <i class="fas fa-bolt"></i> CotiRapi
-                                                </button>
-                                            </div>
-                                            <div class="col-6">
-                                                <button type="button" class="btn btn-outline-success w-100" onclick="sendByWhatsApp()">
-                                                    <i class="fab fa-whatsapp"></i> WhatsApp
-                                                </button>
-                                            </div>
-                                            <div class="col-6">
-                                                <button type="button" class="btn btn-outline-primary w-100" onclick="downloadPDF()">
-                                                    <i class="fas fa-file-pdf"></i> PDF
-                                                </button>
-                                            </div>
-                                            <div class="col-6">
-                                                <button type="button" class="btn btn-outline-success w-100" onclick="sendByEmail()">
-                                                    <i class="fas fa-envelope"></i> Email
-                                                </button>
-                                            </div>
-                                            <div class="col-12">
-                                                <button type="button" class="btn btn-info w-100" onclick="window.print()">
-                                                    <i class="fas fa-print"></i> Vista Previa / Imprimir
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Footer Notes Section -->
-                        <div class="card mt-4">
-                            <div class="card-header bg-info text-white">
-                                <h5 class="mb-0"><i class="fas fa-info-circle"></i> Información Importante</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="footer-notes" style="font-size: 0.9rem;">
-                                    <ul class="list-unstyled mb-3">
-                                        <li class="mb-2">
-                                            <i class="fas fa-check-circle text-primary"></i>
-                                            <strong>Sírvase girar su orden de compra a nombre de:</strong> LLANTA SAN MARTIN S.R.LTDA. - RUC: 20381499627.
-                                        </li>
-                                        <li class="mb-2">
-                                            <i class="fas fa-exclamation-triangle text-warning"></i>
-                                            La mercadería se encuentra en stock salvo venta previa.
-                                        </li>
-                                        <li class="mb-2">
-                                            <i class="fas fa-dollar-sign text-success"></i>
-                                            Consultar el tipo de cambio del día, antes de realizar algún pago.
-                                        </li>
-                                        <li class="mb-2">
-                                            <i class="fas fa-file-invoice text-info"></i>
-                                            Los precios no incluyen la Percepción.
-                                        </li>
-                                        <li class="mb-2">
-                                            <i class="fas fa-landmark text-danger"></i>
-                                            <strong>Agentes de Percepción:</strong> Según el Decreto Supremo N° 091-2013-EF publicado el 14 de Mayo del 2013, hemos sido designados AGENTES DE PERCEPCIÓN a partir del 01 de Julio del 2013. Considerar para efectos de la cobranza.
-                                        </li>
-                                    </ul>
-
-                                    <div class="alert alert-primary mb-0">
-                                        <h6 class="mb-2"><i class="fas fa-university"></i> Cuentas Bancarias:</h6>
-                                        <?php
-                                        // Get bank accounts from database
-                                        try {
-                                            $dbConn = getDBConnection();
-                                            $bankQuery = "SELECT bank_name, account_number, account_type, currency
-                                                        FROM bank_accounts
-                                                        WHERE company_id = ? AND is_active = 1
-                                                        ORDER BY currency, bank_name";
-                                            $stmt = $dbConn->prepare($bankQuery);
-                                            $stmt->execute([$companyId]);
-                                            $bankAccounts = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                                            if ($bankAccounts):
-                                            ?>
-                                                <div class="row">
-                                                    <?php foreach ($bankAccounts as $account): ?>
-                                                        <div class="col-md-6 mb-2">
-                                                            <strong><?= htmlspecialchars($account['bank_name']) ?></strong>
-                                                            (<?= htmlspecialchars($account['currency']) ?>)<br>
-                                                            <small>
-                                                                <?= htmlspecialchars($account['account_type']) ?>:
-                                                                <code><?= htmlspecialchars($account['account_number']) ?></code>
-                                                            </small>
-                                                        </div>
-                                                    <?php endforeach; ?>
-                                                </div>
-                                            <?php else: ?>
-                                                <small class="text-muted">No hay cuentas bancarias registradas.</small>
-                                            <?php endif;
-                                        } catch (Exception $e) {
-                                            echo '<small class="text-muted">Error al cargar las cuentas bancarias.</small>';
-                                        }
-                                        ?>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+                    </div>
                 </div>
 
+                <!-- =========================================================
+                     2. CUADRO: CONDICIONES COMERCIALES
+                     ========================================================= -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <span class="fw-bold"><i class="fas fa-sliders text-warning me-2"></i> Condiciones Comerciales</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3 col-6">
+                                <label for="quotation_date" class="form-label small fw-semibold text-muted">Fecha Emisión *</label>
+                                <input type="date" class="form-control <?= isset($errors['quotation_date']) ? 'is-invalid' : '' ?>"
+                                       id="quotation_date" name="quotation_date"
+                                       value="<?= $formData['quotation_date'] ?? date('Y-m-d') ?>" required>
+                                <?php if (isset($errors['quotation_date'])): ?>
+                                    <div class="invalid-feedback"><?= $errors['quotation_date'] ?></div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <label for="valid_until" class="form-label small fw-semibold text-muted">Válida Hasta</label>
+                                <input type="date" class="form-control" id="valid_until" name="valid_until"
+                                       value="<?= $formData['valid_until'] ?? date('Y-m-d', strtotime('+7 days')) ?>">
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <label for="currency" class="form-label small fw-semibold text-muted">Moneda *</label>
+                                <select class="form-select" id="currency" name="currency" required>
+                                    <option value="USD" <?= ($formData['currency'] ?? 'USD') === 'USD' ? 'selected' : '' ?>>Dólares (USD)</option>
+                                    <option value="PEN" <?= ($formData['currency'] ?? 'USD') === 'PEN' ? 'selected' : '' ?>>Soles (PEN)</option>
+                                </select>
+                                <div class="text-muted small mt-1" id="exchange_rate_info">
+                                    USD 1 = S/ <?= number_format($exchangeRate, 3) ?>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <label for="price_includes_igv" class="form-label small fw-semibold text-muted">
+                                    Régimen IGV
+                                    <i class="fas fa-info-circle text-muted ms-1" data-bs-toggle="tooltip"
+                                       title="INCLUIDO IGV: el precio de lista ya incluye IGV. SIN IGV: se agrega 18% al precio."></i>
+                                </label>
+                                <select class="form-select" id="price_includes_igv" name="price_includes_igv">
+                                    <option value="included" <?= ($formData['price_includes_igv'] ?? 'included') === 'included' ? 'selected' : '' ?>>INCLUIDO IGV</option>
+                                    <option value="plus_igv" <?= ($formData['price_includes_igv'] ?? 'included') === 'plus_igv' ? 'selected' : '' ?>>SIN IGV (+18%)</option>
+                                </select>
+                                <div class="text-muted small mt-1" id="igv_info">
+                                    <span id="igv_status_text">Precio de lista sin cambios</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-12">
+                                <label for="payment_condition" class="form-label small fw-semibold text-muted">Forma de Pago *</label>
+                                <select class="form-select" id="payment_condition" name="payment_condition" required onchange="toggleCreditDays()">
+                                    <option value="cash" <?= ($formData['payment_condition'] ?? 'cash') === 'cash' ? 'selected' : '' ?>>Efectivo / Contado</option>
+                                    <option value="credit" <?= ($formData['payment_condition'] ?? '') === 'credit' ? 'selected' : '' ?>>Crédito</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 col-12" id="credit_days_container" style="<?= ($formData['payment_condition'] ?? 'cash') === 'credit' ? '' : 'display: none;' ?>">
+                                <label for="credit_days" class="form-label small fw-semibold text-muted">Plazo de Crédito</label>
+                                <select class="form-select" id="credit_days" name="credit_days">
+                                    <option value="">Seleccionar plazo...</option>
+                                    <option value="30" <?= ($formData['credit_days'] ?? '') == '30' ? 'selected' : '' ?>>30 días</option>
+                                    <option value="60" <?= ($formData['credit_days'] ?? '') == '60' ? 'selected' : '' ?>>60 días</option>
+                                    <option value="90" <?= ($formData['credit_days'] ?? '') == '90' ? 'selected' : '' ?>>90 días</option>
+                                    <option value="120" <?= ($formData['credit_days'] ?? '') == '120' ? 'selected' : '' ?>>120 días</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- =========================================================
+                     3. CUADRO: ÍTEMS DE LA COTIZACIÓN
+                     ========================================================= -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <span class="fw-bold"><i class="fas fa-boxes-stacked text-warning me-2"></i> Ítems de la Cotización</span>
+                        <div class="d-flex align-items-center gap-1">
+                            <button type="button" class="btn btn-sm btn-outline-primary" id="search_products_btn" data-bs-toggle="modal" data-bs-target="#productSearchModal">
+                                <i class="fas fa-search me-1"></i> Catálogo
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-info" id="show_date_history_btn" onclick="showProductHistoryByDate()">
+                                <i class="fas fa-calendar-alt me-1"></i> Historial
+                            </button>
+                            <button type="button" class="btn btn-sm btn-success add-item-btn">
+                                <i class="fas fa-plus me-1"></i> + Producto Manual
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-body-tertiary border-bottom">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-barcode"></i></span>
+                            <input type="text" class="form-control" id="product_search"
+                                   placeholder="Búsqueda rápida por código, nombre, descripción o marca...">
+                            <button type="button" class="btn btn-primary" onclick="document.getElementById('search_products_btn').click()">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="items-container">
+                            <!-- Items will be added here dynamically -->
+                            <div id="empty-items-message" class="text-center py-4 text-muted">
+                                <i class="fas fa-plus-circle fa-2x mb-2 text-muted opacity-50"></i>
+                                <p class="mb-1 fw-semibold">No hay productos agregados</p>
+                                <p class="small text-muted mb-0">Haz clic en "+ Producto Manual" o busca en el catálogo para comenzar</p>
+                            </div>
+                        </div>
+                        <?php if (isset($errors['items'])): ?>
+                            <div class="alert alert-danger mt-3 mb-0"><?= $errors['items'] ?></div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <!-- =========================================================
+                     4. CUADRO: RESUMEN DE COTIZACIÓN (Directamente debajo de Ítems)
+                     ========================================================= -->
+                <div class="card mb-4 border-0 shadow-sm" style="background-color: var(--color-panel);">
+                    <div class="card-header bg-body-tertiary d-flex justify-content-between align-items-center">
+                        <span class="fw-bold"><i class="fas fa-receipt text-warning me-2"></i> Resumen de Cotización</span>
+                        <span class="badge bg-light text-muted border">Totales calculados</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <!-- Descuento Global -->
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <?php if ($enableDiscounts): ?>
+                                <div class="p-3 rounded" style="background-color: var(--color-canvas); border: 1px solid var(--color-rule);">
+                                    <label for="global_discount_percentage" class="form-label small fw-semibold text-muted mb-1">
+                                        <i class="fas fa-tag text-warning me-1"></i> Descuento Global (%)
+                                    </label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" class="form-control global-discount" id="global_discount_percentage"
+                                               name="global_discount_percentage" min="0" max="100" step="0.01"
+                                               value="<?= $formData['global_discount_percentage'] ?? '0' ?>">
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                    <div class="form-text small text-muted">Aplica a todos los ítems de la cotización.</div>
+                                </div>
+                                <?php else: ?>
+                                <input type="hidden" name="global_discount_percentage" value="0">
+                                <?php endif; ?>
+                            </div>
+
+                            <!-- Desglose de Totales -->
+                            <div class="col-md-6">
+                                <div class="p-3 rounded" style="background-color: var(--color-canvas); border: 1px solid var(--color-rule);">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="text-muted">Subtotal:</span>
+                                        <span class="fw-semibold tabular-nums" style="font-family: var(--font-mono); font-size: 1.05rem;">
+                                            <span class="currency-symbol">$</span> <span class="subtotal-amount">0.00</span>
+                                        </span>
+                                    </div>
+                                    <?php if ($enableDiscounts): ?>
+                                    <div class="d-flex justify-content-between align-items-center mb-2 text-danger">
+                                        <span>Descuento Global:</span>
+                                        <span class="fw-semibold tabular-nums" style="font-family: var(--font-mono); font-size: 1.05rem;">
+                                            - <span class="currency-symbol">$</span> <span class="global-discount-amount">0.00</span>
+                                        </span>
+                                    </div>
+                                    <?php endif; ?>
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="text-muted">IGV (18%):</span>
+                                        <span class="fw-semibold tabular-nums" style="font-family: var(--font-mono); font-size: 1.05rem;">
+                                            <span class="currency-symbol">$</span> <span id="igv_display" class="igv-amount">0.00</span>
+                                        </span>
+                                    </div>
+                                    <hr class="my-2 border-secondary-subtle">
+                                    <div class="d-flex justify-content-between align-items-baseline">
+                                        <span class="h5 mb-0 fw-bold">TOTAL:</span>
+                                        <span class="h3 mb-0 fw-bold tabular-nums" style="font-family: var(--font-mono); color: var(--color-action);">
+                                            <span class="currency-symbol">$</span> <span id="total_display" class="total-amount">0.00</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hidden field for subtotal calculation -->
+                        <input type="hidden" id="subtotal_display" value="0.00">
+
+                        <!-- Botones de Acción (Guardar Principal + Utilidades) -->
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-4 pt-3 border-top">
+                            <div class="d-flex flex-wrap gap-2">
+                                <button type="button" class="btn btn-outline-warning" onclick="generateCotiRapi()" title="Generar texto para WhatsApp">
+                                    <i class="fas fa-bolt me-1"></i> CotiRapi
+                                </button>
+                                <button type="button" class="btn btn-outline-success" onclick="sendByWhatsApp()" title="Enviar por WhatsApp">
+                                    <i class="fab fa-whatsapp me-1"></i> WhatsApp
+                                </button>
+                                <button type="button" class="btn btn-outline-danger" onclick="downloadPDF()" title="Descargar borrador en PDF">
+                                    <i class="fas fa-file-pdf me-1"></i> PDF
+                                </button>
+                                <button type="button" class="btn btn-outline-info" onclick="sendByEmail()" title="Enviar por correo">
+                                    <i class="fas fa-envelope me-1"></i> Correo
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" id="btnPrintQuotation" onclick="printQuotationPDF(event)" title="Guardar e imprimir formato oficial PDF">
+                                    <i class="fas fa-print me-1"></i> Imprimir
+                                </button>
+                                <a href="<?= BASE_URL ?>/quotations/index.php" class="btn btn-ghost border text-muted">
+                                    <i class="fas fa-times me-1"></i> Cancelar
+                                </a>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary px-4 py-2 fw-bold shadow-sm" style="font-size: 16px;">
+                                <i class="fas fa-save me-2"></i> Guardar Cotización
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- =========================================================
+                     5. CUADRO: NOTAS Y TÉRMINOS COMERCIALES
+                     ========================================================= -->
+                <div class="card mb-4" id="notesCard">
+                    <div class="card-header d-flex justify-content-between align-items-center" style="cursor: pointer;" onclick="toggleNotesCard()">
+                        <span class="fw-bold"><i class="fas fa-pen-to-square text-warning me-2"></i> Notas y Términos Comerciales</span>
+                        <button type="button" class="btn btn-sm btn-ghost p-1 text-muted" id="toggleNotesBtn">
+                            <i class="fas fa-chevron-down" id="toggleNotesIcon"></i>
+                        </button>
+                    </div>
+                    <div class="card-body" id="notesCardBody" style="display: none;">
+                        <div class="mb-3">
+                            <label for="notes" class="form-label small fw-semibold text-muted">Observaciones / Notas para el Cliente</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Comentarios adicionales que aparecerán en la cotización..."><?= htmlspecialchars($formData['notes'] ?? '') ?></textarea>
+                        </div>
+                        <div class="mb-0">
+                            <label for="terms_and_conditions" class="form-label small fw-semibold text-muted">Términos y Condiciones</label>
+                            <textarea class="form-control" id="terms_and_conditions" name="terms_and_conditions" rows="6"><?= htmlspecialchars($formData['terms_and_conditions'] ?? '') ?></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- =========================================================
+                     6. CUADRO: CUENTAS BANCARIAS REGISTRADAS (Al final de todos los cuadros)
+                     ========================================================= -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <span class="fw-bold"><i class="fas fa-university text-warning me-2"></i> Cuentas Bancarias Registradas</span>
+                    </div>
+                    <div class="card-body">
+                        <?php
+                        try {
+                            $dbConn = getDBConnection();
+                            $bankQuery = "SELECT bank_name, account_number, account_type, currency
+                                        FROM bank_accounts
+                                        WHERE company_id = ? AND is_active = 1
+                                        ORDER BY currency, bank_name";
+                            $stmt = $dbConn->prepare($bankQuery);
+                            $stmt->execute([$companyId]);
+                            $bankAccounts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                            if ($bankAccounts): ?>
+                                <div class="row g-3">
+                                    <?php foreach ($bankAccounts as $account): ?>
+                                        <div class="col-md-4 col-sm-6">
+                                            <div class="p-3 rounded h-100" style="background-color: var(--color-canvas); border: 1px solid var(--color-rule);">
+                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                    <strong style="color: var(--color-ink);"><?= htmlspecialchars($account['bank_name']) ?></strong>
+                                                    <span class="badge bg-secondary"><?= htmlspecialchars($account['currency']) ?></span>
+                                                </div>
+                                                <div class="text-muted small mb-1"><?= htmlspecialchars($account['account_type']) ?></div>
+                                                <code class="d-block user-select-all p-1 rounded" style="background: var(--color-rule-subtle); color: var(--color-ink);"><?= htmlspecialchars($account['account_number']) ?></code>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php else: ?>
+                                <div class="text-muted text-center py-3">No hay cuentas bancarias registradas.</div>
+                            <?php endif;
+                        } catch (Exception $e) {
+                            echo '<div class="text-muted text-center py-3">Error al cargar cuentas bancarias.</div>';
+                        }
+                        ?>
+                    </div>
+                </div>
+            </form>
+        </div>
                 <!-- Print Version - Hidden on screen, shown on print -->
                 <div id="print-version" class="print-only" style="display: none;">
                     <!-- This will be populated by JavaScript -->
@@ -692,9 +650,6 @@ $pageTitle = 'Nueva Cotización';
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </main>
 
     <!-- Customer Modal -->
     <div class="modal fade" id="customerModal" tabindex="-1">
@@ -772,58 +727,79 @@ $pageTitle = 'Nueva Cotización';
     </div>
 
     <!-- Product Search Modal -->
-    <div class="modal fade" id="productSearchModal" tabindex="-1">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Buscar Productos</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <!-- Product Search Modal (Notion / Linear Clean Architecture) -->
+    <div class="modal fade" id="productSearchModal" tabindex="-1" aria-labelledby="productSearchModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content shadow-lg border-0" style="background-color: var(--color-panel, #18181B); border: 1px solid var(--color-rule, #27272A) !important; border-radius: 14px;">
+                <!-- Modal Header -->
+                <div class="modal-header border-bottom py-2.5 px-3 d-flex align-items-center justify-content-between" style="border-color: var(--color-rule, #27272A) !important;">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 32px; height: 32px; background: rgba(245, 158, 11, 0.15); color: #F59E0B;">
+                            <i class="fas fa-boxes-stacked" style="font-size: 0.9rem;"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fs-6 fw-bold text-body mb-0" id="productSearchModalTitle">
+                                Catálogo de Productos — Agregar Ítem
+                            </h5>
+                            <span class="text-muted small" style="font-size: 0.72rem;">Búsqueda en tiempo real desde el sistema COBOL</span>
+                        </div>
+                        <span class="badge rounded-pill ms-2" id="modal_kpi_count" style="background: rgba(245, 158, 11, 0.12); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.3); font-size: 0.72rem; font-weight: 700; display: none;">0 productos</span>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
-                <div class="modal-body">
-                    <!-- Search Form -->
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="modal_product_search" class="form-label">Buscar Producto</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" id="modal_product_search"
-                                       placeholder="Código, nombre, descripción...">
-                                <button type="button" class="btn btn-primary" id="modal_search_btn">
-                                    <i class="fas fa-search"></i> Buscar
-                                </button>
+
+                <!-- Modal Body -->
+                <div class="modal-body p-3">
+                    <!-- Search & Filter Controls Card -->
+                    <div class="p-2.5 rounded-3 mb-3" style="background-color: var(--color-canvas, #09090B); border: 1px solid var(--color-rule, #27272A);">
+                        <div class="row g-2 align-items-center">
+                            <!-- Search input -->
+                            <div class="col-12 col-md-5">
+                                <label for="modal_product_search" class="form-label small fw-semibold text-muted mb-1" style="font-size: 0.72rem;">Buscar por Código o Descripción</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text bg-body-tertiary border-end-0"><i class="fas fa-search text-muted"></i></span>
+                                    <input type="text" class="form-control border-start-0" id="modal_product_search"
+                                           placeholder="Escriba código, medida, modelo..." autocomplete="off">
+                                    <button type="button" class="btn btn-warning text-dark fw-bold px-3" id="modal_search_btn">
+                                        Buscar
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Brand filter -->
+                            <div class="col-6 col-md-3">
+                                <label for="modal_brand_filter" class="form-label small fw-semibold text-muted mb-1" style="font-size: 0.72rem;">Marca</label>
+                                <select class="form-select form-select-sm" id="modal_brand_filter">
+                                    <option value="">Todas las marcas</option>
+                                </select>
+                            </div>
+
+                            <!-- Warehouse filter -->
+                            <div class="col-6 col-md-4">
+                                <label for="modal_warehouse_filter" class="form-label small fw-semibold text-muted mb-1" style="font-size: 0.72rem;">Sede / Almacén</label>
+                                <select class="form-select form-select-sm" id="modal_warehouse_filter">
+                                    <option value="">Todos los almacenes</option>
+                                </select>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <label for="modal_brand_filter" class="form-label">Filtrar por Marca</label>
-                            <select class="form-select" id="modal_brand_filter">
-                                <option value="">Todas las marcas</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label for="modal_warehouse_filter" class="form-label">Filtrar por Almacén</label>
-                            <select class="form-select" id="modal_warehouse_filter">
-                                <option value="">Todos los almacenes</option>
-                            </select>
-                        </div>
                     </div>
 
-                    <!-- Results Summary -->
-                    <div id="modal_results_summary" class="mb-3" style="display: none;">
-                        <div class="alert alert-info mb-0">
-                            <i class="fas fa-info-circle"></i>
-                            <span id="results_count">0</span> producto(s) encontrado(s)
-                        </div>
-                    </div>
-
-                    <!-- Search Results -->
+                    <!-- Search Results Container -->
                     <div id="modal_search_results">
                         <div class="text-center text-muted py-5">
-                            <i class="fas fa-search fa-3x mb-3"></i>
-                            <p>Ingrese un término de búsqueda para encontrar productos</p>
+                            <i class="fas fa-search fa-3x mb-3 text-secondary opacity-50 d-block"></i>
+                            <div class="fw-semibold">Ingrese un término de búsqueda para ver productos</div>
+                            <div class="small text-muted mt-1">Busque por código, medida de neumático o descripción.</div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+
+                <!-- Modal Footer with Compact Controls -->
+                <div class="modal-footer border-top py-2 px-3 bg-body-tertiary d-flex justify-content-between align-items-center" style="border-color: var(--color-rule, #27272A) !important;">
+                    <div class="text-muted small" id="modal_footer_info" style="font-size: 0.75rem;">
+                        Precios calculados al T.C. de la cotización
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -938,8 +914,6 @@ $pageTitle = 'Nueva Cotización';
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="<?= BASE_URL ?>/assets/js/theme-pro.js"></script>
     <script>
         // Products data for autocomplete
         const products = <?= json_encode($products) ?>;
@@ -958,7 +932,21 @@ $pageTitle = 'Nueva Cotización';
 
             // Event listeners para add-item-btn y remove-item-btn están en el otro listener más abajo
 
+            // Prevent decimals in quantity input (only integers allowed)
+            document.addEventListener('keydown', function(e) {
+                if (e.target && e.target.classList.contains('item-quantity')) {
+                    if (e.key === '.' || e.key === ',' || e.key === 'e' || e.key === 'E' || e.key === '-') {
+                        e.preventDefault();
+                    }
+                }
+            });
+
             document.addEventListener('input', function(e) {
+                if (e.target && e.target.classList.contains('item-quantity')) {
+                    if (e.target.value.includes('.') || e.target.value.includes(',')) {
+                        e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                    }
+                }
                 if (e.target.classList.contains('item-quantity') ||
                     e.target.classList.contains('item-price') ||
                     e.target.classList.contains('item-discount') ||
@@ -968,6 +956,12 @@ $pageTitle = 'Nueva Cotización';
             });
 
             document.addEventListener('change', function(e) {
+                if (e.target && e.target.classList.contains('item-quantity')) {
+                    let val = parseInt(e.target.value, 10);
+                    if (isNaN(val) || val < 1) val = 1;
+                    e.target.value = val;
+                    calculateTotals();
+                }
                 if (e.target.classList.contains('product-select')) {
                     onProductChange(e.target);
                 }
@@ -1043,7 +1037,7 @@ $pageTitle = 'Nueva Cotización';
             const igvOption = document.getElementById('price_includes_igv').value;
 
             document.querySelectorAll('.item-row').forEach(function(row) {
-                const quantity = parseFloat(row.querySelector('.item-quantity').value) || 0;
+                const quantity = parseInt(row.querySelector('.item-quantity').value, 10) || 0;
                 const price = parseFloat(row.querySelector('.item-price').value) || 0;
                 const discount = parseFloat(row.querySelector('.item-discount').value) || 0;
 
@@ -2004,207 +1998,87 @@ Tiempo de entrega: 7 días hábiles.`;
             }
         }
 
+        let modalAllProducts = [];
+        let modalFilteredProducts = [];
+        let modalCurrentPage = 1;
+        let modalPerPage = 10;
+
         function searchProductsModal(searchTerm) {
             const resultsContainer = document.getElementById('modal_search_results');
-            const selectedWarehouse = document.getElementById('modal_warehouse_filter').value;
+            const kpiCount = document.getElementById('modal_kpi_count');
 
             resultsContainer.innerHTML = `
-                <div class="text-center py-4">
-                    <div class="spinner-border text-primary" role="status">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-warning" role="status">
                         <span class="visually-hidden">Buscando...</span>
                     </div>
-                    <p class="mt-2">Buscando productos en COBOL...</p>
+                    <p class="mt-2 text-muted small">Consultando catálogo en tiempo real desde COBOL...</p>
                 </div>
             `;
 
-            // Buscar productos via API (COBOL)
             fetch(`<?= BASE_URL ?>/api/search_products.php?search=${encodeURIComponent(searchTerm)}`, {
                 credentials: 'same-origin'
             })
             .then(response => {
-                // Verificar si la respuesta es OK
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-                return response.text(); // Primero obtener como texto
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                return response.text();
             })
             .then(text => {
-                // Intentar parsear como JSON
                 try {
                     return JSON.parse(text);
                 } catch (e) {
-                    console.error('Respuesta no es JSON válido:', text.substring(0, 500));
                     throw new Error('La respuesta del servidor no es JSON válido');
                 }
             })
             .then(data => {
                 if (data.success && data.products && data.products.length > 0) {
-                    // Display all products, filtering will be done visually
-                    displayModalProductResults(data.products);
+                    modalAllProducts = data.products;
+                    modalCurrentPage = 1;
 
-                    // Apply warehouse filter if selected
-                    if (selectedWarehouse) {
-                        filterModalResults();
-                    }
+                    // Sort products by price ascending
+                    modalAllProducts.sort((a, b) => {
+                        const priceA = parseFloat(a.regular_price) || 0;
+                        const priceB = parseFloat(b.regular_price) || 0;
+                        return priceA - priceB;
+                    });
+
+                    updateModalFilters(modalAllProducts);
                 } else {
+                    modalAllProducts = [];
+                    modalFilteredProducts = [];
+                    if (kpiCount) kpiCount.style.display = 'none';
                     resultsContainer.innerHTML = `
-                        <div class="alert alert-warning text-center">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            ${data.message || 'No se encontraron productos con el término: <strong>' + searchTerm + '</strong>'}
+                        <div class="alert alert-warning text-center py-4 my-3">
+                            <i class="fas fa-exclamation-triangle fa-2x mb-2 text-warning"></i>
+                            <div class="fw-bold">${data.message || 'No se encontraron productos con el término: ' + escapeHtml(searchTerm)}</div>
+                            <div class="small text-muted mt-1">Verifique la ortografía o intente buscar con menos palabras.</div>
                         </div>
                     `;
                 }
             })
             .catch(error => {
                 console.error('Error searching products:', error);
+                if (kpiCount) kpiCount.style.display = 'none';
                 resultsContainer.innerHTML = `
-                    <div class="alert alert-danger text-center">
-                        <i class="fas fa-exclamation-circle"></i>
-                        Error: ${error.message}
+                    <div class="alert alert-danger text-center py-4 my-3">
+                        <i class="fas fa-exclamation-circle fa-2x mb-2 text-danger"></i>
+                        <div class="fw-bold">Error al buscar productos</div>
+                        <div class="small text-muted mt-1">${escapeHtml(error.message)}</div>
                     </div>
                 `;
             });
-        }
-
-        function displayModalProductResults(products) {
-            const resultsContainer = document.getElementById('modal_search_results');
-
-            if (products.length === 0) {
-                resultsContainer.innerHTML = `
-                    <div class="alert alert-info text-center">
-                        <i class="fas fa-info-circle"></i>
-                        No se encontraron productos
-                    </div>
-                `;
-                return;
-            }
-
-            // Sort products by price ascending
-            products.sort((a, b) => {
-                const priceA = parseFloat(a.regular_price) || 0;
-                const priceB = parseFloat(b.regular_price) || 0;
-                return priceA - priceB;
-            });
-
-            let html = `
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Código</th>
-                                <th>Descripción</th>
-                                <th>Marca</th>
-                                <th>Imagen</th>
-                                <th>Stock Total</th>
-                                <th>Almacenes</th>
-                                <th>Precio</th>
-                                <th>Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
-
-            products.forEach(product => {
-                // Format warehouse stocks (only show warehouses with stock > 0)
-                let warehouseStocks = '';
-                let warehousesWithStock = {};
-                if (product.warehouses && Object.keys(product.warehouses).length > 0) {
-                    Object.entries(product.warehouses).forEach(([warehouse, stock]) => {
-                        if (parseFloat(stock) > 0) {
-                            warehousesWithStock[warehouse] = stock;
-                        }
-                    });
-
-                    if (Object.keys(warehousesWithStock).length > 0) {
-                        warehouseStocks = Object.entries(warehousesWithStock)
-                            .map(([warehouse, stock]) => `<small class="d-block"><span class="badge bg-info">${warehouse}</span>: <strong>${stock}</strong></small>`)
-                            .join('');
-                    } else {
-                        warehouseStocks = '<small class="text-muted">Sin stock disponible</small>';
-                    }
-                } else {
-                    warehouseStocks = '<small class="text-muted">Sin stock</small>';
-                }
-
-                // Image display with clickable modal
-                let imageDisplay = '';
-                if (product.image_url) {
-                    if (product.image_url.startsWith('http') || product.image_url.startsWith('/')) {
-                        imageDisplay = `<img src="${product.image_url}" alt="Producto" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; cursor: pointer;" onclick="showImageModal('${product.image_url}', '${product.name || product.description}')" title="Click para ver imagen completa">`;
-                    } else {
-                        imageDisplay = `<a href="${product.image_url}" target="_blank" class="btn btn-sm btn-outline-info" title="Ver imagen"><i class="fas fa-external-link-alt"></i></a>`;
-                    }
-                } else {
-                    imageDisplay = '<span class="text-muted"><i class="fas fa-image"></i></span>';
-                }
-
-                // Calculate converted price
-                let price = parseFloat(product.regular_price) || 0;
-                const quotationCurrency = document.getElementById('currency').value;
-                const productCurrency = product.price_currency || 'USD';
-
-                if (quotationCurrency !== productCurrency) {
-                    if (productCurrency === 'USD' && quotationCurrency === 'PEN') {
-                        price = price * parseFloat(exchangeRate);
-                    } else if (productCurrency === 'PEN' && quotationCurrency === 'USD') {
-                        price = price / parseFloat(exchangeRate);
-                    }
-                }
-
-                const currencySymbol = quotationCurrency === 'USD' ? '$' : 'S/';
-
-                // Get warehouse list for filtering (only warehouses with stock > 0)
-                const warehousesWithStockList = Object.keys(warehousesWithStock).join(',');
-                const brand = product.brand || '';
-
-                html += `
-                    <tr data-brand="${brand}" data-warehouses="${warehousesWithStockList}" data-warehouse-stocks='${JSON.stringify(warehousesWithStock)}'>
-                        <td><code>${product.code}</code></td>
-                        <td>${product.name || product.description}</td>
-                        <td>${brand ? `<span class="badge bg-secondary">${brand}</span>` : '-'}</td>
-                        <td class="text-center">${imageDisplay}</td>
-                        <td class="text-center"><strong class="text-primary">${product.total_stock}</strong></td>
-                        <td>${warehouseStocks}</td>
-                        <td><strong>${currencySymbol} ${price.toFixed(2)}</strong><br><small class="text-muted">${productCurrency}</small></td>
-                        <td>
-                            <div class="d-flex gap-1 flex-wrap">
-                                <button type="button" class="btn btn-success btn-sm" onclick="selectProductFromModal(${JSON.stringify(product).replace(/"/g, '&quot;')})">
-                                    <i class="fas fa-plus"></i> Agregar
-                                </button>
-                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="viewFichasTecnicas('${product.code}')" title="Ver Ficha Técnica">
-                                    <i class="fas fa-file-alt"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
-
-            html += `
-                        </tbody>
-                    </table>
-                </div>
-                <div class="text-muted text-center mt-2">
-                    <small>Se encontraron ${products.length} productos</small>
-                </div>
-            `;
-
-            resultsContainer.innerHTML = html;
-
-            // Update filters with current products
-            updateModalFilters(products);
         }
 
         function updateModalFilters(products) {
-            // Extract unique brands
+            // Unique brands
             const brands = [...new Set(products.map(p => p.brand).filter(b => b))].sort();
             const brandSelect = document.getElementById('modal_brand_filter');
             brandSelect.innerHTML = '<option value="">Todas las marcas</option>';
             brands.forEach(brand => {
-                brandSelect.innerHTML += `<option value="${brand}">${brand}</option>`;
+                brandSelect.innerHTML += `<option value="${escapeHtml(brand)}">${escapeHtml(brand)}</option>`;
             });
 
-            // Extract unique warehouses that have stock > 0
+            // Unique warehouses with stock > 0
             const warehousesWithStock = new Set();
             products.forEach(product => {
                 if (product.warehouses) {
@@ -2216,72 +2090,271 @@ Tiempo de entrega: 7 días hábiles.`;
                 }
             });
 
-            const warehouses = [...warehousesWithStock].sort();
+            const warehousesList = [...warehousesWithStock].sort();
             const warehouseSelect = document.getElementById('modal_warehouse_filter');
             warehouseSelect.innerHTML = '<option value="">Todos los almacenes</option>';
-            warehouses.forEach(warehouse => {
-                warehouseSelect.innerHTML += `<option value="${warehouse}">${warehouse}</option>`;
+            warehousesList.forEach(warehouse => {
+                warehouseSelect.innerHTML += `<option value="${escapeHtml(warehouse)}">${escapeHtml(warehouse)}</option>`;
             });
 
-            // Mantener el almacén asignado/elegido como selección por defecto (si está disponible)
             if (userWarehouseChoice && [...warehouseSelect.options].some(o => o.value === userWarehouseChoice)) {
                 warehouseSelect.value = userWarehouseChoice;
             }
 
-            // Remove existing event listeners to avoid duplicates
             brandSelect.removeEventListener('change', filterModalResults);
             warehouseSelect.removeEventListener('change', filterModalResults);
-
-            // Add filter event listeners
             brandSelect.addEventListener('change', filterModalResults);
             warehouseSelect.addEventListener('change', filterModalResults);
 
-            // Aplicar el filtro por defecto (almacén asignado) sobre los resultados
             filterModalResults();
         }
 
         function filterModalResults() {
             const brandFilter = document.getElementById('modal_brand_filter').value;
             const warehouseFilter = document.getElementById('modal_warehouse_filter').value;
-            const rows = document.querySelectorAll('#modal_search_results tbody tr');
 
-            let visibleCount = 0;
-            rows.forEach(row => {
-                const brand = row.dataset.brand || '';
-                const warehouses = row.dataset.warehouses || '';
-                const warehouseStocks = row.dataset.warehouseStocks || '{}';
-
+            modalFilteredProducts = modalAllProducts.filter(product => {
+                const brand = product.brand || '';
                 const brandMatch = !brandFilter || brand === brandFilter;
 
                 let warehouseMatch = true;
                 if (warehouseFilter) {
-                    try {
-                        const stockData = JSON.parse(warehouseStocks);
-                        // Check if the selected warehouse exists and has stock > 0
-                        warehouseMatch = stockData[warehouseFilter] && parseFloat(stockData[warehouseFilter]) > 0;
-                    } catch (e) {
-                        // Fallback to simple string check if JSON parsing fails
-                        warehouseMatch = warehouses.includes(warehouseFilter);
+                    if (product.warehouses && typeof product.warehouses === 'object') {
+                        warehouseMatch = parseFloat(product.warehouses[warehouseFilter] || 0) > 0;
+                    } else {
+                        warehouseMatch = false;
+                    }
+                }
+                return brandMatch && warehouseMatch;
+            });
+
+            const kpiCount = document.getElementById('modal_kpi_count');
+            if (kpiCount) {
+                kpiCount.style.display = 'inline-block';
+                kpiCount.textContent = `${modalFilteredProducts.length} producto(s)`;
+            }
+
+            modalCurrentPage = 1;
+            renderModalPage();
+        }
+
+        function setModalPage(p) {
+            modalCurrentPage = p;
+            renderModalPage();
+        }
+
+        function setModalPerPage(num) {
+            modalPerPage = num;
+            modalCurrentPage = 1;
+            renderModalPage();
+        }
+
+        function renderModalPage() {
+            const resultsContainer = document.getElementById('modal_search_results');
+            if (!resultsContainer) return;
+
+            if (modalFilteredProducts.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="alert alert-info text-center py-4 my-3">
+                        <i class="fas fa-info-circle fa-2x mb-2 text-info"></i>
+                        <div class="fw-bold">No hay productos que coincidan con los filtros seleccionados</div>
+                        <div class="small text-muted mt-1">Pruebe seleccionando "Todas las marcas" o "Todos los almacenes".</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const total = modalFilteredProducts.length;
+            const isAll = (modalPerPage === 'all' || modalPerPage >= 9999);
+            const actualPerPage = isAll ? total : parseInt(modalPerPage, 10);
+            const totalPages = isAll ? 1 : Math.max(1, Math.ceil(total / actualPerPage));
+
+            if (modalCurrentPage > totalPages) modalCurrentPage = totalPages;
+            if (modalCurrentPage < 1) modalCurrentPage = 1;
+
+            const startIndex = isAll ? 0 : (modalCurrentPage - 1) * actualPerPage;
+            const endIndex = isAll ? total : Math.min(total, startIndex + actualPerPage);
+            const pageProducts = isAll ? modalFilteredProducts : modalFilteredProducts.slice(startIndex, endIndex);
+
+            const quotationCurrency = document.getElementById('currency').value;
+            const currencySymbol = quotationCurrency === 'USD' ? '$' : 'S/';
+
+            let html = `
+                <div class="card border-0 shadow-sm" style="background-color: var(--color-panel, #18181B); border: 1px solid var(--color-rule, #27272A) !important; border-radius: 10px; overflow: hidden;">
+                    <!-- Table Bar with Page Size Switcher -->
+                    <div class="card-header bg-body-tertiary border-bottom py-2 px-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="small text-muted">
+                                Mostrando <strong>${startIndex + 1} - ${endIndex}</strong> de <strong>${total}</strong> productos
+                            </span>
+                        </div>
+                        <div class="d-flex align-items-center gap-1.5">
+                            <span class="text-muted small" style="font-size: 0.72rem;">Ver:</span>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn ${modalPerPage === 10 ? 'btn-primary' : 'btn-outline-secondary'} py-0 px-2" style="font-size: 0.72rem;" onclick="setModalPerPage(10)">10</button>
+                                <button type="button" class="btn ${modalPerPage === 15 ? 'btn-primary' : 'btn-outline-secondary'} py-0 px-2" style="font-size: 0.72rem;" onclick="setModalPerPage(15)">15</button>
+                                <button type="button" class="btn ${modalPerPage === 25 ? 'btn-primary' : 'btn-outline-secondary'} py-0 px-2" style="font-size: 0.72rem;" onclick="setModalPerPage(25)">25</button>
+                                <button type="button" class="btn ${isAll ? 'btn-primary' : 'btn-outline-secondary'} py-0 px-2" style="font-size: 0.72rem;" onclick="setModalPerPage('all')">Todos</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Consolidated 4-Column Table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" style="width: 100%;">
+                            <thead style="background-color: var(--color-canvas, #09090B); font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase;">
+                                <tr>
+                                    <th class="ps-3 py-2 text-muted" style="width: 170px;">Producto / Código</th>
+                                    <th class="py-2 text-muted" style="min-width: 260px;">Descripción, Marca & Ficha</th>
+                                    <th class="py-2 text-muted" style="min-width: 220px;">Precio & Stock</th>
+                                    <th class="pe-3 py-2 text-end text-muted" style="width: 120px;">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+
+            pageProducts.forEach(product => {
+                // Price calculation
+                let price = parseFloat(product.regular_price) || parseFloat(product.precio) || 0;
+                const productCurrency = product.price_currency || 'USD';
+
+                if (quotationCurrency !== productCurrency) {
+                    if (productCurrency === 'USD' && quotationCurrency === 'PEN') {
+                        price = price * parseFloat(exchangeRate);
+                    } else if (productCurrency === 'PEN' && quotationCurrency === 'USD') {
+                        price = price / parseFloat(exchangeRate);
                     }
                 }
 
-                if (brandMatch && warehouseMatch) {
-                    row.style.display = '';
-                    visibleCount++;
+                // Image thumbnail
+                let imgThumb = '';
+                if (product.image_url && (product.image_url.startsWith('http') || product.image_url.startsWith('/'))) {
+                    imgThumb = `<img src="${escapeHtml(product.image_url)}" alt="Producto" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">`;
                 } else {
-                    row.style.display = 'none';
+                    imgThumb = `<i class="fas fa-image text-muted opacity-50" style="font-size: 1.1rem;"></i>`;
                 }
+
+                // Warehouse stocks chips
+                let warehouseChips = '';
+                if (product.warehouses && typeof product.warehouses === 'object') {
+                    const positiveWarehouses = Object.entries(product.warehouses).filter(([w, s]) => parseFloat(s) > 0);
+                    if (positiveWarehouses.length > 0) {
+                        warehouseChips = positiveWarehouses.map(([w, s]) =>
+                            `<span class="badge font-monospace bg-body-tertiary border text-body py-0.5 px-1.5" style="font-size:0.65rem;" title="${escapeHtml(w)}: ${s} unid.">${escapeHtml(w)}: <strong>${parseFloat(s).toFixed(0)}</strong></span>`
+                        ).join(' ');
+                    } else {
+                        warehouseChips = '<span class="text-muted small" style="font-size:0.68rem;">Sin stock en almacenes</span>';
+                    }
+                }
+
+                const brand = product.brand || '';
+                const brandPill = brand ? `<span class="badge bg-secondary-subtle text-secondary small py-0.5 px-1.5" style="font-size:0.68rem;">${escapeHtml(brand)}</span>` : '';
+                const productJson = JSON.stringify(product).replace(/"/g, '&quot;');
+
+                html += `
+                    <tr>
+                        <!-- Col 1: Producto / Código -->
+                        <td class="ps-3 py-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="rounded-2 d-flex align-items-center justify-content-center"
+                                     style="width: 44px; height: 44px; background: var(--color-canvas, #09090B); border: 1px solid var(--color-rule, #27272A); overflow: hidden; cursor: pointer; flex-shrink: 0;"
+                                     onclick="showImageModal('${escapeHtml(product.image_url || '')}', '${escapeHtml(product.name || product.description || '')}')" title="Ver imagen">
+                                    ${imgThumb}
+                                </div>
+                                <div>
+                                    <div class="font-monospace fw-bold text-body small" style="font-size: 0.82rem;">${escapeHtml(product.code)}</div>
+                                    <button type="button" class="btn btn-link btn-sm p-0 text-muted" onclick="navigator.clipboard.writeText('${escapeHtml(product.code)}')" title="Copiar código" style="font-size: 0.68rem;">
+                                        <i class="fas fa-copy"></i> Copiar
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+
+                        <!-- Col 2: Descripción, Marca & Ficha -->
+                        <td class="py-2">
+                            <div class="fw-semibold text-body" style="font-size: 0.88rem; line-height: 1.35;">
+                                ${escapeHtml(product.name || product.description)}
+                            </div>
+                            <div class="d-flex flex-wrap align-items-center gap-1.5 mt-1">
+                                ${brandPill}
+                                <button type="button" class="btn btn-outline-danger btn-sm py-0 px-1.5" onclick="viewFichasTecnicas('${escapeHtml(product.code)}')" title="Ver Ficha Técnica" style="font-size: 0.68rem;">
+                                    <i class="fas fa-file-pdf me-0.5"></i> Ficha
+                                </button>
+                            </div>
+                        </td>
+
+                        <!-- Col 3: Precio & Stock -->
+                        <td class="py-2">
+                            <div class="d-flex align-items-baseline gap-1.5 mb-1">
+                                <span class="font-monospace fw-bold fs-6" style="color: var(--color-ink, #FAFAFA);">${currencySymbol} ${price.toFixed(2)}</span>
+                                <span class="text-muted small" style="font-size: 0.68rem;">(${escapeHtml(productCurrency)})</span>
+                                <span class="badge font-monospace ${product.total_stock > 0 ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger'} px-1.5 py-0.5 ms-1" style="font-size: 0.72rem; font-weight: 700;">
+                                    Stock: ${product.total_stock}
+                                </span>
+                            </div>
+                            <div class="d-flex flex-wrap gap-1">
+                                ${warehouseChips}
+                            </div>
+                        </td>
+
+                        <!-- Col 4: Acción -->
+                        <td class="pe-3 py-2 text-end">
+                            <button type="button" class="btn btn-warning text-dark btn-sm fw-bold px-2.5 py-1.5 shadow-sm d-inline-flex align-items-center gap-1"
+                                    onclick="selectProductFromModal(${productJson})" title="Agregar producto a la cotización">
+                                <i class="fas fa-plus"></i>
+                                <span>Agregar</span>
+                            </button>
+                        </td>
+                    </tr>
+                `;
             });
 
-            // Update results count
-            const resultsCountElement = document.getElementById('results_count');
-            const totalProducts = rows.length;
+            html += `
+                            </tbody>
+                        </table>
+                    </div>
 
-            if (visibleCount === totalProducts) {
-                resultsCountElement.textContent = visibleCount;
-            } else {
-                resultsCountElement.innerHTML = `${visibleCount} <small class="text-muted">de ${totalProducts}</small>`;
+                    <!-- Modal Pagination Bar -->
+                    ${totalPages > 1 ? `
+                        <div class="card-footer bg-body-tertiary border-top py-2 px-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+                            <div class="text-muted small" style="font-size: 0.75rem;">
+                                Página <strong>${modalCurrentPage}</strong> de <strong>${totalPages}</strong>
+                            </div>
+                            <nav aria-label="Navegación del modal">
+                                <ul class="pagination pagination-sm mb-0">
+                                    <li class="page-item ${modalCurrentPage <= 1 ? 'disabled' : ''}">
+                                        <button type="button" class="page-link" onclick="setModalPage(${modalCurrentPage - 1})">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </button>
+                                    </li>
+                                    ${generateModalPaginationNumbers(modalCurrentPage, totalPages)}
+                                    <li class="page-item ${modalCurrentPage >= totalPages ? 'disabled' : ''}">
+                                        <button type="button" class="page-link" onclick="setModalPage(${modalCurrentPage + 1})">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
+            resultsContainer.innerHTML = html;
+        }
+
+        function generateModalPaginationNumbers(current, total) {
+            let str = '';
+            const range = 2;
+            const start = Math.max(1, current - range);
+            const end = Math.min(total, current + range);
+
+            for (let i = start; i <= end; i++) {
+                str += `<li class="page-item ${i === current ? 'active' : ''}">
+                    <button type="button" class="page-link" onclick="setModalPage(${i})">${i}</button>
+                </li>`;
             }
+            return str;
         }
 
         function showImageModal(imageUrl, productName) {
@@ -2805,7 +2878,7 @@ Tiempo de entrega: 7 días hábiles.`;
                             <div class="col-6 col-md-1">
                                 <div class="mb-3">
                                     <label class="form-label">Cant.</label>
-                                    <input type="number" class="form-control item-quantity" name="items[${itemIndex}][quantity]" placeholder="Cant." min="0.01" step="0.01" value="1">
+                                    <input type="number" class="form-control item-quantity" name="items[${itemIndex}][quantity]" placeholder="Cant." min="1" step="1" value="1">
                                 </div>
                             </div>
 
@@ -3534,6 +3607,140 @@ Tiempo de entrega: 7 días hábiles.`;
             return div.innerHTML;
         }
 
+        // Function to save quotation and display official PDF for printing
+        async function printQuotationPDF(e) {
+            // Validate that there are items
+            const items = document.querySelectorAll('.item-row');
+            if (items.length === 0) {
+                alert('Por favor, agrega al menos un producto antes de imprimir la cotización.');
+                return;
+            }
+
+            const customerId = document.getElementById('customer_id')?.value;
+            if (!customerId) {
+                alert('Por favor, selecciona un cliente primero.');
+                return;
+            }
+
+            // Immediately open blank tab to bypass browser popup blockers
+            const printWindow = window.open('about:blank', '_blank');
+            if (printWindow) {
+                printWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html lang="es">
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>Preparando impresión...</title>
+                        <style>
+                            body {
+                                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                height: 100vh;
+                                margin: 0;
+                                background-color: #09090b;
+                                color: #f4f4f5;
+                            }
+                            .loader-card {
+                                text-align: center;
+                                padding: 32px;
+                                border: 1px solid #27272a;
+                                border-radius: 12px;
+                                background-color: #18181b;
+                                box-shadow: 0 16px 36px rgba(0,0,0,0.4);
+                                max-width: 420px;
+                            }
+                            .spinner {
+                                width: 42px;
+                                height: 42px;
+                                border: 3px solid rgba(245, 158, 11, 0.2);
+                                border-top-color: #f59e0b;
+                                border-radius: 50%;
+                                animation: spin 0.8s linear infinite;
+                                margin: 0 auto 16px;
+                            }
+                            @keyframes spin { to { transform: rotate(360deg); } }
+                            h3 { margin: 0 0 8px; font-size: 16px; font-weight: 600; color: #fff; }
+                            p { margin: 0; font-size: 13px; color: #a1a1aa; line-height: 1.4; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="loader-card">
+                            <div class="spinner"></div>
+                            <h3>Guardando cotización...</h3>
+                            <p>Generando el formato PDF oficial para enviar a impresión.</p>
+                        </div>
+                    </body>
+                    </html>
+                `);
+            }
+
+            // Show loading on button
+            const btn = document.getElementById('btnPrintQuotation') || (e && e.target ? e.target.closest('button') : null);
+            let originalText = '';
+            if (btn) {
+                originalText = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Guardando...';
+            }
+
+            try {
+                // Step 1: Save quotation via API
+                const form = document.getElementById('quotationForm');
+                const formData = new FormData(form);
+                const saveResponse = await fetch('<?= BASE_URL ?>/api/save_quotation.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const saveResult = await saveResponse.json();
+
+                if (!saveResult.success) {
+                    throw new Error(saveResult.message || 'Error al guardar la cotización');
+                }
+
+                const quotationId = saveResult.quotation_id;
+                console.log('Cotización guardada exitosamente con ID:', quotationId);
+
+                if (btn) {
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Abriendo PDF...';
+                }
+
+                // Step 2: Open official PDF with print parameter
+                const pdfPrintUrl = `<?= BASE_URL ?>/quotations/pdf.php?id=${quotationId}&print=1`;
+                if (printWindow && !printWindow.closed) {
+                    printWindow.location.href = pdfPrintUrl;
+                } else {
+                    window.open(pdfPrintUrl, '_blank');
+                }
+
+                // Step 3: Redirect main editor page to saved quotation view
+                setTimeout(() => {
+                    window.location.href = `<?= BASE_URL ?>/quotations/view.php?id=${quotationId}`;
+                }, 800);
+
+            } catch (error) {
+                console.error('Error al guardar e imprimir cotización:', error);
+                if (printWindow && !printWindow.closed) {
+                    printWindow.close();
+                }
+                alert('❌ Error al guardar cotización: ' + error.message);
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            }
+        }
+
+        // Intercept Ctrl+P to trigger official PDF print workflow
+        window.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P')) {
+                e.preventDefault();
+                printQuotationPDF(e);
+            }
+        });
+
         // Function to download PDF
         async function downloadPDF() {
             // Validate that there are items
@@ -4038,5 +4245,7 @@ Tiempo de entrega: 7 días hábiles.`;
             </div>
         </div>
     </div>
-</body>
-</html>
+
+<?php
+require_once __DIR__ . '/../../includes/app_footer.php';
+?>

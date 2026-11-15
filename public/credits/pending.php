@@ -40,49 +40,10 @@ $pendingRequests = $creditManager->getPendingCreditRequests($companyId);
 $stats = $creditManager->getCreditStats($companyId);
 
 $pageTitle = 'Solicitudes de Crédito Pendientes';
+$pageTitle = 'Solicitudes de Crédito Pendientes';
+$activePage = 'credits';
+require_once __DIR__ . '/../../includes/app_header.php';
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $pageTitle ?></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Tema profesional COTI (no-flash + marca) -->
-    <script>(function(){var t=localStorage.getItem('coti-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-bs-theme',t);})();</script>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/theme-pro.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/theme-pro.css") ?>">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/style.css") ?>">
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg bg-primary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="<?= BASE_URL ?>/dashboard_simple.php">
-                <i class="fas fa-chart-line"></i> Sistema de Cotizaciones
-            </a>
-            <div class="navbar-nav ms-auto">
-                <button class="theme-toggle me-3" id="themeToggle" title="Cambiar tema">
-                    <i class="fas fa-moon" id="themeIcon"></i>
-                </button>
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user"></i> <?= htmlspecialchars($auth->getUser()['username']) ?>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <?php if (!$isOnlyCredits): ?>
-                            <li><a class="dropdown-item" href="<?= BASE_URL ?>/dashboard_simple.php">Dashboard</a></li>
-                        <?php endif; ?>
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/credits/pending.php">Solicitudes Pendientes</a></li>
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/credits/history.php">Historial</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/logout.php">Cerrar Sesión</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <main class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1><i class="fas fa-credit-card"></i> <?= $pageTitle ?></h1>
             <a href="<?= BASE_URL ?>/credits/history.php" class="btn btn-outline-secondary">
@@ -212,9 +173,7 @@ $pageTitle = 'Solicitudes de Crédito Pendientes';
                 <?php endif; ?>
             </div>
         </div>
-    </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="<?= BASE_URL ?>/assets/js/theme-pro.js"></script>
-</body>
-</html>
+<?php
+require_once __DIR__ . '/../../includes/app_footer.php';
+?>

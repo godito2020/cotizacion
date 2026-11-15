@@ -66,10 +66,29 @@ $pageTitle = 'Dashboard';
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $pageTitle ?></title>
+    <script>
+        (function () {
+            var mode = 'system';
+            try {
+                var saved = localStorage.getItem('coti-theme');
+                if (saved === 'light' || saved === 'dark' || saved === 'system') mode = saved;
+            } catch (e) {}
+            var theme = mode === 'system'
+                ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                : mode;
+            document.documentElement.setAttribute('data-bs-theme', theme);
+            document.documentElement.setAttribute('data-coti-theme-mode', mode);
+        })();
+    </script>
     <?php include __DIR__ . '/../includes/pwa_head.php'; ?>
 
+    <!-- gstack Typography: Satoshi, DM Sans, JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@700,900&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -100,27 +119,31 @@ $pageTitle = 'Dashboard';
             margin: 0;
         }
 
-        /* Mobile Header */
+        /* gstack Industrial Mobile Header */
         .mobile-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #0a58ca 100%);
-            color: white;
-            padding: 16px;
+            background: var(--color-panel);
+            border-bottom: 1px solid var(--color-rule);
+            color: var(--color-ink);
+            padding: 14px 16px;
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: var(--elevation-paper);
         }
 
         .mobile-header h1 {
-            font-size: 20px;
+            font-family: var(--font-display) !important;
+            font-size: 18px;
             margin: 0;
-            font-weight: 600;
+            font-weight: 700;
+            color: var(--color-ink);
+            letter-spacing: -0.02em;
         }
 
         .mobile-header .welcome {
-            font-size: 13px;
-            opacity: 0.9;
-            margin-top: 4px;
+            font-size: 12px;
+            color: var(--color-muted);
+            margin-top: 2px;
         }
 
         /* Container */
@@ -137,46 +160,54 @@ $pageTitle = 'Dashboard';
         }
 
         .stat-card {
-            background: white;
+            background: var(--color-panel);
+            border: 1px solid var(--color-rule);
             border-radius: 12px;
-            padding: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
+            padding: 14px;
+            box-shadow: var(--elevation-paper);
+            transition: transform 0.15s ease, border-color 0.15s ease;
         }
 
         .stat-card:active {
             transform: scale(0.98);
         }
 
-        .stat-card.primary { border-left: 4px solid var(--primary-color); }
-        .stat-card.success { border-left: 4px solid var(--success-color); }
-        .stat-card.info { border-left: 4px solid var(--info-color); }
-        .stat-card.warning { border-left: 4px solid var(--warning-color); }
+        .stat-card.primary { border-top: 3px solid var(--color-action); }
+        .stat-card.success { border-top: 3px solid var(--color-success); }
+        .stat-card.info { border-top: 3px solid var(--color-info); }
+        .stat-card.warning { border-top: 3px solid var(--color-warning); }
 
         .stat-value {
-            font-size: 28px;
+            font-family: var(--font-mono) !important;
+            font-size: 24px;
             font-weight: 700;
-            margin-bottom: 4px;
+            color: var(--color-ink);
+            margin-bottom: 2px;
+            letter-spacing: -0.02em;
         }
 
         .stat-label {
-            font-size: 13px;
-            color: #6c757d;
-            font-weight: 500;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--color-muted);
         }
 
         .stat-icon {
-            font-size: 24px;
-            opacity: 0.3;
+            font-size: 20px;
+            color: var(--color-muted);
+            opacity: 0.5;
             float: right;
         }
 
         /* Section Title */
         .section-title {
-            font-size: 16px;
+            font-family: var(--font-display);
+            font-size: 15px;
             font-weight: 700;
-            color: #212529;
-            margin: 24px 0 12px 0;
+            color: var(--color-ink);
+            margin: 20px 0 12px 0;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -191,52 +222,51 @@ $pageTitle = 'Dashboard';
         }
 
         .action-card {
-            background: white;
+            background: var(--color-panel);
+            border: 1px solid var(--color-rule);
             border-radius: 12px;
-            padding: 20px 16px;
+            padding: 16px 12px;
             text-align: center;
             text-decoration: none;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            transition: all 0.2s;
-            color: white;
+            box-shadow: var(--elevation-paper);
+            transition: transform 0.15s ease, border-color 0.15s ease;
+            color: var(--color-ink);
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 8px;
-            min-height: 100px;
+            min-height: 90px;
             justify-content: center;
         }
 
         .action-card:active {
-            transform: scale(0.95);
+            transform: scale(0.96);
         }
 
         .action-card i {
-            font-size: 32px;
-            margin-bottom: 4px;
+            font-size: 24px;
+            color: var(--color-action);
+            margin-bottom: 2px;
         }
 
         .action-card span {
-            font-size: 13px;
+            font-size: 12.5px;
             font-weight: 600;
+            color: var(--color-ink);
         }
-
-        .action-card.primary { background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); }
-        .action-card.success { background: linear-gradient(135deg, #198754 0%, #146c43 100%); }
-        .action-card.info { background: linear-gradient(135deg, #0dcaf0 0%, #0aa2c0 100%); }
-        .action-card.warning { background: linear-gradient(135deg, #ffc107 0%, #cc9a06 100%); }
 
         /* Quotation Card */
         .quotation-card {
-            background: white;
+            background: var(--color-panel);
+            border: 1px solid var(--color-rule);
             border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            box-shadow: var(--elevation-paper);
             text-decoration: none;
             color: inherit;
             display: block;
-            transition: transform 0.2s;
+            transition: transform 0.15s ease, border-color 0.15s ease;
         }
 
         .quotation-card:active {
@@ -246,32 +276,33 @@ $pageTitle = 'Dashboard';
         .quotation-header {
             display: flex;
             justify-content: space-between;
-            align-items: start;
-            margin-bottom: 12px;
+            align-items: center;
+            margin-bottom: 8px;
         }
 
         .quotation-number {
-            font-size: 16px;
+            font-family: var(--font-display);
+            font-size: 14.5px;
             font-weight: 700;
-            color: #212529;
+            color: var(--color-ink);
         }
 
         .quotation-status {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 11px;
             font-weight: 600;
             white-space: nowrap;
         }
 
-        .status-draft { background: #6c757d; color: white; }
-        .status-sent { background: #0dcaf0; color: white; }
-        .status-accepted { background: #198754; color: white; }
-        .status-rejected { background: #dc3545; color: white; }
+        .status-draft { background: var(--color-draft-bg); color: var(--color-draft); }
+        .status-sent { background: var(--color-action-subtle); color: var(--color-action); }
+        .status-accepted { background: var(--color-success-bg); color: var(--color-success); }
+        .status-rejected { background: var(--color-danger-bg); color: var(--color-danger); }
 
         .quotation-customer {
-            font-size: 14px;
-            color: #6c757d;
+            font-size: 13px;
+            color: var(--color-muted);
             margin-bottom: 8px;
         }
 
@@ -279,60 +310,71 @@ $pageTitle = 'Dashboard';
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-top: 12px;
-            border-top: 1px solid var(--gray-200);
+            padding-top: 10px;
+            border-top: 1px solid var(--color-rule);
         }
 
         .quotation-date {
-            font-size: 13px;
-            color: #6c757d;
+            font-size: 12px;
+            color: var(--color-muted);
         }
 
         .quotation-total {
-            font-size: 18px;
+            font-family: var(--font-mono) !important;
+            font-size: 16px;
             font-weight: 700;
-            color: var(--primary-color);
+            color: var(--color-action);
         }
 
         /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 40px 20px;
-            background: white;
+            padding: 36px 16px;
+            background: var(--color-panel);
+            border: 1px solid var(--color-rule);
             border-radius: 12px;
-            color: #6c757d;
+            color: var(--color-muted);
         }
 
         .empty-state i {
-            font-size: 48px;
-            margin-bottom: 16px;
-            opacity: 0.3;
+            font-size: 40px;
+            margin-bottom: 12px;
+            opacity: 0.4;
+            color: var(--color-muted);
         }
 
         .empty-state p {
-            margin-bottom: 16px;
+            margin-bottom: 12px;
+            font-size: 13px;
         }
 
         /* View All Link */
         .view-all {
             display: inline-block;
-            color: var(--primary-color);
+            color: var(--color-action);
             text-decoration: none;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             margin-left: auto;
         }
     </style>
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/theme-pro.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/theme-pro.css") ?>">
 </head>
 <body>
     <!-- Mobile Header -->
     <div class="mobile-header">
         <div class="d-flex justify-content-between align-items-center">
             <div>
-                <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+                <h1><span class="live-pulse-dot me-2"></span>Dashboard</h1>
                 <div class="welcome">Bienvenido, <?= htmlspecialchars($user['first_name'] ?: $user['username']) ?></div>
             </div>
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2 align-items-center">
+                <!-- Theme toggle 3-state pill -->
+                <div class="theme-toggle-pill" role="radiogroup" aria-label="Preferencia de tema">
+                    <button type="button" class="theme-btn" data-theme-val="light" title="Modo Claro"><i class="fas fa-sun"></i></button>
+                    <button type="button" class="theme-btn" data-theme-val="system" title="Tema del Sistema"><i class="fas fa-desktop"></i></button>
+                    <button type="button" class="theme-btn" data-theme-val="dark" title="Modo Oscuro"><i class="fas fa-moon"></i></button>
+                </div>
                 <!-- Notification Bell -->
                 <?php include __DIR__ . '/../includes/notification_bell.php'; ?>
 
@@ -477,7 +519,11 @@ $pageTitle = 'Dashboard';
         <?php endif; ?>
     </div>
 
+    <!-- Universal Mobile Bottom Navigation -->
+    <?php include __DIR__ . "/../includes/mobile_bottom_nav.php"; ?>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="<?= BASE_URL ?>/assets/js/theme-pro.js?v=<?= @filemtime(APP_ROOT . "/public/assets/js/theme-pro.js") ?>"></script>
 </body>
 </html>

@@ -247,5 +247,8 @@ $pageTitle = 'Mis Solicitudes de Facturación';
         }
     </script>
     <script src="<?= BASE_URL ?>/assets/js/theme-pro.js"></script>
+
+    <!-- Universal Mobile Bottom Navigation -->
+    <?php include __DIR__ . "/../../includes/mobile_bottom_nav.php"; ?>
 </body>
 </html>

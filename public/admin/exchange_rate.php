@@ -9,7 +9,7 @@ if (!$auth->isLoggedIn()) {
 
 if (!$auth->hasRole(['Administrador del Sistema', 'Administrador de Empresa'])) {
     $_SESSION['error_message'] = 'No tienes permisos para acceder a esta sección';
-    $auth->redirect(BASE_URL . '/dashboard_simple.php');
+    $auth->redirect(BASE_URL . '/dashboard.php');
 }
 
 $user = $auth->getUser();
@@ -19,7 +19,7 @@ $companySettings = new CompanySettings();
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $exchangeRate = floatval($_POST['exchange_rate']);
+    $exchangeRate = floatval($_POST['exchange_rate'] ?? 0);
 
     if (!$companyId) {
         $_SESSION['error_message'] = 'Error: No se pudo identificar la empresa del usuario';
@@ -75,191 +75,236 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Get current exchange rate
-$currentExchangeRate = $companySettings->getSetting($companyId, 'exchange_rate_usd_pen') ?? '3.80';
+$currentExchangeRate = (float)($companySettings->getSetting($companyId, 'exchange_rate_usd_pen') ?? 3.80);
 
 $pageTitle = 'Tipo de Cambio';
+$activePage = 'exchange_rate';
+require_once __DIR__ . '/../../includes/app_header.php';
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $pageTitle ?></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Tema profesional COTI (no-flash + marca) -->
-    <script>(function(){var t=localStorage.getItem('coti-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-bs-theme',t);})();</script>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/theme-pro.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/theme-pro.css") ?>">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/style.css") ?>">
-    <style>
-        .exchange-card {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .exchange-display {
-            font-size: 3rem;
-            font-weight: bold;
-            color: var(--brand);
-        }
-        .currency-icon {
-            font-size: 4rem;
-            color: #198754;
-        }
-    </style>
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg bg-primary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="<?= BASE_URL ?>/dashboard_simple.php">
-                <i class="fas fa-chart-line"></i> Sistema de Cotizaciones
-            </a>
-            <div class="navbar-nav ms-auto">
-                <button class="theme-toggle me-3" id="themeToggle" title="Cambiar tema">
-                    <i class="fas fa-moon" id="themeIcon"></i>
-                </button>
 
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user"></i> <?= htmlspecialchars($user['username']) ?>
+<div class="container-fluid px-2 px-md-3 py-3" style="max-width: 900px; margin: 0 auto;">
+
+    <!-- =========================================================
+         1. BREADCRUMB & HEADER
+         ========================================================= -->
+    <div class="d-flex flex-column gap-2 mb-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1 small">
+                <li class="breadcrumb-item">
+                    <a href="<?= BASE_URL ?>/dashboard.php" class="text-decoration-none text-muted">
+                        <i class="fas fa-home me-1"></i>Inicio
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/dashboard_simple.php">Dashboard</a></li>
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/admin/index.php">Panel Admin</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/logout.php">Cerrar Sesión</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
+                </li>
+                <li class="breadcrumb-item text-muted">Sistema</li>
+                <li class="breadcrumb-item active text-body fw-semibold" aria-current="page">Tipo de Cambio</li>
+            </ol>
+        </nav>
 
-    <main class="container py-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1><i class="fas fa-exchange-alt"></i> <?= $pageTitle ?></h1>
-            <a href="<?= BASE_URL ?>/admin/index.php" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Volver
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="status-pulse-dot" style="display:inline-block; width:9px; height:9px; border-radius:50%; background:#F59E0B; box-shadow:0 0 8px rgba(245, 158, 11, 0.6);"></span>
+                    <h1 class="h4 fw-bold mb-0 text-body" style="font-family: var(--font-display); letter-spacing: -0.02em;">
+                        Configuración de Tipo de Cambio
+                    </h1>
+                </div>
+                <p class="text-muted small mb-0 mt-0.5" style="font-size: 0.82rem;">
+                    Paridad cambiaria oficial USD / PEN aplicada en cotizaciones, productos y facturación.
+                </p>
+            </div>
+
+            <a href="<?= BASE_URL ?>/admin/index.php" class="btn btn-outline-secondary btn-sm px-3">
+                <i class="fas fa-arrow-left me-1"></i> Panel Admin
             </a>
         </div>
+    </div>
 
-        <?php if (isset($_SESSION['success_message'])): ?>
-            <div class="alert alert-success alert-dismissible fade show">
-                <i class="fas fa-check-circle"></i> <?= htmlspecialchars($_SESSION['success_message']) ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-            <?php unset($_SESSION['success_message']); ?>
-        <?php endif; ?>
+    <!-- Feedback Alerts -->
+    <?php if (isset($_SESSION['success_message'])): ?>
+        <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2 py-2 px-3 small mb-3" role="alert">
+            <i class="fas fa-check-circle"></i>
+            <div><?= htmlspecialchars($_SESSION['success_message']) ?></div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <?php unset($_SESSION['success_message']); ?>
+    <?php endif; ?>
 
-        <?php if (isset($_SESSION['error_message'])): ?>
-            <div class="alert alert-danger alert-dismissible fade show">
-                <i class="fas fa-exclamation-circle"></i> <?= htmlspecialchars($_SESSION['error_message']) ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-            <?php unset($_SESSION['error_message']); ?>
-        <?php endif; ?>
+    <?php if (isset($_SESSION['error_message'])): ?>
+        <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2 py-2 px-3 small mb-3" role="alert">
+            <i class="fas fa-exclamation-circle"></i>
+            <div><?= htmlspecialchars($_SESSION['error_message']) ?></div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <?php unset($_SESSION['error_message']); ?>
+    <?php endif; ?>
 
-        <div class="card exchange-card">
-            <div class="card-header bg-warning text-dark">
-                <h5 class="mb-0"><i class="fas fa-dollar-sign"></i> Configurar Tipo de Cambio USD a PEN</h5>
+    <!-- =========================================================
+         2. MASTER PARITY HERO CARD
+         ========================================================= -->
+    <div class="card border-0 shadow-sm mb-4" style="background-color: var(--color-panel); border: 1px solid var(--color-rule) !important; border-radius: 14px; overflow: hidden;">
+        <div class="card-header bg-body-tertiary border-bottom py-2.5 px-4 d-flex justify-content-between align-items-center">
+            <span class="fw-bold small text-body">
+                <i class="fas fa-money-bill-transfer text-warning me-2"></i>Tipo de Cambio Activo
+            </span>
+            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 small">
+                <i class="fas fa-circle-check me-1"></i>En uso
+            </span>
+        </div>
+
+        <div class="card-body p-4">
+            <!-- Visual Exchange Display -->
+            <div class="p-4 rounded text-center mb-4" style="background-color: var(--color-canvas); border: 1px solid var(--color-rule);">
+                <div class="row align-items-center justify-content-center g-3">
+                    <div class="col-auto">
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center text-primary mb-1" style="width: 52px; height: 52px; background: rgba(59, 130, 246, 0.12);">
+                            <i class="fas fa-dollar-sign fa-2x"></i>
+                        </div>
+                        <div class="fs-5 fw-bold text-body" style="font-family: var(--font-mono);">1.00 USD</div>
+                        <div class="small text-muted">Dólar Americano</div>
+                    </div>
+
+                    <div class="col-auto px-4">
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center text-muted" style="width: 36px; height: 36px; background: var(--color-panel); border: 1px solid var(--color-rule);">
+                            <i class="fas fa-equals"></i>
+                        </div>
+                    </div>
+
+                    <div class="col-auto">
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center text-success mb-1" style="width: 52px; height: 52px; background: rgba(16, 185, 129, 0.12);">
+                            <span class="fw-bold fs-4">S/</span>
+                        </div>
+                        <div class="fs-2 fw-bold text-success" style="font-family: var(--font-mono); letter-spacing: -0.02em;">
+                            S/ <?= number_format($currentExchangeRate, 3) ?>
+                        </div>
+                        <div class="small text-muted">Soles Peruanos (PEN)</div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <!-- Current Exchange Rate Display -->
-                <div class="text-center mb-4 p-4 bg-light rounded">
-                    <div class="row align-items-center justify-content-center">
-                        <div class="col-auto">
-                            <i class="fas fa-dollar-sign currency-icon"></i>
-                            <div class="h5 mb-0">1 USD</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-arrow-right fa-2x text-muted"></i>
-                        </div>
-                        <div class="col-auto">
-                            <div class="exchange-display">S/ <?= number_format($currentExchangeRate, 3) ?></div>
-                            <div class="h5 mb-0 text-muted">PEN</div>
-                        </div>
+
+            <!-- Form: Update Rate -->
+            <form method="POST" action="">
+                <div class="mb-3">
+                    <label for="exchange_rate" class="form-label small fw-bold text-body">
+                        Modificar Tipo de Cambio (Soles por 1 USD) *
+                    </label>
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text bg-body-tertiary font-monospace fw-bold">1 USD = S/</span>
+                        <input type="number"
+                               class="form-control text-center fw-bold font-monospace"
+                               id="exchange_rate"
+                               name="exchange_rate"
+                               value="<?= htmlspecialchars(number_format($currentExchangeRate, 3, '.', '')) ?>"
+                               step="0.001"
+                               min="0.001"
+                               max="20"
+                               required
+                               style="font-size: 1.6rem; letter-spacing: 0.05em;">
+                        <span class="input-group-text bg-body-tertiary fw-semibold">PEN</span>
+                    </div>
+                    <div class="form-text small text-muted mt-1">
+                        Ingrese el valor con hasta 3 decimales (ejemplo: <code>3.800</code> o <code>3.745</code>). Se aplicará de inmediato a las nuevas cotizaciones.
                     </div>
                 </div>
 
-                <!-- Update Form -->
-                <form method="POST">
-                    <div class="mb-4">
-                        <label for="exchange_rate" class="form-label fw-bold">Nuevo Tipo de Cambio</label>
-                        <div class="input-group input-group-lg">
-                            <span class="input-group-text">1 USD =</span>
-                            <input type="number" class="form-control form-control-lg text-center"
-                                   id="exchange_rate" name="exchange_rate"
-                                   value="<?= htmlspecialchars($currentExchangeRate) ?>"
-                                   step="0.001" min="0.001" max="20" required
-                                   style="font-size: 1.5rem; font-weight: bold;">
-                            <span class="input-group-text">PEN</span>
-                        </div>
-                        <small class="text-muted">Ingrese el valor del dólar en soles (ejemplo: 3.800)</small>
-                    </div>
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-warning btn-lg fw-bold text-dark shadow-sm">
+                        <i class="fas fa-save me-2"></i> Guardar y Actualizar Tipo de Cambio
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-warning btn-lg">
-                            <i class="fas fa-save"></i> Actualizar Tipo de Cambio
-                        </button>
+    <!-- =========================================================
+         3. INTERACTIVE CONVERSION CALCULATOR & SYSTEM NOTES
+         ========================================================= -->
+    <div class="row g-3">
+        <!-- Interactive Converter -->
+        <div class="col-md-7">
+            <div class="card border-0 shadow-sm h-100" style="background-color: var(--color-panel); border: 1px solid var(--color-rule) !important; border-radius: 12px;">
+                <div class="card-header bg-body-tertiary border-bottom py-2.5 px-3">
+                    <span class="fw-bold small text-body">
+                        <i class="fas fa-calculator text-primary me-2"></i>Calculadora de Conversión Rápida
+                    </span>
+                </div>
+                <div class="card-body p-3">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-5">
+                            <label class="form-label small text-muted mb-1">Dólares (USD)</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control font-monospace fw-semibold" id="usd_amount" value="100" step="0.01" min="0">
+                            </div>
+                        </div>
+
+                        <div class="col-2 text-center pt-3">
+                            <i class="fas fa-arrow-right-arrow-left text-muted"></i>
+                        </div>
+
+                        <div class="col-5">
+                            <label class="form-label small text-muted mb-1">Soles (PEN)</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text">S/</span>
+                                <input type="text" class="form-control font-monospace fw-bold text-success bg-body-tertiary" id="pen_amount" readonly>
+                            </div>
+                        </div>
                     </div>
-                </form>
+                    <div class="small text-muted mt-2 text-center" style="font-size: 0.75rem;">
+                        Conversión en tiempo real basada en la tasa activa: <strong>1 USD = S/ <?= number_format($currentExchangeRate, 3) ?></strong>
+                    </div>
+                </div>
             </div>
-            <div class="card-footer">
-                <div class="alert alert-info mb-0">
-                    <h6><i class="fas fa-info-circle"></i> Información</h6>
-                    <ul class="mb-0">
-                        <li>Este tipo de cambio se utiliza para convertir automáticamente los precios en USD a PEN en las cotizaciones.</li>
-                        <li>Los productos de COBOL vienen con precio en USD.</li>
-                        <li>Cuando una cotización es en Soles (PEN), los precios se multiplican por este factor.</li>
+        </div>
+
+        <!-- System Guidelines Note -->
+        <div class="col-md-5">
+            <div class="card border-0 shadow-sm h-100" style="background-color: var(--color-panel); border: 1px solid var(--color-rule) !important; border-radius: 12px;">
+                <div class="card-header bg-body-tertiary border-bottom py-2.5 px-3">
+                    <span class="fw-bold small text-body">
+                        <i class="fas fa-circle-info text-info me-2"></i>Pautas del Sistema
+                    </span>
+                </div>
+                <div class="card-body p-3">
+                    <ul class="list-unstyled mb-0 d-flex flex-column gap-2 small text-muted" style="font-size: 0.78rem;">
+                        <li class="d-flex align-items-start gap-2">
+                            <i class="fas fa-check text-success mt-1"></i>
+                            <span>Los precios de catálogo COBOL se gestionan originalmente en <strong>Dólares (USD)</strong>.</span>
+                        </li>
+                        <li class="d-flex align-items-start gap-2">
+                            <i class="fas fa-check text-success mt-1"></i>
+                            <span>Cuando una cotización se emite en <strong>Soles (PEN)</strong>, los precios se multiplican por este factor.</span>
+                        </li>
+                        <li class="d-flex align-items-start gap-2">
+                            <i class="fas fa-check text-success mt-1"></i>
+                            <span>Las cotizaciones guardadas mantienen el tipo de cambio registrado en su fecha de emisión.</span>
+                        </li>
                     </ul>
                 </div>
             </div>
         </div>
+    </div>
+</div>
 
-        <!-- Conversion Calculator -->
-        <div class="card exchange-card mt-4">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-calculator"></i> Calculadora de Conversión</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-5">
-                        <label class="form-label">USD (Dólares)</label>
-                        <div class="input-group">
-                            <span class="input-group-text">$</span>
-                            <input type="number" class="form-control" id="usd_amount" value="100" step="0.01" min="0">
-                        </div>
-                    </div>
-                    <div class="col-md-2 d-flex align-items-end justify-content-center">
-                        <i class="fas fa-exchange-alt fa-2x text-muted mb-2"></i>
-                    </div>
-                    <div class="col-md-5">
-                        <label class="form-label">PEN (Soles)</label>
-                        <div class="input-group">
-                            <span class="input-group-text">S/</span>
-                            <input type="text" class="form-control" id="pen_amount" readonly
-                                   style="font-weight: bold; background-color: #f8f9fa;">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const rate = <?= floatval($currentExchangeRate) ?>;
+    const usdInput = document.getElementById('usd_amount');
+    const penOutput = document.getElementById('pen_amount');
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="<?= BASE_URL ?>/assets/js/theme-pro.js"></script>
-    <script>
-        // Conversion calculator
-        const exchangeRate = <?= floatval($currentExchangeRate) ?>;
-        const usdInput = document.getElementById('usd_amount');
-        const penOutput = document.getElementById('pen_amount');
+    function calculate() {
+        if (!usdInput || !penOutput) return;
+        const usd = parseFloat(usdInput.value) || 0;
+        const pen = usd * rate;
+        penOutput.value = pen.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
 
-        function updateConversion() {
-            const usd = parseFloat(usdInput.value) || 0;
-            const pen = usd * exchangeRate;
-            penOutput.value = pen.toFixed(2);
-        }
+    if (usdInput) {
+        usdInput.addEventListener('input', calculate);
+        calculate();
+    }
+});
+</script>
 
-        usdInput.addEventListener('input', updateConversion);
-        updateConversion(); // Initial calculation
-    </script>
-</body>
-</html>
+<?php
+require_once __DIR__ . '/../../includes/app_footer.php';
+?>

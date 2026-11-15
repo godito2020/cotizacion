@@ -18,73 +18,10 @@ $user = $auth->getUser();
 $userPermissions = Permissions::getUserPermissions($auth);
 
 $pageTitle = 'Panel de Administración';
+$pageTitle = 'Panel de Administración';
+$activePage = 'admin';
+require_once __DIR__ . '/../../includes/app_header.php';
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $pageTitle ?></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Tema profesional COTI (no-flash + marca) -->
-    <script>(function(){var t=localStorage.getItem('coti-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-bs-theme',t);})();</script>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/theme-pro.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/theme-pro.css") ?>">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/style.css") ?>">
-    <style>
-        .admin-card {
-            transition: transform 0.2s, box-shadow 0.2s;
-            height: 100%;
-        }
-        .admin-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-        }
-        .admin-card .card-body {
-            text-align: center;
-            padding: 2rem;
-        }
-        .admin-card i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-        .admin-card h5 {
-            font-weight: 600;
-        }
-        .section-title {
-            margin-top: 2rem;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 3px solid #0d6efd;
-        }
-    </style>
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg bg-primary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="<?= BASE_URL ?>/dashboard_simple.php">
-                <i class="fas fa-chart-line"></i> Sistema de Cotizaciones
-            </a>
-            <div class="navbar-nav ms-auto">
-                <button class="theme-toggle me-3" id="themeToggle" title="Cambiar tema">
-                    <i class="fas fa-moon" id="themeIcon"></i>
-                </button>
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user"></i> <?= htmlspecialchars($user['username']) ?>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/dashboard_simple.php">Dashboard</a></li>
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/quotations/index.php">Cotizaciones</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/logout.php">Cerrar Sesión</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <main class="container-fluid py-4">
         <div class="row mb-4">
             <div class="col-12">
                 <h1><i class="fas fa-tools"></i> <?= $pageTitle ?></h1>
@@ -310,9 +247,7 @@ $pageTitle = 'Panel de Administración';
                 </a>
             </div>
         </div>
-    </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="<?= BASE_URL ?>/assets/js/theme-pro.js"></script>
-</body>
-</html>
+<?php
+require_once __DIR__ . '/../../includes/app_footer.php';
+?>

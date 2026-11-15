@@ -120,40 +120,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#15181d">
+    <meta name="theme-color" content="#ffffff">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Iniciar Sesión - Sistema de Cotizaciones</title>
-    <!-- Fijar tema antes de pintar para evitar parpadeo -->
+
+    <!-- Anti-Flash Theme Init (System default) -->
     <script>
         (function () {
-            var t = localStorage.getItem('coti-theme')
-                    || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-            document.documentElement.setAttribute('data-bs-theme', t);
+            var mode = 'system';
+            try {
+                var saved = localStorage.getItem('coti-theme');
+                if (saved === 'light' || saved === 'dark' || saved === 'system') mode = saved;
+            } catch (e) {}
+            var theme = mode === 'system'
+                ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                : mode;
+            document.documentElement.setAttribute('data-bs-theme', theme);
+            document.documentElement.setAttribute('data-coti-theme-mode', mode);
         })();
     </script>
+
+    <!-- gstack Fonts: Satoshi & DM Sans & FontAwesome -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@700,900&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
         :root {
-            --brand: #d32f2f;
-            --brand-dark: #b71c1c;
-            --brand-rgb: 211, 47, 47;
-            --card-bg: #ffffff;
-            --card-fg: #1f2937;
-            --muted: #6b7280;
-            --input-bg: #f8f9fa;
-            --input-border: #e2e5ea;
+            --brand: #D97706;
+            --brand-dark: #B45309;
+            --brand-rgb: 217, 119, 6;
+            --page-bg: #FAFAF9;
+            --card-bg: #FFFFFF;
+            --card-fg: #292524;
+            --card-ink: #1C1917;
+            --muted: #78716C;
+            --input-bg: #FFFFFF;
+            --input-border: #E7E5E4;
+            --paper-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 0 0 1px #E7E5E4;
+            --grain-opacity: 0.02;
         }
         [data-bs-theme="dark"] {
-            --brand: #ef5350;
-            --brand-dark: #e53935;
-            --brand-rgb: 239, 83, 80;
-            --card-bg: #1b1e24;
-            --card-fg: #e6e8ec;
-            --muted: #9aa1ac;
-            --input-bg: #14171c;
-            --input-border: #2b3038;
+            --brand: #F59E0B;
+            --brand-dark: #FBBF24;
+            --brand-rgb: 245, 158, 11;
+            --page-bg: #0C0C0C;
+            --card-bg: #141414;
+            --card-fg: #D4D4D8;
+            --card-ink: #FAFAFA;
+            --muted: #A1A1AA;
+            --input-bg: #0C0C0C;
+            --input-border: #262626;
+            --paper-shadow: 0 1px 3px rgba(0, 0, 0, 0.6), 0 0 0 1px #262626;
+            --grain-opacity: 0.03;
         }
 
         * {
@@ -164,233 +186,258 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: radial-gradient(1200px 600px at 50% -10%, rgba(var(--brand-rgb), .25), transparent 60%),
-                        linear-gradient(160deg, #1f2329 0%, #15181d 55%, #0f1115 100%);
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--page-bg);
+            color: var(--card-fg);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             padding: 16px;
             position: relative;
-            overflow: hidden;
+            transition: background-color 0.15s ease, color 0.15s ease;
         }
 
-        body::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
-            background-size: 46px 46px;
-            animation: moveBackground 24s linear infinite;
-            pointer-events: none;
-        }
-
-        @keyframes moveBackground {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(46px, 46px); }
-        }
-
-        /* Botón de cambio de tema */
-        .theme-toggle {
+        body::after {
+            content: "";
             position: fixed;
-            top: 18px; right: 18px;
-            width: 42px; height: 42px;
-            border-radius: 50%;
-            border: 1px solid rgba(255,255,255,.22);
-            background: rgba(255,255,255,.10);
-            color: #fff;
-            font-size: 18px;
-            cursor: pointer;
-            z-index: 5;
-            transition: background .18s ease;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 99999;
+            opacity: var(--grain-opacity, 0.03);
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
-        .theme-toggle:hover { background: rgba(255,255,255,.2); }
 
+        h1, h2, h3, .brand-title {
+            font-family: 'Satoshi', sans-serif !important;
+            font-weight: 700 !important;
+            letter-spacing: -0.025em;
+        }
+
+        /* 3-State Theme Toggle Pill */
+        .theme-toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 6px 14px;
+            min-height: 34px;
+            border-radius: 9999px;
+            border: 1px solid var(--input-border);
+            background: var(--card-bg);
+            color: var(--card-fg);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: var(--paper-shadow);
+            transition: transform 0.1s ease, background-color 0.15s ease, border-color 0.15s ease;
+        }
+        .theme-toggle-btn:hover {
+            transform: scale(1.02);
+            border-color: var(--brand);
+        }
+        .theme-toggle-btn:active {
+            transform: scale(0.97);
+        }
+        .theme-toggle-btn i {
+            color: var(--brand);
+            font-size: 14px;
+        }
+
+        /* Notion Login Card */
         .login-container {
             background-color: var(--card-bg);
             color: var(--card-fg);
-            padding: 36px 28px;
-            border-radius: 20px;
-            box-shadow: 0 24px 70px rgba(0,0,0,0.45);
+            padding: 36px 32px;
+            border-radius: 12px;
+            box-shadow: var(--paper-shadow);
             width: 100%;
-            max-width: 420px;
+            max-width: 410px;
             position: relative;
             z-index: 1;
-            border: 1px solid rgba(255,255,255,.06);
-            animation: fadeIn 0.5s ease-out;
+            border: 1px solid var(--input-border);
+            animation: fadeIn 0.3s ease-out;
+            transition: background-color 0.15s ease, border-color 0.15s ease;
         }
 
         @media (max-width: 480px) {
-            .login-container { padding: 26px 20px; border-radius: 18px; }
+            .login-container {
+                padding: 28px 20px;
+                border-radius: 12px;
+            }
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-16px); }
+            from { opacity: 0; transform: translateY(-8px); }
             to   { opacity: 1; transform: translateY(0); }
         }
 
-        .logo-container { text-align: center; margin-bottom: 26px; }
+        .logo-container {
+            text-align: center;
+            margin-bottom: 24px;
+        }
 
         .logo-container img {
-            max-width: 190px;
-            max-height: 104px;
+            max-width: 160px;
+            max-height: 70px;
             object-fit: contain;
-            margin-bottom: 14px;
-            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.15));
+            margin-bottom: 12px;
         }
 
         .company-name {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--card-fg);
-            margin-bottom: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            color: var(--card-ink);
+            margin-bottom: 2px;
         }
 
         .logo-placeholder {
-            width: 84px;
-            height: 84px;
-            margin: 0 auto 14px;
-            background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
-            border-radius: 22px;
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 12px;
+            background: var(--brand);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 38px;
+            font-size: 26px;
             color: #fff;
-            font-weight: 800;
-            box-shadow: 0 8px 22px rgba(var(--brand-rgb), .4);
+            font-weight: 700;
         }
 
         .login-container h1 {
             text-align: center;
-            color: var(--card-fg);
+            color: var(--card-ink);
             margin-bottom: 24px;
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
-            letter-spacing: -.3px;
+            letter-spacing: -0.025em;
         }
 
-        .form-group { margin-bottom: 18px; }
+        .form-group {
+            margin-bottom: 16px;
+        }
 
         .login-container label {
             display: block;
-            margin-bottom: 7px;
-            color: var(--card-fg);
-            font-weight: 600;
-            font-size: 14.5px;
+            margin-bottom: 6px;
+            color: var(--card-ink);
+            font-weight: 500;
+            font-size: 13.5px;
         }
 
         .login-container input[type="text"],
         .login-container input[type="email"],
         .login-container input[type="password"] {
             width: 100%;
-            padding: 15px 16px;
-            border: 1.5px solid var(--input-border);
-            border-radius: 11px;
-            font-size: 16px;
-            transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+            height: 40px;
+            padding: 8px 12px;
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            font-size: 14.5px;
+            font-family: inherit;
+            transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
             background-color: var(--input-bg);
             color: var(--card-fg);
             -webkit-appearance: none;
             appearance: none;
         }
 
-        @media (max-width: 480px) {
-            .login-container h1 { font-size: 22px; margin-bottom: 20px; }
-            .login-container label { font-size: 15px; }
-            .login-container input { font-size: 16px; padding: 14px 15px; }
-            .company-name { font-size: 17px; }
-        }
-
         .login-container input:focus {
             outline: none;
             border-color: var(--brand);
-            box-shadow: 0 0 0 3.5px rgba(var(--brand-rgb), 0.18);
+            box-shadow: 0 0 0 3px rgba(var(--brand-rgb), 0.16);
         }
-        .login-container input:focus-visible { outline: none; }
 
+        /* Notion 8px Rectangular Primary Action Button */
         .login-container button[type="submit"] {
             width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
-            color: white;
-            border: none;
-            border-radius: 11px;
+            height: 40px;
+            padding: 8px 16px;
+            background: var(--brand);
+            color: #ffffff;
+            border: 1px solid transparent;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 16px;
-            font-weight: 700;
-            transition: transform .18s ease, box-shadow .18s ease;
-            margin-top: 6px;
-            letter-spacing: 0.3px;
-            -webkit-appearance: none;
-            appearance: none;
-            touch-action: manipulation;
+            font-size: 14.5px;
+            font-weight: 600;
+            font-family: inherit;
+            transition: background-color .15s ease, transform .08s ease;
+            margin-top: 8px;
+            user-select: none;
         }
 
         .login-container button[type="submit"]:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 26px rgba(var(--brand-rgb), 0.4);
+            background-color: var(--brand-dark);
         }
-        .login-container button[type="submit"]:active { transform: scale(0.99); }
+        .login-container button[type="submit"]:active {
+            transform: scale(0.985);
+        }
 
         .error-message {
-            background-color: rgba(var(--brand-rgb), .10);
-            color: var(--brand-dark);
-            border: 1px solid rgba(var(--brand-rgb), .3);
-            padding: 13px 15px;
-            border-radius: 11px;
-            margin-bottom: 18px;
+            background-color: rgba(220, 38, 38, 0.08);
+            color: #dc2626;
+            border: 1px solid rgba(220, 38, 38, 0.25);
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 16px;
             text-align: center;
-            font-size: 14.5px;
+            font-size: 13.5px;
             font-weight: 500;
-            animation: shake 0.4s;
         }
-        [data-bs-theme="dark"] .error-message { color: #ff8a80; }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-8px); }
-            75% { transform: translateX(8px); }
+        [data-bs-theme="dark"] .error-message {
+            background-color: rgba(239, 68, 68, 0.16);
+            color: #f87171;
+            border-color: rgba(239, 68, 68, 0.35);
         }
 
         .info-message {
-            background-color: rgba(22, 163, 74, .12);
+            background-color: rgba(22, 163, 74, 0.08);
             color: #15803d;
-            border: 1px solid rgba(22, 163, 74, .3);
-            padding: 13px 15px;
-            border-radius: 11px;
-            margin-bottom: 18px;
+            border: 1px solid rgba(22, 163, 74, 0.25);
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 16px;
             text-align: center;
-            font-size: 14.5px;
+            font-size: 13.5px;
         }
-        [data-bs-theme="dark"] .info-message { color: #4ade80; }
+        [data-bs-theme="dark"] .info-message {
+            background-color: rgba(34, 197, 94, 0.16);
+            color: #4ade80;
+            border-color: rgba(34, 197, 94, 0.35);
+        }
 
         .footer-text {
             text-align: center;
-            margin-top: 22px;
+            margin-top: 24px;
             color: var(--muted);
-            font-size: 13px;
+            font-size: 12.5px;
         }
 
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { animation: none !important; transition: none !important; }
         }
     </style>
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/theme-pro.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/theme-pro.css") ?>">
 </head>
 <body>
-    <button type="button" class="theme-toggle" id="themeToggle" aria-label="Cambiar modo de color" title="Cambiar modo de color">🌙</button>
+    <!-- Theme Toggle Pill Button -->
+    <button type="button" class="theme-toggle-btn" id="themeToggle" data-theme-toggle="" aria-label="Cambiar tema" title="Cambiar tema">
+        <i class="fas fa-circle-half-stroke"></i>
+        <span class="theme-mode-text">Sistema</span>
+    </button>
 
     <div class="login-container">
         <!-- Logo de la empresa -->
         <div class="logo-container">
             <?php
             $logoPath = !empty($company['logo_url']) ? $company['logo_url'] : '';
-            // Si la ruta empieza con 'public/', removerla porque BASE_URL ya incluye /public
             if (strpos($logoPath, 'public/') === 0) {
-                $logoPath = substr($logoPath, 7); // Remover 'public/'
+                $logoPath = substr($logoPath, 7);
             }
             $fullLogoPath = APP_ROOT . '/public/' . $logoPath;
             ?>
@@ -423,12 +470,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <form action="login.php" method="POST">
             <div class="form-group">
-                <label for="username_or_email">Usuario o Email:</label>
-                <input type="text" id="username_or_email" name="username_or_email" required autocomplete="username">
+                <label for="username_or_email">Usuario o Email</label>
+                <input type="text" id="username_or_email" name="username_or_email" required autocomplete="username" placeholder="tu_usuario o correo@empresa.com">
             </div>
             <div class="form-group">
-                <label for="password">Contraseña:</label>
-                <input type="password" id="password" name="password" required autocomplete="current-password">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="••••••••">
             </div>
             <div>
                 <button type="submit">Iniciar Sesión</button>
@@ -440,23 +487,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
-    <script>
-        (function () {
-            var btn = document.getElementById('themeToggle');
-            function sync() {
-                var dark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
-                btn.textContent = dark ? '☀️' : '🌙';
-                btn.setAttribute('aria-label', dark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
-            }
-            btn.addEventListener('click', function () {
-                var dark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
-                var next = dark ? 'light' : 'dark';
-                document.documentElement.setAttribute('data-bs-theme', next);
-                try { localStorage.setItem('coti-theme', next); } catch (e) {}
-                sync();
-            });
-            sync();
-        })();
-    </script>
+    <script src="<?= BASE_URL ?>/assets/js/theme-pro.js?v=<?= @filemtime(APP_ROOT . "/public/assets/js/theme-pro.js") ?>"></script>
 </body>
 </html>

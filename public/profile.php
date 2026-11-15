@@ -100,7 +100,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
     $auth->redirect(BASE_URL . '/profile.php');
 }
 
-ob_start();
+$pageTitle = 'Mi Perfil';
+$activePage = 'profile';
+require_once __DIR__ . '/../includes/app_header.php';
 ?>
 
 <div class="row justify-content-center">
@@ -190,6 +192,31 @@ ob_start();
 
                 <hr>
 
+                <!-- Theme Preference -->
+                <div class="mb-4">
+                    <h5><i class="fas fa-palette"></i> Apariencia y Tema</h5>
+                    <p class="text-muted small">Selecciona el modo visual preferido para tu espacio de trabajo.</p>
+                    <div class="theme-selector-group">
+                        <div class="theme-choice-card" data-choice-mode="system" role="radio" aria-checked="false" tabindex="0">
+                            <i class="fas fa-circle-half-stroke"></i>
+                            <strong>Sistema</strong>
+                            <small>Automático según tu dispositivo</small>
+                        </div>
+                        <div class="theme-choice-card" data-choice-mode="light" role="radio" aria-checked="false" tabindex="0">
+                            <i class="fas fa-sun"></i>
+                            <strong>Claro</strong>
+                            <small>Fondo blanco con tinta nítida</small>
+                        </div>
+                        <div class="theme-choice-card" data-choice-mode="dark" role="radio" aria-checked="false" tabindex="0">
+                            <i class="fas fa-moon"></i>
+                            <strong>Oscuro</strong>
+                            <small>Grafito gstack industrial anti-fatiga</small>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
                 <!-- Change Password -->
                 <h5><i class="fas fa-lock"></i> Cambiar Contraseña</h5>
                 <?php if (isset($_SESSION['success_message'])): ?>
@@ -230,49 +257,5 @@ ob_start();
 </div>
 
 <?php
-$content = ob_get_clean();
-
-// Simple template rendering
+require_once __DIR__ . '/../includes/app_footer.php';
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $pageTitle ?></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Tema profesional COTI (no-flash + marca) -->
-    <script>(function(){var t=localStorage.getItem('coti-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-bs-theme',t);})();</script>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/theme-pro.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/theme-pro.css") ?>">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/style.css") ?>">
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg bg-primary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="<?= BASE_URL ?>/dashboard_simple.php">
-                <i class="fas fa-chart-line"></i> Sistema de Cotizaciones
-            </a>
-            <div class="navbar-nav ms-auto">
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user"></i> <?= htmlspecialchars($user['username']) ?>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/dashboard_simple.php">Dashboard</a></li>
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/quotations/index.php">Cotizaciones</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/logout.php">Cerrar Sesión</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <main class="container-fluid py-4">
-        <?= $content ?>
-    </main>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>

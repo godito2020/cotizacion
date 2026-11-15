@@ -9,7 +9,7 @@ if (!$auth->isLoggedIn()) {
 
 if (!$auth->hasRole(['Administrador del Sistema', 'Administrador de Empresa'])) {
     $_SESSION['error_message'] = 'No tienes permisos para acceder a esta sección';
-    $auth->redirect(BASE_URL . '/dashboard_simple.php');
+    $auth->redirect(BASE_URL . '/dashboard.php');
 }
 
 $user = $auth->getUser();
@@ -25,13 +25,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         switch ($_POST['action']) {
             case 'update_company':
                 $companyData = [
-                    'name' => $_POST['company_name'],
-                    'tax_id' => $_POST['tax_id'],
-                    'address' => $_POST['address'],
-                    'phone' => $_POST['phone'],
-                    'email' => $_POST['email'],
-                    'website' => $_POST['website'],
-                    'whatsapp' => $_POST['whatsapp']
+                    'name' => trim($_POST['company_name'] ?? ''),
+                    'tax_id' => trim($_POST['tax_id'] ?? ''),
+                    'address' => trim($_POST['address'] ?? ''),
+                    'phone' => trim($_POST['phone'] ?? ''),
+                    'email' => trim($_POST['email'] ?? ''),
+                    'website' => trim($_POST['website'] ?? ''),
+                    'whatsapp' => trim($_POST['whatsapp'] ?? '')
                 ];
                 $result = $companySettings->updateCompanyInfo($companyId, $companyData);
                 break;
@@ -79,7 +79,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $companySettings->updateSetting($companyId, 'pdf_header_color', $pdfColor);
                 }
                 break;
-
         }
 
         if ($result) {
@@ -91,331 +90,324 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Get company data from settings table
+// Get company data
 $company = $companySettings->getCompanyInfo($companyId);
 
 // Get quotation settings
-$enableDiscounts = $companySettings->getSetting($companyId, 'quotation_enable_discounts');
-$enableDiscounts = $enableDiscounts === '1';
+$enableDiscounts = ($companySettings->getSetting($companyId, 'quotation_enable_discounts') === '1');
 $pdfHeaderColor  = $companySettings->getSetting($companyId, 'pdf_header_color') ?: '#1B3A6B';
 
 $pageTitle = 'Configuración de Empresa';
+$activePage = 'admin';
+require_once __DIR__ . '/../../includes/app_header.php';
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $pageTitle ?></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Tema profesional COTI (no-flash + marca) -->
-    <script>(function(){var t=localStorage.getItem('coti-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-bs-theme',t);})();</script>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/theme-pro.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/theme-pro.css") ?>">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/style.css") ?>">
 
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg bg-primary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="<?= BASE_URL ?>/dashboard_simple.php">
-                <i class="fas fa-chart-line"></i> Sistema de Cotizaciones
-            </a>
-            <div class="navbar-nav ms-auto">
-                <button class="theme-toggle me-3" id="themeToggle" title="Cambiar tema">
-                    <i class="fas fa-moon" id="themeIcon"></i>
-                </button>
+<div class="container-fluid px-2 px-md-3 py-3" style="max-width: 1200px; margin: 0 auto;">
 
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user"></i> <?= htmlspecialchars($user['username']) ?>
+    <!-- =========================================================
+         1. BREADCRUMB & HEADER
+         ========================================================= -->
+    <div class="d-flex flex-column gap-2 mb-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1 small">
+                <li class="breadcrumb-item">
+                    <a href="<?= BASE_URL ?>/dashboard.php" class="text-decoration-none text-muted">
+                        <i class="fas fa-home me-1"></i>Inicio
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/dashboard_simple.php">Dashboard</a></li>
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/admin/index.php">Panel Admin</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/logout.php">Cerrar Sesión</a></li>
-                    </ul>
+                </li>
+                <li class="breadcrumb-item text-muted">Administración</li>
+                <li class="breadcrumb-item active text-body fw-semibold" aria-current="page">Configuración de Empresa</li>
+            </ol>
+        </nav>
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="status-pulse-dot" style="display:inline-block; width:9px; height:9px; border-radius:50%; background:#F59E0B; box-shadow:0 0 8px rgba(245, 158, 11, 0.6);"></span>
+                    <h1 class="h4 fw-bold mb-0 text-body" style="font-family: var(--font-display); letter-spacing: -0.02em;">
+                        Configuración de Empresa
+                    </h1>
                 </div>
+                <p class="text-muted small mb-0 mt-0.5" style="font-size: 0.82rem;">
+                    Identidad corporativa, logo, membretes y personalización de cotizaciones.
+                </p>
             </div>
+
+            <a href="<?= BASE_URL ?>/admin/index.php" class="btn btn-outline-secondary btn-sm px-3">
+                <i class="fas fa-arrow-left me-1"></i> Panel Admin
+            </a>
         </div>
-    </nav>
+    </div>
 
-    <main class="container-fluid py-4">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-3">
-                <?php include __DIR__ . '/../../includes/admin_sidebar.php'; ?>
-            </div>
+    <!-- Feedback Alerts -->
+    <?php if (isset($_SESSION['success_message'])): ?>
+        <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2 py-2 px-3 small mb-3" role="alert">
+            <i class="fas fa-check-circle"></i>
+            <div><?= htmlspecialchars($_SESSION['success_message']) ?></div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <?php unset($_SESSION['success_message']); ?>
+    <?php endif; ?>
 
-            <!-- Main Content -->
-            <div class="col-md-9">
-                <h1><i class="fas fa-building"></i> <?= $pageTitle ?></h1>
+    <?php if (isset($_SESSION['error_message'])): ?>
+        <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2 py-2 px-3 small mb-3" role="alert">
+            <i class="fas fa-exclamation-circle"></i>
+            <div><?= htmlspecialchars($_SESSION['error_message']) ?></div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <?php unset($_SESSION['error_message']); ?>
+    <?php endif; ?>
 
-                <!-- Company Information -->
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0">Información de la Empresa</h5>
-                    </div>
-                    <div class="card-body">
-                        <form method="POST">
-                            <input type="hidden" name="action" value="update_company">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="company_name" class="form-label">Nombre de la Empresa *</label>
-                                        <input type="text" class="form-control" id="company_name" name="company_name"
-                                               value="<?= htmlspecialchars($company['name'] ?? '') ?>" required>
-                                    </div>
+    <div class="row g-4">
+        <!-- =========================================================
+             2. DATOS DE LA EMPRESA
+             ========================================================= -->
+        <div class="col-12 col-lg-7">
+            <div class="card border-0 shadow-sm mb-4" style="background-color: var(--color-panel); border: 1px solid var(--color-rule) !important; border-radius: 12px;">
+                <div class="card-header bg-body-tertiary border-bottom py-2.5 px-3 d-flex justify-content-between align-items-center">
+                    <span class="fw-bold small text-body">
+                        <i class="fas fa-building text-warning me-2"></i>Información Corporativa
+                    </span>
+                    <span class="badge bg-body-secondary text-body border small">Razón Social y Contacto</span>
+                </div>
+                <div class="card-body p-3 p-md-4">
+                    <form method="POST">
+                        <input type="hidden" name="action" value="update_company">
+
+                        <div class="row g-3">
+                            <div class="col-md-7">
+                                <label for="company_name" class="form-label small fw-semibold text-body mb-1">Nombre o Razón Social *</label>
+                                <input type="text" class="form-control form-control-sm" id="company_name" name="company_name"
+                                       value="<?= htmlspecialchars($company['name'] ?? '') ?>" required>
+                            </div>
+                            <div class="col-md-5">
+                                <label for="tax_id" class="form-label small fw-semibold text-body mb-1">RUC (11 dígitos)</label>
+                                <input type="text" class="form-control form-control-sm font-monospace" id="tax_id" name="tax_id"
+                                       value="<?= htmlspecialchars($company['tax_id'] ?? '') ?>" maxlength="11">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="email" class="form-label small fw-semibold text-body mb-1">Correo Electrónico</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                    <input type="email" class="form-control" id="email" name="email"
+                                           value="<?= htmlspecialchars($company['email'] ?? '') ?>">
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="tax_id" class="form-label">RUC</label>
-                                        <input type="text" class="form-control" id="tax_id" name="tax_id"
-                                               value="<?= htmlspecialchars($company['tax_id'] ?? '') ?>" maxlength="11">
-                                    </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label small fw-semibold text-body mb-1">Teléfono Principal</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                    <input type="tel" class="form-control" id="phone" name="phone"
+                                           value="<?= htmlspecialchars($company['phone'] ?? '') ?>">
                                 </div>
                             </div>
 
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="email" class="form-label">Email</label>
-                                        <input type="email" class="form-control" id="email" name="email"
-                                               value="<?= htmlspecialchars($company['email'] ?? '') ?>">
-                                    </div>
+                            <div class="col-md-6">
+                                <label for="whatsapp" class="form-label small fw-semibold text-body mb-1">WhatsApp Corporativo</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text"><i class="fab fa-whatsapp text-success"></i></span>
+                                    <input type="tel" class="form-control" id="whatsapp" name="whatsapp"
+                                           value="<?= htmlspecialchars($company['whatsapp'] ?? '') ?>" placeholder="+51 999 999 999">
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="phone" class="form-label">Teléfono</label>
-                                        <input type="tel" class="form-control" id="phone" name="phone"
-                                               value="<?= htmlspecialchars($company['phone'] ?? '') ?>">
-                                    </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="website" class="form-label small fw-semibold text-body mb-1">Sitio Web Oficial</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text"><i class="fas fa-globe"></i></span>
+                                    <input type="url" class="form-control" id="website" name="website"
+                                           value="<?= htmlspecialchars($company['website'] ?? '') ?>" placeholder="https://www.ejemplo.com">
                                 </div>
                             </div>
 
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="website" class="form-label">Sitio Web</label>
-                                        <input type="url" class="form-control" id="website" name="website"
-                                               value="<?= htmlspecialchars($company['website'] ?? '') ?>"
-                                               placeholder="https://www.ejemplo.com">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="whatsapp" class="form-label">WhatsApp</label>
-                                        <input type="tel" class="form-control" id="whatsapp" name="whatsapp"
-                                               value="<?= htmlspecialchars($company['whatsapp'] ?? '') ?>"
-                                               placeholder="+51 999 999 999">
-                                    </div>
-                                </div>
+                            <div class="col-12">
+                                <label for="address" class="form-label small fw-semibold text-body mb-1">Dirección Fiscal / Sede Central</label>
+                                <textarea class="form-control form-control-sm" id="address" name="address" rows="2"><?= htmlspecialchars($company['address'] ?? '') ?></textarea>
                             </div>
+                        </div>
 
-                            <div class="mb-3">
-                                <label for="address" class="form-label">Dirección</label>
-                                <textarea class="form-control" id="address" name="address" rows="3"><?= htmlspecialchars($company['address'] ?? '') ?></textarea>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Guardar Información
+                        <div class="mt-4 pt-2 border-top text-end">
+                            <button type="submit" class="btn btn-warning btn-sm fw-bold text-dark px-4 shadow-sm">
+                                <i class="fas fa-save me-1"></i> Guardar Información
                             </button>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </div>
+            </div>
 
-                <!-- Logo and Favicon -->
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">Logo de la Empresa</h5>
+            <!-- =========================================================
+                 CONFIGURACIÓN DE COTIZACIONES & COLOR PDF
+                 ========================================================= -->
+            <div class="card border-0 shadow-sm" style="background-color: var(--color-panel); border: 1px solid var(--color-rule) !important; border-radius: 12px;">
+                <div class="card-header bg-body-tertiary border-bottom py-2.5 px-3">
+                    <span class="fw-bold small text-body">
+                        <i class="fas fa-file-invoice text-warning me-2"></i>Reglas de Cotización y Estilo PDF
+                    </span>
+                </div>
+                <div class="card-body p-3 p-md-4">
+                    <form method="POST">
+                        <input type="hidden" name="action" value="update_quotation_settings">
+
+                        <!-- Descuentos Switch -->
+                        <div class="p-3 rounded mb-3" style="background-color: var(--color-canvas); border: 1px solid var(--color-rule);">
+                            <div class="form-check form-switch mb-1">
+                                <input class="form-check-input" type="checkbox" role="switch" id="enable_discounts"
+                                       name="enable_discounts" <?= $enableDiscounts ? 'checked' : '' ?>>
+                                <label class="form-check-label fw-bold text-body small" for="enable_discounts">
+                                    Habilitar módulo de descuentos en cotizaciones (%)
+                                </label>
                             </div>
-                            <div class="card-body text-center">
-                                <?php if (!empty($company['logo_url'])): ?>
-                                    <img src="<?= htmlspecialchars(upload_url($company['logo_url'])) ?>"
-                                         alt="Logo" class="img-fluid mb-3" style="max-height: 150px;">
-                                <?php else: ?>
-                                    <div class="bg-light p-4 mb-3">
-                                        <i class="fas fa-image fa-3x text-muted"></i>
-                                        <p class="text-muted mt-2">No hay logo cargado</p>
-                                    </div>
-                                <?php endif; ?>
-
-                                <form method="POST" enctype="multipart/form-data">
-                                    <input type="hidden" name="action" value="upload_logo">
-                                    <div class="mb-3">
-                                        <input type="file" class="form-control" name="logo" accept="image/*" required>
-                                        <small class="text-muted">Formatos: JPG, PNG, GIF. Máximo 2MB. Se usa como ícono de la PWA al instalar la app.</small>
-                                    </div>
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="fas fa-upload"></i> Subir Logo
-                                    </button>
-                                </form>
+                            <div class="small text-muted ps-4" style="font-size: 0.78rem;">
+                                Permite ingresar descuentos individuales por ítem y descuento global en el formulario de cotización.
                             </div>
                         </div>
-                    </div>
 
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">Favicon</h5>
-                            </div>
-                            <div class="card-body text-center">
-                                <?php if (!empty($company['favicon_url'])): ?>
-                                    <img src="<?= BASE_URL ?>/<?= htmlspecialchars($company['favicon_url']) ?>"
-                                         alt="Favicon" class="mb-3" style="width: 64px; height: 64px;">
-                                <?php else: ?>
-                                    <div class="bg-light p-4 mb-3">
-                                        <i class="fas fa-star fa-2x text-muted"></i>
-                                        <p class="text-muted mt-2">No hay favicon cargado</p>
-                                    </div>
-                                <?php endif; ?>
-
-                                <form method="POST" enctype="multipart/form-data">
-                                    <input type="hidden" name="action" value="upload_favicon">
-                                    <div class="mb-3">
-                                        <input type="file" class="form-control" name="favicon" accept=".ico,.png,.jpg,.jpeg" required>
-                                        <small class="text-muted">Formatos: ICO, PNG, JPG. Recomendado: PNG 64×64px o mayor. Se usa como favicon del navegador.</small>
-                                    </div>
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="fas fa-upload"></i> Subir Favicon
-                                    </button>
-                                </form>
+                        <!-- Color PDF -->
+                        <div class="p-3 rounded mb-3" style="background-color: var(--color-canvas); border: 1px solid var(--color-rule);">
+                            <label class="form-label small fw-bold text-body mb-1">
+                                <i class="fas fa-palette text-primary me-1"></i>Color Principal del Documento PDF
+                            </label>
+                            <p class="text-muted small mb-2" style="font-size: 0.75rem;">
+                                Se aplica a cabeceras de tabla, caja de correlativo, línea divisoria de marcas y totales.
+                            </p>
+                            <div class="d-flex align-items-center gap-3">
+                                <input type="color" class="form-control form-control-color"
+                                       id="pdf_header_color" name="pdf_header_color"
+                                       value="<?= htmlspecialchars($pdfHeaderColor) ?>"
+                                       style="width: 50px; height: 38px; cursor: pointer;">
+                                <div class="badge px-3 py-2 font-monospace" id="colorPreviewBadge"
+                                      style="background-color: <?= htmlspecialchars($pdfHeaderColor) ?>; color: #fff; font-size: 0.85rem;">
+                                    <?= htmlspecialchars($pdfHeaderColor) ?>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <!-- Quotation Settings -->
-                <div class="card mt-4">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-file-alt"></i> Configuración de Cotizaciones</h5>
-                    </div>
-                    <div class="card-body">
-                        <form method="POST">
-                            <input type="hidden" name="action" value="update_quotation_settings">
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h6>Columnas en Cotizaciones</h6>
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" id="enable_discounts"
-                                               name="enable_discounts" <?= $enableDiscounts ? 'checked' : '' ?>>
-                                        <label class="form-check-label" for="enable_discounts">
-                                            Habilitar columna de descuento (%)
-                                        </label>
-                                    </div>
-                                    <small class="text-muted">
-                                        Permite agregar descuentos por producto y descuento global en las cotizaciones.
-                                    </small>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="alert alert-info">
-                                        <h6><i class="fas fa-info-circle"></i> Información</h6>
-                                        <p class="mb-1"><strong>Estado actual:</strong> <?= $enableDiscounts ? 'Activado' : 'Desactivado' ?></p>
-                                        <p class="mb-0"><small>Esta configuración afecta todas las cotizaciones nuevas.</small></p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row mt-4">
-                                <div class="col-md-6">
-                                    <h6><i class="fas fa-palette me-1"></i>Color del PDF</h6>
-                                    <p class="text-muted small mb-2">Color principal del encabezado de tabla, totales y separadores en el PDF de cotización.</p>
-                                    <div class="d-flex align-items-center gap-3">
-                                        <input type="color" class="form-control form-control-color"
-                                               id="pdf_header_color" name="pdf_header_color"
-                                               value="<?= htmlspecialchars($pdfHeaderColor) ?>"
-                                               style="width:60px; height:40px; cursor:pointer;">
-                                        <div>
-                                            <span class="badge" id="colorPreviewBadge"
-                                                  style="background-color:<?= htmlspecialchars($pdfHeaderColor) ?>; font-size:0.85rem; padding:6px 14px;">
-                                                <?= htmlspecialchars($pdfHeaderColor) ?>
-                                            </span>
-                                            <br><small class="text-muted">Vista previa del color</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="alert alert-light border mt-2">
-                                        <small><i class="fas fa-info-circle text-primary me-1"></i>
-                                        Este color se aplica a: cabeceras de tabla, caja de número de cotización, fila TOTAL IMPORTE y línea separadora de marcas en el PDF.</small>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="mt-3">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save"></i> Guardar Configuración
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Company Preview -->
-                <div class="card mt-4">
-                    <div class="card-header">
-                        <h5 class="mb-0">Vista Previa</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="border p-4 text-center bg-light">
-                            <?php if (!empty($company['logo_url'])): ?>
-                                <img src="<?= htmlspecialchars(upload_url($company['logo_url'])) ?>"
-                                     alt="Logo" style="max-height: 60px;" class="mb-2">
-                            <?php endif; ?>
-                            <h4><?= htmlspecialchars($company['name'] ?? 'Nombre de la Empresa') ?></h4>
-                            <?php if ($company['tax_id']): ?>
-                                <p class="mb-1"><strong>RUC:</strong> <?= htmlspecialchars($company['tax_id']) ?></p>
-                            <?php endif; ?>
-                            <?php if ($company['address']): ?>
-                                <p class="mb-1"><?= nl2br(htmlspecialchars($company['address'])) ?></p>
-                            <?php endif; ?>
-                            <div class="row justify-content-center">
-                                <?php if ($company['email']): ?>
-                                    <div class="col-auto">
-                                        <small><i class="fas fa-envelope"></i> <?= htmlspecialchars($company['email']) ?></small>
-                                    </div>
-                                <?php endif; ?>
-                                <?php if ($company['phone']): ?>
-                                    <div class="col-auto">
-                                        <small><i class="fas fa-phone"></i> <?= htmlspecialchars($company['phone']) ?></small>
-                                    </div>
-                                <?php endif; ?>
-                                <?php if ($company['website']): ?>
-                                    <div class="col-auto">
-                                        <small><i class="fas fa-globe"></i> <?= htmlspecialchars($company['website']) ?></small>
-                                    </div>
-                                <?php endif; ?>
-                                <?php if (isset($company['whatsapp']) && $company['whatsapp']): ?>
-                                    <div class="col-auto">
-                                        <small><i class="fab fa-whatsapp"></i> <?= htmlspecialchars($company['whatsapp']) ?></small>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary btn-sm fw-semibold px-4">
+                                <i class="fas fa-save me-1"></i> Guardar Ajustes de Cotización
+                            </button>
                         </div>
-                    </div>
+                    </form>
                 </div>
-
             </div>
         </div>
-    </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Create uploads directory if needed
-        <?php
-        $uploadDir = PUBLIC_PATH . '/uploads/company';
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0755, true);
-        }
-        ?>
-    </script>
-    <script src="<?= BASE_URL ?>/assets/js/theme-pro.js"></script>
-    <script>
+        <!-- =========================================================
+             3. LOGO, FAVICON & VISTA PREVIA
+             ========================================================= -->
+        <div class="col-12 col-lg-5">
+            <!-- Logo Upload -->
+            <div class="card border-0 shadow-sm mb-4" style="background-color: var(--color-panel); border: 1px solid var(--color-rule) !important; border-radius: 12px;">
+                <div class="card-header bg-body-tertiary border-bottom py-2.5 px-3">
+                    <span class="fw-bold small text-body">
+                        <i class="fas fa-image text-warning me-2"></i>Logo de la Empresa
+                    </span>
+                </div>
+                <div class="card-body p-3 text-center">
+                    <div class="p-3 rounded mb-3 d-flex align-items-center justify-content-center"
+                         style="background: var(--color-canvas); border: 1px dashed var(--color-rule); min-height: 120px;">
+                        <?php if (!empty($company['logo_url'])): ?>
+                            <img src="<?= htmlspecialchars(upload_url($company['logo_url'])) ?>"
+                                 alt="Logo Corporativo" class="img-fluid" style="max-height: 100px; object-fit: contain;">
+                        <?php else: ?>
+                            <div class="text-muted small">
+                                <i class="fas fa-image fa-2x mb-1 opacity-50 d-block"></i>
+                                Sin logo cargado
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <form method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="action" value="upload_logo">
+                        <div class="input-group input-group-sm mb-2">
+                            <input type="file" class="form-control" name="logo" accept="image/*" required>
+                            <button type="submit" class="btn btn-outline-secondary fw-semibold">
+                                <i class="fas fa-upload me-1"></i> Subir
+                            </button>
+                        </div>
+                        <div class="text-muted small" style="font-size: 0.72rem;">
+                            Formatos: PNG, JPG, GIF (Máx. 2MB). Utilizado en PDFs y PWA.
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Favicon Upload -->
+            <div class="card border-0 shadow-sm mb-4" style="background-color: var(--color-panel); border: 1px solid var(--color-rule) !important; border-radius: 12px;">
+                <div class="card-header bg-body-tertiary border-bottom py-2.5 px-3">
+                    <span class="fw-bold small text-body">
+                        <i class="fas fa-globe text-warning me-2"></i>Favicon del Navegador
+                    </span>
+                </div>
+                <div class="card-body p-3 text-center">
+                    <div class="p-2 rounded mb-3 d-inline-flex align-items-center justify-content-center"
+                         style="background: var(--color-canvas); border: 1px dashed var(--color-rule); width: 64px; height: 64px;">
+                        <?php if (!empty($company['favicon_url'])): ?>
+                            <img src="<?= BASE_URL ?>/<?= htmlspecialchars($company['favicon_url']) ?>"
+                                 alt="Favicon" style="width: 42px; height: 42px; object-fit: contain;">
+                        <?php else: ?>
+                            <i class="fas fa-star text-muted opacity-50 fa-lg"></i>
+                        <?php endif; ?>
+                    </div>
+
+                    <form method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="action" value="upload_favicon">
+                        <div class="input-group input-group-sm mb-2">
+                            <input type="file" class="form-control" name="favicon" accept=".ico,.png,.jpg,.jpeg" required>
+                            <button type="submit" class="btn btn-outline-secondary fw-semibold">
+                                <i class="fas fa-upload me-1"></i> Subir
+                            </button>
+                        </div>
+                        <div class="text-muted small" style="font-size: 0.72rem;">
+                            Formatos: ICO, PNG (64x64px recomendado).
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Vista Previa Membrete -->
+            <div class="card border-0 shadow-sm" style="background-color: var(--color-panel); border: 1px solid var(--color-rule) !important; border-radius: 12px;">
+                <div class="card-header bg-body-tertiary border-bottom py-2.5 px-3">
+                    <span class="fw-bold small text-body">
+                        <i class="fas fa-id-card text-warning me-2"></i>Vista Previa de Membrete
+                    </span>
+                </div>
+                <div class="card-body p-3">
+                    <div class="p-3 rounded text-center" style="background-color: var(--color-canvas); border: 1px solid var(--color-rule);">
+                        <?php if (!empty($company['logo_url'])): ?>
+                            <img src="<?= htmlspecialchars(upload_url($company['logo_url'])) ?>"
+                                 alt="Logo" style="max-height: 48px; object-fit: contain;" class="mb-2">
+                        <?php endif; ?>
+                        <h6 class="fw-bold text-body mb-0" style="font-family: var(--font-display);">
+                            <?= htmlspecialchars($company['name'] ?? 'Nombre de la Empresa') ?>
+                        </h6>
+                        <?php if (!empty($company['tax_id'])): ?>
+                            <div class="small text-muted font-monospace" style="font-size:0.75rem;">
+                                RUC: <?= htmlspecialchars($company['tax_id']) ?>
+                            </div>
+                        <?php endif; ?>
+                        <?php if (!empty($company['address'])): ?>
+                            <div class="small text-muted mt-1" style="font-size:0.72rem;">
+                                <?= nl2br(htmlspecialchars($company['address'])) ?>
+                            </div>
+                        <?php endif; ?>
+                        <div class="d-flex flex-wrap justify-content-center gap-2 mt-2 pt-2 border-top small text-muted" style="font-size: 0.72rem;">
+                            <?php if (!empty($company['phone'])): ?>
+                                <span><i class="fas fa-phone text-muted me-1"></i><?= htmlspecialchars($company['phone']) ?></span>
+                            <?php endif; ?>
+                            <?php if (!empty($company['email'])): ?>
+                                <span><i class="fas fa-envelope text-muted me-1"></i><?= htmlspecialchars($company['email']) ?></span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
     const colorInput = document.getElementById('pdf_header_color');
     const colorBadge = document.getElementById('colorPreviewBadge');
     if (colorInput && colorBadge) {
@@ -424,6 +416,9 @@ $pageTitle = 'Configuración de Empresa';
             colorBadge.textContent = this.value.toUpperCase();
         });
     }
-    </script>
-</body>
-</html>
+});
+</script>
+
+<?php
+require_once __DIR__ . '/../../includes/app_footer.php';
+?>

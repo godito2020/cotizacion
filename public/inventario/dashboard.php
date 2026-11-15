@@ -1247,5 +1247,6 @@ $pageTitle = 'Inventario';
             document.getElementById('searchInput').focus();
         });
     </script>
+<script src="<?= BASE_URL ?>/assets/js/theme-pro.js?v=<?= @filemtime(APP_ROOT . "/public/assets/js/theme-pro.js") ?>"></script>
 </body>
 </html>

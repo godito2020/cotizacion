@@ -304,5 +304,6 @@ $pageTitle = 'Historial de Sesiones';
             }
         });
     </script>
+<script src="<?= BASE_URL ?>/assets/js/theme-pro.js?v=<?= @filemtime(APP_ROOT . "/public/assets/js/theme-pro.js") ?>"></script>
 </body>
 </html>

@@ -63,76 +63,10 @@ $quotationRepo = new Quotation();
 $result = $quotationRepo->getQuotationsWithFilters($companyId, $filters, $page, 20);
 
 $pageTitle = ($user['can_view_all_quotations'] ?? 0) ? 'Cotizaciones' : 'Mis Cotizaciones';
+$pageTitle = ($user['can_view_all_quotations'] ?? 0) ? 'Cotizaciones' : 'Mis Cotizaciones';
+$activePage = 'quotations';
+require_once __DIR__ . '/../../includes/app_header.php';
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $pageTitle ?></title>
-    <?php include __DIR__ . '/../../includes/pwa_head.php'; ?>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Tema profesional COTI (no-flash + marca) -->
-    <script>(function(){var t=localStorage.getItem('coti-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-bs-theme',t);})();</script>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/theme-pro.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/theme-pro.css") ?>">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/style.css") ?>">
-
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg bg-primary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="<?= BASE_URL ?>/dashboard_simple.php">
-                <i class="fas fa-chart-line"></i> Sistema de Cotizaciones
-            </a>
-            <div class="navbar-nav ms-auto">
-                <button class="theme-toggle me-3" id="themeToggle" title="Cambiar tema">
-                    <i class="fas fa-moon" id="themeIcon"></i>
-                </button>
-
-                <!-- Facturación Dropdown -->
-                <?php
-                // Check if user has billing role
-                $hasBillingRole = $auth->hasRole(['Facturación', 'Administrador del Sistema', 'Administrador de Empresa']);
-                ?>
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="billingDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-file-invoice-dollar"></i> Facturación
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end shadow">
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/billing/history.php">
-                            <i class="fas fa-history"></i> Mi Historial
-                        </a></li>
-                        <?php if ($hasBillingRole): ?>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="<?= BASE_URL ?>/billing/pending.php">
-                                <i class="fas fa-clock"></i> Solicitudes Pendientes
-                            </a></li>
-                        <?php endif; ?>
-                    </ul>
-                </div>
-
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user"></i> <?= htmlspecialchars($user['username']) ?>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end shadow">
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/dashboard_simple.php">Dashboard</a></li>
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/customers/index.php">Clientes</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li id="menu-install-pwa" style="display: none;">
-                            <a class="dropdown-item" href="#" onclick="installPWA(); return false;">
-                                <i class="fas fa-download me-2"></i>Instalar Aplicación
-                            </a>
-                        </li>
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/logout.php">Cerrar Sesión</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <main class="container-fluid py-4">
         <div class="row">
             <div class="col-12">
                 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -448,7 +382,6 @@ $pageTitle = ($user['can_view_all_quotations'] ?? 0) ? 'Cotizaciones' : 'Mis Cot
                 </div>
             </div>
         </div>
-    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -507,14 +440,6 @@ $pageTitle = ($user['can_view_all_quotations'] ?? 0) ? 'Cotizaciones' : 'Mis Cot
         }
     </script>
 
-    <script src="<?= BASE_URL ?>/assets/js/theme-pro.js"></script>
-    <script src="<?= BASE_URL ?>/assets/js/pwa.js"></script>
-
-    <!-- Boton flotante de instalacion PWA -->
-    <button id="pwa-install-btn" onclick="installPWA()" class="btn btn-primary position-fixed d-none align-items-center gap-2"
-            style="bottom: 20px; right: 20px; z-index: 1000; border-radius: 50px; padding: 12px 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-        <i class="fas fa-download"></i>
-        <span class="d-none d-sm-inline">Instalar App</span>
-    </button>
-</body>
-</html>
+<?php
+require_once __DIR__ . '/../../includes/app_footer.php';
+?>

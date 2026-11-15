@@ -1,10 +1,17 @@
-# node_modules/
-# .env
-# vendor/
-# *.log
 *.db
-
 /config/local.php
-
 .DS_Store
 Thumbs.db
+
+# Logs and runtime sessions
+*.log
+logs/
+sessions/sess_*
+
+# Backups and temporary workspace files
+backups/
+scratch/
+database/respaldo.sql
+gstack/
+*.bak
+*-DESIGN.md

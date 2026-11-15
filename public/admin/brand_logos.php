@@ -7,7 +7,7 @@ if (!$auth->isLoggedIn()) {
 }
 if (!$auth->hasRole(['Administrador del Sistema', 'Administrador de Empresa'])) {
     $_SESSION['error_message'] = 'No tienes permisos para acceder a esta sección';
-    $auth->redirect(BASE_URL . '/dashboard_simple.php');
+    $auth->redirect(BASE_URL . '/dashboard.php');
 }
 
 $user = $auth->getUser();
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($uploadResult['success']) {
                 $companySettings->updateLogo($targetCompanyId, 'uploads/company/' . $uploadResult['filename']);
                 $companySettings->generatePwaIcons($uploadResult['path'], $targetCompanyId);
-                $_SESSION['success_message'] = 'Logo PWA actualizado y tamaños PWA generados correctamente';
+                $_SESSION['success_message'] = 'Logo PWA actualizado y tamaños generados correctamente';
             } else {
                 $_SESSION['error_message'] = 'Error al subir imagen: ' . $uploadResult['message'];
             }
@@ -99,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
     } elseif ($action === 'update_brand') {
-        $brandId   = (int)$_POST['brand_id'];
+        $brandId   = (int)($_POST['brand_id'] ?? 0);
         $brandName = trim($_POST['brand_name'] ?? '');
         $sortOrder = (int)($_POST['sort_order'] ?? 0);
         $isActive  = isset($_POST['is_active']) ? 1 : 0;
@@ -111,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
     } elseif ($action === 'delete_brand') {
-        $brandId = (int)$_POST['brand_id'];
+        $brandId = (int)($_POST['brand_id'] ?? 0);
         if ($companySettings->deleteBrandLogo($targetCompanyId, $brandId)) {
             $_SESSION['success_message'] = 'Marca eliminada correctamente';
         } else {
@@ -131,357 +131,373 @@ $pwaLogoUrl    = $companySettings->getSetting($selectedCompanyId, 'company_logo_
 $pwaFaviconUrl = $companySettings->getSetting($selectedCompanyId, 'company_favicon_url') ?: null;
 
 $pageTitle = 'Logos de Marcas';
-require_once __DIR__ . '/../../includes/init.php';
+$activePage = 'admin';
+require_once __DIR__ . '/../../includes/app_header.php';
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $pageTitle ?> - Admin</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <!-- Tema profesional COTI (no-flash + marca) -->
-    <script>(function(){var t=localStorage.getItem('coti-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-bs-theme',t);})();</script>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/theme-pro.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/theme-pro.css") ?>">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
-<?php include __DIR__ . '/../../includes/notification_bell.php'; ?>
 
-<div class="container-fluid py-4">
-    <div class="row">
-        <!-- Sidebar -->
-        <div class="col-md-3">
-            <?php include __DIR__ . '/../../includes/admin_sidebar.php'; ?>
-        </div>
+<div class="container-fluid px-2 px-md-3 py-3" style="max-width: 1300px; margin: 0 auto;">
 
-        <!-- Main content -->
-        <div class="col-md-9">
-            <div class="mb-3">
-                <a href="<?= BASE_URL ?>/admin/index.php" class="btn btn-outline-secondary btn-sm">
-                    <i class="fas fa-arrow-left me-1"></i>Volver al Panel Admin
+    <!-- =========================================================
+         1. BREADCRUMB & HEADER
+         ========================================================= -->
+    <div class="d-flex flex-column gap-2 mb-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1 small">
+                <li class="breadcrumb-item">
+                    <a href="<?= BASE_URL ?>/dashboard.php" class="text-decoration-none text-muted">
+                        <i class="fas fa-home me-1"></i>Inicio
+                    </a>
+                </li>
+                <li class="breadcrumb-item text-muted">Administración</li>
+                <li class="breadcrumb-item active text-body fw-semibold" aria-current="page">Logos de Marcas</li>
+            </ol>
+        </nav>
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="status-pulse-dot" style="display:inline-block; width:9px; height:9px; border-radius:50%; background:#F59E0B; box-shadow:0 0 8px rgba(245, 158, 11, 0.6);"></span>
+                    <h1 class="h4 fw-bold mb-0 text-body" style="font-family: var(--font-display); letter-spacing: -0.02em;">
+                        Logos de Marcas y Cabecera PDF
+                    </h1>
+                    <span class="badge rounded-pill bg-body-tertiary text-body border px-2 py-1 small fw-semibold">
+                        <?= count($brands) ?> marcas
+                    </span>
+                </div>
+                <p class="text-muted small mb-0 mt-0.5" style="font-size: 0.82rem;">
+                    Marcas comerciales que se imprimen horizontalmente en el encabezado de las cotizaciones en PDF.
+                </p>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <?php if ($isSysAdmin && !empty($companies)): ?>
+                    <form method="get" class="d-flex align-items-center gap-1.5 m-0">
+                        <span class="small text-muted text-nowrap">Empresa:</span>
+                        <select name="company_id" class="form-select form-select-sm" onchange="this.form.submit()" style="min-width: 200px;">
+                            <?php foreach ($companies as $c): ?>
+                                <option value="<?= $c['id'] ?>" <?= $c['id'] == $selectedCompanyId ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($c['name']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </form>
+                <?php endif; ?>
+                <a href="<?= BASE_URL ?>/admin/index.php" class="btn btn-outline-secondary btn-sm px-3">
+                    <i class="fas fa-arrow-left me-1"></i> Panel Admin
                 </a>
             </div>
-            <div class="d-flex align-items-center justify-content-between mb-3">
-                <h4 class="mb-0"><i class="fas fa-tags me-2 text-primary"></i>Logos de Marcas</h4>
-                <?php if ($isSysAdmin && !empty($companies)): ?>
-                <form method="get" class="d-flex align-items-center gap-2">
-                    <label class="mb-0 text-muted small">Empresa:</label>
-                    <select name="company_id" class="form-select form-select-sm" onchange="this.form.submit()" style="width:auto;">
-                        <?php foreach ($companies as $c): ?>
-                            <option value="<?= $c['id'] ?>" <?= $c['id'] == $selectedCompanyId ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($c['name']) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </form>
-                <?php endif; ?>
-            </div>
+        </div>
+    </div>
 
-            <p class="text-muted">Los logos de marcas se muestran como una fila de imágenes en el encabezado del PDF de cotización.</p>
+    <!-- Feedback Alerts -->
+    <?php if (isset($_SESSION['success_message'])): ?>
+        <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2 py-2 px-3 small mb-3" role="alert">
+            <i class="fas fa-check-circle"></i>
+            <div><?= htmlspecialchars($_SESSION['success_message']) ?></div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <?php unset($_SESSION['success_message']); ?>
+    <?php endif; ?>
 
-            <?php if ($isSysAdmin): ?>
-            <?php
-                $sessionCompanyId   = $auth->getCompanyId();
-                $sessionCompanyLogo = $companySettings->getSetting($sessionCompanyId, 'company_logo_url');
-                $sessionCompanyName = $companySettings->getSetting($sessionCompanyId, 'company_name') ?: 'Tu empresa';
-            ?>
-            <div class="alert alert-info py-2 small mb-3">
-                <i class="fas fa-info-circle me-1"></i>
-                <strong>Ícono PWA del manifest:</strong> el ícono que se instala en el celular corresponde a la empresa de tu sesión
-                (<strong><?= htmlspecialchars($sessionCompanyName) ?></strong> — ID <?= $sessionCompanyId ?>).
-                <?php if ($sessionCompanyLogo): ?>
-                    <span class="text-success"><i class="fas fa-check-circle me-1"></i>Tiene logo cargado.</span>
-                <?php else: ?>
-                    <span class="text-danger"><i class="fas fa-times-circle me-1"></i>Sin logo — selecciona esa empresa en el panel y súbele un logo.</span>
-                <?php endif; ?>
-            </div>
-            <?php endif; ?>
+    <?php if (isset($_SESSION['error_message'])): ?>
+        <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2 py-2 px-3 small mb-3" role="alert">
+            <i class="fas fa-exclamation-circle"></i>
+            <div><?= htmlspecialchars($_SESSION['error_message']) ?></div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <?php unset($_SESSION['error_message']); ?>
+    <?php endif; ?>
 
-            <?php if (!empty($_SESSION['success_message'])): ?>
-                <div class="alert alert-success alert-dismissible fade show">
-                    <?= htmlspecialchars($_SESSION['success_message']) ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div class="row g-3">
+        <!-- =========================================================
+             2. MARCAS REGISTRADAS & VISTA PREVIA PDF (Izquierda 8 Col)
+             ========================================================= -->
+        <div class="col-12 col-lg-8">
+            <div class="card border-0 shadow-sm mb-3" style="background-color: var(--color-panel); border: 1px solid var(--color-rule) !important; border-radius: 12px; overflow: hidden;">
+                <div class="card-header bg-body-tertiary border-bottom py-2.5 px-3 d-flex justify-content-between align-items-center">
+                    <span class="fw-bold small text-body">
+                        <i class="fas fa-tags text-warning me-2"></i>Marcas de Neumáticos Registradas
+                    </span>
+                    <span class="badge bg-body-secondary text-body border">
+                        <?= count($brands) ?> activas
+                    </span>
                 </div>
-                <?php unset($_SESSION['success_message']); ?>
-            <?php endif; ?>
-            <?php if (!empty($_SESSION['error_message'])): ?>
-                <div class="alert alert-danger alert-dismissible fade show">
-                    <?= htmlspecialchars($_SESSION['error_message']) ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-                <?php unset($_SESSION['error_message']); ?>
-            <?php endif; ?>
 
-            <!-- PWA Icon Setting -->
-            <div class="card mb-4">
-                <div class="card-header d-flex align-items-center justify-content-between">
-                    <span><i class="fas fa-mobile-alt me-1"></i>Ícono de la aplicación (PWA)</span>
-                    <a href="<?= BASE_URL ?>/manifest.php" target="_blank" class="btn btn-outline-secondary btn-sm">
-                        <i class="fas fa-eye me-1"></i>Ver manifest actual
-                    </a>
-                </div>
-                <div class="card-body">
-                    <p class="text-muted small mb-3">El <strong>Favicon</strong> se usa como ícono PWA (es cuadrado y queda bien en celulares). El <strong>Logo</strong> es solo respaldo si no hay favicon.</p>
-                    <div class="row g-3">
-                        <!-- Logo (fallback) -->
-                        <div class="col-md-6">
-                            <div class="border rounded p-3 text-center h-100">
-                                <div class="fw-semibold mb-2"><i class="fas fa-image me-1"></i>Logo de empresa <span class="badge bg-secondary">Respaldo PDF / portada</span></div>
-                                <?php if ($pwaLogoUrl): ?>
-                                    <img src="<?= htmlspecialchars(upload_url($pwaLogoUrl)) ?>"
-                                         alt="Logo" class="img-fluid mb-2" style="max-height:80px;object-fit:contain;">
-                                <?php else: ?>
-                                    <div class="bg-light p-3 mb-2 rounded">
-                                        <i class="fas fa-image fa-2x text-muted"></i>
-                                        <p class="text-muted small mt-1 mb-0">Sin logo</p>
-                                    </div>
-                                <?php endif; ?>
-                                <form method="post" enctype="multipart/form-data">
-                                    <input type="hidden" name="action" value="upload_pwa_logo">
-                                    <input type="hidden" name="company_id" value="<?= $selectedCompanyId ?>">
-                                    <input type="file" class="form-control form-control-sm mb-2" name="pwa_logo" accept="image/*" required>
-                                    <small class="text-muted d-block mb-2">PNG/JPG/WebP. Recomendado: 512×512px o mayor.</small>
-                                    <button type="submit" class="btn btn-success btn-sm w-100">
-                                        <i class="fas fa-upload me-1"></i>Subir Logo
-                                    </button>
-                                </form>
+                <div class="card-body p-0">
+                    <!-- Live PDF Header Preview Row -->
+                    <?php if (!empty($brands)): ?>
+                        <div class="p-3 border-bottom" style="background-color: var(--color-canvas);">
+                            <div class="small text-muted fw-semibold mb-2" style="font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase;">
+                                <i class="fas fa-eye text-primary me-1"></i>Vista Previa de Fila de Logos en el PDF:
+                            </div>
+                            <div class="d-flex align-items-center gap-3 flex-wrap p-2 rounded border" style="background: #ffffff; min-height: 48px;">
+                                <?php foreach ($brands as $b): ?>
+                                    <?php if ($b['is_active']): ?>
+                                        <img src="<?= htmlspecialchars(upload_url($b['logo_url'])) ?>"
+                                             alt="<?= htmlspecialchars($b['brand_name']) ?>"
+                                             style="height: 28px; max-width: 80px; object-fit: contain;"
+                                             title="<?= htmlspecialchars($b['brand_name']) ?>">
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
                             </div>
                         </div>
-                        <!-- Favicon (browser tab) -->
-                        <div class="col-md-6">
-                            <div class="border rounded p-3 text-center h-100">
-                                <div class="fw-semibold mb-2"><i class="fas fa-star me-1"></i>Favicon <span class="badge bg-success">Ícono PWA + Pestaña</span></div>
-                                <?php if ($pwaFaviconUrl): ?>
-                                    <img src="<?= htmlspecialchars(upload_url($pwaFaviconUrl)) ?>"
-                                         alt="Favicon" class="mb-2" style="width:48px;height:48px;object-fit:contain;">
-                                <?php else: ?>
-                                    <div class="bg-light p-3 mb-2 rounded">
-                                        <i class="fas fa-star fa-2x text-muted"></i>
-                                        <p class="text-muted small mt-1 mb-0">Sin favicon</p>
-                                    </div>
-                                <?php endif; ?>
-                                <form method="post" enctype="multipart/form-data">
-                                    <input type="hidden" name="action" value="upload_pwa_favicon">
-                                    <input type="hidden" name="company_id" value="<?= $selectedCompanyId ?>">
-                                    <input type="file" class="form-control form-control-sm mb-2" name="pwa_favicon" accept=".ico,.png,.jpg,.jpeg,.webp" required>
-                                    <small class="text-muted d-block mb-2">ICO/PNG. Recomendado: 32×32px o 64×64px.</small>
-                                    <button type="submit" class="btn btn-success btn-sm w-100">
-                                        <i class="fas fa-upload me-1"></i>Subir Favicon
-                                    </button>
-                                </form>
-                            </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0" style="width: 100%;">
+                                <thead style="background-color: var(--color-canvas); font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase;">
+                                    <tr>
+                                        <th class="ps-3 py-2 text-muted" style="width: 90px;">Logo</th>
+                                        <th class="py-2 text-muted">Nombre de la Marca</th>
+                                        <th class="py-2 text-muted text-center" style="width: 80px;">Orden</th>
+                                        <th class="py-2 text-muted text-center" style="width: 90px;">Estado</th>
+                                        <th class="pe-3 py-2 text-end text-muted" style="width: 100px;">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y">
+                                    <?php foreach ($brands as $b): ?>
+                                        <tr class="transition-hover">
+                                            <td class="ps-3 py-2 text-center">
+                                                <div class="p-1 rounded d-inline-flex align-items-center justify-content-center" style="background: #ffffff; border: 1px solid var(--color-rule); width: 70px; height: 38px;">
+                                                    <img src="<?= htmlspecialchars(upload_url($b['logo_url'])) ?>"
+                                                         alt="<?= htmlspecialchars($b['brand_name']) ?>"
+                                                         style="max-height: 28px; max-width: 60px; object-fit: contain;">
+                                                </div>
+                                            </td>
+                                            <td class="py-2">
+                                                <strong class="text-body" style="font-size: 0.85rem;"><?= htmlspecialchars($b['brand_name']) ?></strong>
+                                            </td>
+                                            <td class="py-2 text-center font-monospace small">
+                                                <?= (int)$b['sort_order'] ?>
+                                            </td>
+                                            <td class="py-2 text-center">
+                                                <?php if ($b['is_active']): ?>
+                                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-0.5" style="font-size: 0.7rem;">
+                                                        Visible
+                                                    </span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-body-secondary text-muted border px-2 py-0.5" style="font-size: 0.7rem;">
+                                                        Oculto
+                                                    </span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td class="pe-3 py-2 text-end text-nowrap">
+                                                <div class="d-inline-flex align-items-center gap-1">
+                                                    <button type="button" class="btn btn-sm btn-outline-primary px-2 py-1"
+                                                            style="font-size: 0.75rem;"
+                                                            onclick="editBrand(<?= htmlspecialchars(json_encode($b)) ?>)"
+                                                            title="Editar Marca">
+                                                        <i class="fas fa-pen"></i>
+                                                    </button>
+                                                    <form method="post" class="d-inline m-0" onsubmit="return confirm('¿Está seguro de eliminar el logo de <?= htmlspecialchars($b['brand_name']) ?>?')">
+                                                        <input type="hidden" name="action" value="delete_brand">
+                                                        <input type="hidden" name="company_id" value="<?= $selectedCompanyId ?>">
+                                                        <input type="hidden" name="brand_id" value="<?= $b['id'] ?>">
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger px-2 py-1"
+                                                                style="font-size: 0.75rem;"
+                                                                title="Eliminar">
+                                                            <i class="fas fa-trash-alt"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
                         </div>
-                    </div>
+                    <?php else: ?>
+                        <div class="text-center py-5 px-3">
+                            <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 52px; height: 52px; background: rgba(245, 158, 11, 0.1); color: #F59E0B;">
+                                <i class="fas fa-tags fa-2x"></i>
+                            </div>
+                            <h6 class="fw-bold text-body mb-1">Sin marcas registradas</h6>
+                            <p class="text-muted small mb-0">Use el formulario a la derecha para agregar logos de marcas.</p>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
 
-            <!-- PDF Color Setting -->
-            <div class="card mb-4">
-                <div class="card-header"><i class="fas fa-palette me-1"></i>Color principal del PDF de cotización</div>
-                <div class="card-body">
-                    <form method="post" class="d-flex align-items-end gap-3 flex-wrap">
+            <!-- PDF Header Color Setting -->
+            <div class="card border-0 shadow-sm" style="background-color: var(--color-panel); border: 1px solid var(--color-rule) !important; border-radius: 12px;">
+                <div class="card-header bg-body-tertiary border-bottom py-2.5 px-3">
+                    <span class="fw-bold small text-body">
+                        <i class="fas fa-palette text-primary me-2"></i>Color Oficial del Encabezado PDF
+                    </span>
+                </div>
+                <div class="card-body p-3">
+                    <form method="post" class="d-flex align-items-end gap-3 flex-wrap m-0">
                         <input type="hidden" name="action" value="save_pdf_color">
                         <input type="hidden" name="company_id" value="<?= $selectedCompanyId ?>">
                         <div>
-                            <label class="form-label mb-1 d-block">Color</label>
+                            <label class="form-label small text-muted mb-1">Selector</label>
                             <input type="color" class="form-control form-control-color"
                                    name="pdf_header_color" id="pdfColorPicker"
                                    value="<?= htmlspecialchars($pdfHeaderColor) ?>"
-                                   style="width:60px;height:38px;padding:2px;">
+                                   style="width: 48px; height: 34px; cursor: pointer;">
                         </div>
                         <div>
-                            <label class="form-label mb-1 d-block">Hex</label>
+                            <label class="form-label small text-muted mb-1">Código HEX</label>
                             <input type="text" class="form-control form-control-sm font-monospace"
                                    id="pdfColorHex" value="<?= htmlspecialchars($pdfHeaderColor) ?>"
-                                   maxlength="7" style="width:90px;"
-                                   oninput="document.getElementById('pdfColorPicker').value=this.value">
+                                   maxlength="7" style="width: 95px;"
+                                   oninput="document.getElementById('pdfColorPicker').value=this.value; document.getElementById('pdfColorPreview').style.background=this.value;">
                         </div>
                         <div>
-                            <label class="form-label mb-1 d-block">Vista previa</label>
-                            <span id="pdfColorPreview"
-                                  style="display:inline-block;padding:4px 18px;border-radius:4px;font-weight:bold;font-size:13px;color:#fff;background:<?= htmlspecialchars($pdfHeaderColor) ?>;">
+                            <label class="form-label small text-muted mb-1">Vista Previa</label>
+                            <span id="pdfColorPreview" class="badge px-3 py-2 font-monospace"
+                                  style="font-size: 0.8rem; background: <?= htmlspecialchars($pdfHeaderColor) ?>; color: #fff;">
                                 COTIZACIÓN
                             </span>
                         </div>
-                        <div class="mt-auto">
-                            <button type="submit" class="btn btn-primary btn-sm">
-                                <i class="fas fa-save me-1"></i>Guardar color
+                        <div class="ms-auto">
+                            <button type="submit" class="btn btn-primary btn-sm fw-semibold px-3">
+                                <i class="fas fa-save me-1"></i> Guardar Color
                             </button>
                         </div>
                     </form>
-                    <small class="text-muted mt-2 d-block">Afecta: encabezado "COTIZACIÓN", cabecera de tabla de items y fila "TOTAL IMPORTE".</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- =========================================================
+             3. AGREGAR MARCA & PWA ICONS (Derecha 4 Col)
+             ========================================================= -->
+        <div class="col-12 col-lg-4">
+            <!-- Add Brand Card -->
+            <div class="card border-0 shadow-sm mb-3" style="background-color: var(--color-panel); border: 1px solid var(--color-rule) !important; border-radius: 12px;">
+                <div class="card-header bg-body-tertiary border-bottom py-2.5 px-3">
+                    <span class="fw-bold small text-body">
+                        <i class="fas fa-plus-circle text-warning me-2"></i>Agregar Nueva Marca
+                    </span>
+                </div>
+                <div class="card-body p-3">
+                    <form method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="action" value="add_brand">
+                        <input type="hidden" name="company_id" value="<?= $selectedCompanyId ?>">
+
+                        <div class="mb-2.5">
+                            <label class="form-label small fw-semibold text-body mb-1">Nombre de la Marca *</label>
+                            <input type="text" class="form-control form-control-sm" name="brand_name" placeholder="Ej: Continental, Pirelli, Triangle" required>
+                        </div>
+
+                        <div class="mb-2.5">
+                            <label class="form-label small fw-semibold text-body mb-1">Archivo de Logo (PNG transparente) *</label>
+                            <input type="file" class="form-control form-control-sm" name="logo" accept="image/*" required>
+                            <div class="text-muted small mt-1" style="font-size: 0.72rem;">
+                                Recomendado: formato PNG transparente, altura proporcional.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-body mb-1">Orden de Visualización</label>
+                            <input type="number" class="form-control form-control-sm" name="sort_order" value="0" min="0">
+                            <div class="text-muted small mt-1" style="font-size: 0.72rem;">
+                                0 aparece primero, seguido de 1, 2, 3...
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-warning btn-sm w-100 fw-bold text-dark shadow-sm">
+                            <i class="fas fa-upload me-1"></i> Subir y Registrar Logo
+                        </button>
+                    </form>
                 </div>
             </div>
 
-            <div class="row">
-                <!-- Add brand form -->
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-header"><i class="fas fa-plus-circle me-1"></i>Agregar Marca</div>
-                        <div class="card-body">
-                            <form method="post" enctype="multipart/form-data">
-                                <input type="hidden" name="action" value="add_brand">
-                                <input type="hidden" name="company_id" value="<?= $selectedCompanyId ?>">
-                                <div class="mb-3">
-                                    <label class="form-label">Nombre de la Marca <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="brand_name" placeholder="Ej: Continental" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Logo <span class="text-danger">*</span></label>
-                                    <input type="file" class="form-control" name="logo" accept="image/*" required>
-                                    <small class="text-muted">PNG, JPG, SVG o WebP. Recomendado: fondo transparente (PNG), máx 1MB.</small>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Orden</label>
-                                    <input type="number" class="form-control" name="sort_order" value="0" min="0">
-                                    <small class="text-muted">Menor número = aparece primero.</small>
-                                </div>
-                                <button type="submit" class="btn btn-primary w-100">
-                                    <i class="fas fa-upload me-1"></i>Agregar Logo
-                                </button>
-                            </form>
-                        </div>
-                    </div>
+            <!-- PWA Icon Card -->
+            <div class="card border-0 shadow-sm" style="background-color: var(--color-panel); border: 1px solid var(--color-rule) !important; border-radius: 12px;">
+                <div class="card-header bg-body-tertiary border-bottom py-2.5 px-3 d-flex justify-content-between align-items-center">
+                    <span class="fw-bold small text-body">
+                        <i class="fas fa-mobile-screen text-info me-2"></i>Ícono de la App (PWA)
+                    </span>
+                    <a href="<?= BASE_URL ?>/manifest.php" target="_blank" class="badge bg-body-secondary text-body border text-decoration-none" style="font-size: 0.7rem;">
+                        manifest.json <i class="fas fa-external-link-alt ms-1"></i>
+                    </a>
                 </div>
-
-                <!-- Brands list -->
-                <div class="col-md-8">
-                    <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <span><i class="fas fa-list me-1"></i>Marcas Registradas</span>
-                            <span class="badge bg-secondary"><?= count($brands) ?> marca(s)</span>
-                        </div>
-                        <div class="card-body p-0">
-                            <?php if (empty($brands)): ?>
-                                <div class="p-4 text-center text-muted">
-                                    <i class="fas fa-tags fa-2x mb-2 d-block"></i>
-                                    No hay logos de marcas registrados.
-                                </div>
-                            <?php else: ?>
-                                <!-- Preview row -->
-                                <div class="p-3 bg-light border-bottom d-flex align-items-center gap-3 flex-wrap">
-                                    <small class="text-muted fw-bold">Vista previa PDF:</small>
-                                    <?php foreach ($brands as $b): ?>
-                                        <?php if ($b['is_active']): ?>
-                                        <img src="<?= htmlspecialchars(upload_url($b['logo_url'])) ?>"
-                                             alt="<?= htmlspecialchars($b['brand_name']) ?>"
-                                             style="height:32px; object-fit:contain;"
-                                             title="<?= htmlspecialchars($b['brand_name']) ?>">
-                                        <?php endif; ?>
-                                    <?php endforeach; ?>
-                                </div>
-                                <table class="table table-sm table-hover mb-0">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Logo</th>
-                                            <th>Nombre</th>
-                                            <th class="text-center">Orden</th>
-                                            <th class="text-center">Activo</th>
-                                            <th class="text-center">Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php foreach ($brands as $b): ?>
-                                        <tr>
-                                            <td>
-                                                <img src="<?= htmlspecialchars(upload_url($b['logo_url'])) ?>"
-                                                     alt="<?= htmlspecialchars($b['brand_name']) ?>"
-                                                     style="height:36px; max-width:80px; object-fit:contain;">
-                                            </td>
-                                            <td class="align-middle"><?= htmlspecialchars($b['brand_name']) ?></td>
-                                            <td class="text-center align-middle"><?= $b['sort_order'] ?></td>
-                                            <td class="text-center align-middle">
-                                                <?php if ($b['is_active']): ?>
-                                                    <span class="badge bg-success">Sí</span>
-                                                <?php else: ?>
-                                                    <span class="badge bg-secondary">No</span>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td class="text-center align-middle">
-                                                <button type="button" class="btn btn-sm btn-outline-primary"
-                                                        onclick="editBrand(<?= htmlspecialchars(json_encode($b)) ?>)">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                                <form method="post" class="d-inline"
-                                                      onsubmit="return confirm('¿Eliminar este logo?')">
-                                                    <input type="hidden" name="action" value="delete_brand">
-                                                    <input type="hidden" name="company_id" value="<?= $selectedCompanyId ?>">
-                                                    <input type="hidden" name="brand_id" value="<?= $b['id'] ?>">
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            <?php endif; ?>
-                        </div>
+                <div class="card-body p-3">
+                    <div class="text-center p-2 rounded mb-2" style="background: var(--color-canvas); border: 1px dashed var(--color-rule);">
+                        <?php if ($pwaFaviconUrl): ?>
+                            <img src="<?= htmlspecialchars(upload_url($pwaFaviconUrl)) ?>"
+                                 alt="Favicon" style="width: 44px; height: 44px; object-fit: contain;">
+                        <?php else: ?>
+                            <i class="fas fa-star text-muted fa-2x opacity-50"></i>
+                        <?php endif; ?>
                     </div>
+                    <form method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="action" value="upload_pwa_favicon">
+                        <input type="hidden" name="company_id" value="<?= $selectedCompanyId ?>">
+                        <div class="input-group input-group-sm mb-1.5">
+                            <input type="file" class="form-control" name="pwa_favicon" accept=".ico,.png,.jpg,.jpeg,.webp" required>
+                            <button type="submit" class="btn btn-outline-secondary fw-semibold">Subir</button>
+                        </div>
+                        <div class="text-muted small" style="font-size: 0.72rem;">
+                            Genera automáticamente los tamaños PWA requeridos por Android / iOS.
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Edit modal -->
-<div class="modal fade" id="editBrandModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="fas fa-edit me-1"></i>Editar Marca</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+<!-- =========================================================
+     MODAL: EDITAR MARCA
+     ========================================================= -->
+<div class="modal fade" id="editBrandModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content" style="background-color: var(--color-panel); border: 1px solid var(--color-rule); border-radius: 14px;">
+            <div class="modal-header border-bottom py-2.5 px-3">
+                <h6 class="modal-title fw-bold text-body mb-0">
+                    <i class="fas fa-pen text-warning me-2"></i>Editar Marca
+                </h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <form method="post">
-                <div class="modal-body">
+                <div class="modal-body p-3">
                     <input type="hidden" name="action" value="update_brand">
                     <input type="hidden" name="company_id" value="<?= $selectedCompanyId ?>">
                     <input type="hidden" name="brand_id" id="edit_brand_id">
-                    <div class="mb-3">
-                        <label class="form-label">Nombre</label>
-                        <input type="text" class="form-control" name="brand_name" id="edit_brand_name" required>
+
+                    <div class="mb-2.5">
+                        <label class="form-label small fw-semibold text-body mb-1">Nombre</label>
+                        <input type="text" class="form-control form-control-sm" name="brand_name" id="edit_brand_name" required>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Orden</label>
-                        <input type="number" class="form-control" name="sort_order" id="edit_sort_order" min="0">
+
+                    <div class="mb-2.5">
+                        <label class="form-label small fw-semibold text-body mb-1">Orden</label>
+                        <input type="number" class="form-control form-control-sm" name="sort_order" id="edit_sort_order" min="0">
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="is_active" id="edit_is_active" value="1">
-                        <label class="form-check-label" for="edit_is_active">Activo (visible en PDF)</label>
+
+                    <div class="form-check form-switch mt-2">
+                        <input class="form-check-input" type="checkbox" role="switch" name="is_active" id="edit_is_active" value="1">
+                        <label class="form-check-label small fw-semibold text-body" for="edit_is_active">
+                            Activo (visible en PDF)
+                        </label>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                <div class="modal-footer border-top py-2 px-3 d-flex justify-content-between">
+                    <button type="button" class="btn btn-outline-secondary btn-sm px-3" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary btn-sm px-3 fw-semibold">Guardar</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 function editBrand(brand) {
     document.getElementById('edit_brand_id').value    = brand.id;
     document.getElementById('edit_brand_name').value  = brand.brand_name;
     document.getElementById('edit_sort_order').value  = brand.sort_order;
-    document.getElementById('edit_is_active').checked = brand.is_active == 1;
+    document.getElementById('edit_is_active').checked = (brand.is_active == 1);
     new bootstrap.Modal(document.getElementById('editBrandModal')).show();
 }
 
-// Sync color picker ↔ hex input ↔ preview
 document.getElementById('pdfColorPicker').addEventListener('input', function() {
     document.getElementById('pdfColorHex').value = this.value;
     document.getElementById('pdfColorPreview').style.background = this.value;
 });
-document.getElementById('pdfColorHex').addEventListener('input', function() {
-    if (/^#[0-9A-Fa-f]{6}$/.test(this.value)) {
-        document.getElementById('pdfColorPicker').value = this.value;
-        document.getElementById('pdfColorPreview').style.background = this.value;
-    }
-});
 </script>
-</body>
-</html>
+
+<?php
+require_once __DIR__ . '/../../includes/app_footer.php';
+?>

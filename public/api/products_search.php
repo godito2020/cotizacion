@@ -21,7 +21,7 @@ $startTime = microtime(true);
 $search    = trim($_GET['search'] ?? '');
 $warehouse = $_GET['warehouse'] ?? '';
 $page      = max(1, (int)($_GET['page'] ?? 1));
-$perPage   = 50;
+$perPage   = in_array((int)($_GET['per_page'] ?? 15), [10, 15, 25, 50, 100]) ? (int)$_GET['per_page'] : 15;
 
 // Mes actual
 $meses = [

@@ -41,49 +41,10 @@ $pendingRequests = $billingManager->getPendingBillingRequests($companyId);
 $stats = $billingManager->getBillingStats($companyId);
 
 $pageTitle = 'Solicitudes Pendientes de Facturación';
+$pageTitle = 'Solicitudes Pendientes de Facturación';
+$activePage = 'billing';
+require_once __DIR__ . '/../../includes/app_header.php';
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $pageTitle ?></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Tema profesional COTI (no-flash + marca) -->
-    <script>(function(){var t=localStorage.getItem('coti-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-bs-theme',t);})();</script>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/theme-pro.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/theme-pro.css") ?>">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/style.css") ?>">
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg bg-primary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="<?= $isOnlyBilling ? BASE_URL . '/billing/pending.php' : BASE_URL . '/dashboard_simple.php' ?>">
-                <i class="fas fa-file-invoice"></i> <?= $isOnlyBilling ? 'Panel de Facturación' : 'Sistema de Cotizaciones' ?>
-            </a>
-            <div class="navbar-nav ms-auto">
-                <button class="theme-toggle me-3" id="themeToggle" title="Cambiar tema">
-                    <i class="fas fa-moon" id="themeIcon"></i>
-                </button>
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user"></i> <?= htmlspecialchars($auth->getUser()['username']) ?>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <?php if (!$isOnlyBilling): ?>
-                            <li><a class="dropdown-item" href="<?= BASE_URL ?>/dashboard_simple.php">Dashboard</a></li>
-                            <li><a class="dropdown-item" href="<?= BASE_URL ?>/quotations/index.php">Cotizaciones</a></li>
-                            <li><a class="dropdown-item" href="<?= BASE_URL ?>/billing/pending.php">Facturación</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                        <?php endif; ?>
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/logout.php">Cerrar Sesión</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <main class="container-fluid py-4">
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1><i class="fas fa-file-invoice"></i> <?= $pageTitle ?></h1>
@@ -219,9 +180,7 @@ $pageTitle = 'Solicitudes Pendientes de Facturación';
                 <?php endif; ?>
             </div>
         </div>
-    </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="<?= BASE_URL ?>/assets/js/theme-pro.js"></script>
-</body>
-</html>
+<?php
+require_once __DIR__ . '/../../includes/app_footer.php';
+?>

@@ -289,592 +289,358 @@ function statusLabel($status) {
     $s = $map[$status] ?? [$status, 'bg-secondary'];
     return '<span class="badge ' . $s[1] . '">' . $s[0] . '</span>';
 }
+$pageTitle = 'Dashboard';
+$activePage = 'dashboard';
+require_once __DIR__ . '/../includes/app_header.php';
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Sistema de Cotizaciones</title>
-    <?php include __DIR__ . '/../includes/pwa_head.php'; ?>
-    <!-- Fijar tema antes de pintar para evitar parpadeo (modo claro/oscuro) -->
-    <script>
-        (function () {
-            var t = localStorage.getItem('coti-theme')
-                    || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-            document.documentElement.setAttribute('data-bs-theme', t);
-        })();
-    </script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/theme-pro.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/theme-pro.css") ?>">
-    <style>
-        .stats-card { border-radius: 12px; padding: 1.5rem; color: white; }
-        .stats-number { font-size: 2rem; font-weight: 800; }
-        .workflow-stat { text-align: center; padding: 0.75rem; border-radius: 10px; background-color: var(--bs-tertiary-bg) !important; }
-        .workflow-stat .number { font-size: 1.5rem; font-weight: 800; }
-        .workflow-stat .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
-        #notificationDropdown .fa-shake { animation: fa-shake 1.5s ease infinite; }
-        @keyframes fa-shake {
-            0%, 100% { transform: rotate(0deg); }
-            10%, 30% { transform: rotate(-10deg); }
-            20%, 40% { transform: rotate(10deg); }
-            50% { transform: rotate(0deg); }
-        }
-        .dropdown-menu .dropdown-item:hover { background-color: var(--bs-tertiary-bg) !important; }
-        .dropdown-menu .border-start { border-left-width: 3px !important; }
-    </style>
-</head>
-<body>
-    <a href="#mainContent" class="skip-link">Saltar al contenido</a>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-brandbar">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="<?= BASE_URL ?>/dashboard_simple.php">
-                <i class="fas fa-chart-line"></i> Sistema de Cotizaciones
-            </a>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= BASE_URL ?>/quotations/create.php">
-                            <i class="fas fa-plus"></i> Nueva Cotización
+                <!-- Hero Action Bar -->
+                <div class="dashboard-hero">
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span class="live-pulse-dot" title="Operativo en tiempo real"></span>
+                            <h1 class="h2 mb-0 fw-bold">Dashboard</h1>
+                        </div>
+                        <p class="text-muted mb-0">Bienvenido, <?= htmlspecialchars(($user['first_name'] ?: $user['username']) ?: 'Usuario') ?> · Espacio comercial y operativo en tiempo real</p>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <?php if (Permissions::userCan($auth, 'manage_quotations')): ?>
+                        <a href="<?= BASE_URL ?>/quotations/create.php" class="btn btn-primary shadow-sm">
+                            <i class="fas fa-plus"></i>
+                            <span>Nueva Cotización</span>
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= BASE_URL ?>/customers/index.php">
-                            <i class="fas fa-users"></i> Clientes
+                        <?php endif; ?>
+                        <?php if (Permissions::userCan($auth, 'manage_customers')): ?>
+                        <a href="<?= BASE_URL ?>/customers/create.php" class="btn btn-secondary">
+                            <i class="fas fa-user-plus"></i>
+                            <span class="d-none d-sm-inline">Nuevo Cliente</span>
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= BASE_URL ?>/products/index.php">
-                            <i class="fas fa-box"></i> Productos
-                        </a>
-                    </li>
-                </ul>
+                        <?php endif; ?>
+                    </div>
+                </div>
 
-                <?php $totalBellCount = count($alerts) + $unreadNotifications; ?>
-                <ul class="navbar-nav align-items-lg-center">
-                    <li class="nav-item me-2 my-1 my-lg-0">
-                        <button type="button" class="theme-toggle-btn" data-theme-toggle aria-label="Cambiar modo de color">
-                            <i class="fas fa-moon"></i>
-                        </button>
-                    </li>
-                    <li class="nav-item dropdown me-3">
-                        <a class="nav-link dropdown-toggle position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-bell<?= $totalBellCount > 0 ? ' fa-shake' : '' ?>"></i>
-                            <?php if ($totalBellCount > 0): ?>
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="bellBadge">
-                                    <?= $totalBellCount > 99 ? '99+' : $totalBellCount ?>
+                <!-- 4 Bento KPI Cards (gstack Industrial Spec) -->
+                <div class="row g-3 mb-4">
+                    <div class="col-6 col-lg-3">
+                        <div class="kpi-card h-100">
+                            <div class="kpi-card-header">
+                                <span class="kpi-label"><?= $isAdmin ? 'Cotizaciones' : 'Mis Cotizaciones' ?></span>
+                                <span class="kpi-icon-pill amber">
+                                    <i class="fas fa-file-invoice"></i>
                                 </span>
-                            <?php endif; ?>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-lg" style="width: 400px; max-height: 80vh; overflow-y: auto;">
-                            <!-- Alertas del sistema -->
-                            <?php if (!empty($alerts)): ?>
-                            <li class="dropdown-header d-flex justify-content-between align-items-center alert-header" style="background:#fff3cd;">
-                                <span><i class="fas fa-exclamation-triangle text-warning"></i> Alertas</span>
-                                <span class="badge bg-warning text-dark" id="alertCountBadge"><?= count($alerts) ?></span>
-                            </li>
-                            <?php foreach ($alerts as $alert): ?>
-                                <li class="alert-item" data-alert-key="<?= htmlspecialchars($alert['key']) ?>">
-                                    <div class="dropdown-item py-2 border-start border-3 border-<?= $alert['type'] ?>" style="white-space: normal;">
-                                        <div class="d-flex align-items-start">
-                                            <i class="fas <?= $alert['icon'] ?> text-<?= $alert['type'] ?> me-2 mt-1"></i>
-                                            <div class="flex-grow-1">
-                                                <a href="<?= $alert['url'] ?>" class="text-decoration-none text-dark">
-                                                    <div class="small fw-bold"><?= htmlspecialchars($alert['title']) ?></div>
-                                                    <div class="small text-muted"><?= htmlspecialchars($alert['message']) ?></div>
-                                                </a>
-                                                <?php if (!empty($alert['details'])): ?>
-                                                    <div class="mt-1">
-                                                        <?php foreach (array_slice($alert['details'], 0, 2) as $detail): ?>
-                                                            <span class="badge bg-light text-dark me-1" style="font-size:0.65rem;">
-                                                                <?= htmlspecialchars($detail['quotation_number']) ?> (<?= date('d/m', strtotime($detail['valid_until'])) ?>)
-                                                            </span>
-                                                        <?php endforeach; ?>
-                                                        <?php if (count($alert['details']) > 2): ?>
-                                                            <span class="text-muted" style="font-size:0.65rem;">+<?= count($alert['details']) - 2 ?> más</span>
-                                                        <?php endif; ?>
-                                                    </div>
-                                                <?php endif; ?>
-                                            </div>
-                                            <button type="button" class="btn btn-sm text-muted p-0 ms-2 mt-1 dismiss-alert"
-                                                    onclick="dismissAlert('<?= htmlspecialchars($alert['key']) ?>', this); event.stopPropagation();"
-                                                    title="Descartar alerta">
-                                                <i class="fas fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </li>
-                            <?php endforeach; ?>
-                            <li class="alert-divider"><hr class="dropdown-divider my-1"></li>
-                            <li class="no-alerts-msg d-none text-center py-2 text-muted small">
-                                <i class="fas fa-check-circle text-success"></i> Sin alertas pendientes
-                            </li>
-                            <?php endif; ?>
-
-                            <!-- Notificaciones recientes -->
-                            <li class="dropdown-header d-flex justify-content-between align-items-center">
-                                <span><i class="fas fa-bell"></i> Notificaciones</span>
-                                <?php if ($unreadNotifications > 0): ?>
-                                    <span class="badge bg-primary"><?= $unreadNotifications ?></span>
-                                <?php endif; ?>
-                            </li>
-                            <?php if (empty($recentNotifications)): ?>
-                                <li class="text-center py-3 text-muted">
-                                    <i class="fas fa-bell-slash"></i><br>
-                                    <span class="small">No hay notificaciones</span>
-                                </li>
-                            <?php else: ?>
-                                <?php foreach (array_slice($recentNotifications, 0, 4) as $notification): ?>
-                                    <li>
-                                        <a class="dropdown-item py-2 <?= !$notification['read_at'] ? 'bg-light' : '' ?>"
-                                           href="<?= !empty($notification['related_url']) ? htmlspecialchars($notification['related_url']) : BASE_URL . '/notifications/index.php' ?>"
-                                           style="white-space: normal;">
-                                            <div class="d-flex align-items-start">
-                                                <div class="flex-shrink-0 me-2 mt-1">
-                                                    <?php
-                                                    $icon = 'fa-info-circle text-info';
-                                                    switch ($notification['type']) {
-                                                        case 'quotation_created': $icon = 'fa-file-invoice text-info'; break;
-                                                        case 'quotation_accepted': $icon = 'fa-check-circle text-success'; break;
-                                                        case 'quotation_rejected': $icon = 'fa-times-circle text-danger'; break;
-                                                        case 'quotation_invoiced': $icon = 'fa-file-invoice-dollar text-primary'; break;
-                                                        case 'billing_request': $icon = 'fa-file-invoice-dollar text-warning'; break;
-                                                        case 'billing_approved': $icon = 'fa-check-double text-success'; break;
-                                                        case 'billing_rejected': $icon = 'fa-ban text-danger'; break;
-                                                        case 'credit_request': $icon = 'fa-credit-card text-warning'; break;
-                                                        case 'credit_approved': $icon = 'fa-thumbs-up text-success'; break;
-                                                        case 'credit_rejected': $icon = 'fa-thumbs-down text-danger'; break;
-                                                        case 'low_stock': $icon = 'fa-exclamation-triangle text-warning'; break;
-                                                        case 'customer_created': $icon = 'fa-user-plus text-success'; break;
-                                                    }
-                                                    ?>
-                                                    <i class="fas <?= $icon ?>"></i>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <div class="small fw-bold"><?= htmlspecialchars($notification['title']) ?></div>
-                                                    <div class="small text-muted"><?= htmlspecialchars(substr($notification['message'], 0, 60)) ?></div>
-                                                    <div class="small text-muted"><i class="fas fa-clock"></i> <?= timeAgo($notification['created_at']) ?></div>
-                                                </div>
-                                                <?php if (!$notification['read_at']): ?>
-                                                    <span class="badge bg-primary rounded-pill ms-1" style="font-size:0.5rem;">&bull;</span>
-                                                <?php endif; ?>
-                                            </div>
-                                        </a>
-                                    </li>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                            <li><hr class="dropdown-divider my-1"></li>
-                            <li>
-                                <a class="dropdown-item text-center py-2 text-primary fw-bold" href="<?= BASE_URL ?>/notifications/index.php">
-                                    <i class="fas fa-list"></i> Ver todas las notificaciones
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user"></i> <?= htmlspecialchars($user['username']) ?>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="<?= BASE_URL ?>/profile.php">
-                                <i class="fas fa-user-edit"></i> Mi Perfil
-                            </a></li>
-                            <?php if ($isAdmin): ?>
-                                <li><a class="dropdown-item" href="<?= BASE_URL ?>/admin/index.php">Panel Admin</a></li>
-                            <?php endif; ?>
-                            <?php if ($isCredits || $isAdmin): ?>
-                                <li><a class="dropdown-item" href="<?= BASE_URL ?>/credits/pending.php"><i class="fas fa-credit-card"></i> Panel de Créditos</a></li>
-                            <?php endif; ?>
-                            <li><a class="dropdown-item" href="<?= BASE_URL ?>/notifications/index.php">Notificaciones</a></li>
-                            <li><a class="dropdown-item" href="<?= BASE_URL ?>/activities/index.php">Actividades</a></li>
-                            <li><a class="dropdown-item" href="<?= BASE_URL ?>/reports/index.php">Reportes</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="<?= BASE_URL ?>/logout.php">Cerrar Sesión</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="container-fluid py-4" id="mainContent">
-        <!-- Welcome -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <h1 class="mb-1">
-                    <i class="fas fa-tachometer-alt text-primary"></i> Dashboard
-                </h1>
-                <p class="lead mb-0">Bienvenido, <?= htmlspecialchars(($user['first_name'] ?: $user['username']) ?: 'Usuario') ?>!</p>
-            </div>
-        </div>
-
-
-        <!-- Statistics Cards -->
-        <div class="row mb-4">
-            <div class="col-md-3 mb-3">
-                <div class="card stats-card" style="background: linear-gradient(135deg, #ef4444, #b71c1c);">
-                    <div class="card-body text-center">
-                        <i class="fas fa-file-invoice fa-lg mb-2 opacity-75"></i>
-                        <div class="stats-number"><?= number_format($totalQuotations) ?></div>
-                        <div><?= $isAdmin ? 'Cotizaciones' : 'Mis Cotizaciones' ?></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card stats-card" style="background: linear-gradient(135deg, #10b981, #047857);">
-                    <div class="card-body text-center">
-                        <i class="fas fa-users fa-lg mb-2 opacity-75"></i>
-                        <div class="stats-number"><?= number_format($totalCustomers) ?></div>
-                        <div><?= $isAdmin ? 'Clientes' : 'Mis Clientes' ?></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card stats-card" style="background: linear-gradient(135deg, #f59e0b, #b45309);">
-                    <div class="card-body text-center">
-                        <i class="fas fa-box fa-lg mb-2 opacity-75"></i>
-                        <div class="stats-number"><?= number_format($totalProducts) ?></div>
-                        <div><?= $isAdmin ? 'Productos' : 'Mis Productos' ?></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card stats-card" style="background: linear-gradient(135deg, #334155, #0f172a);">
-                    <div class="card-body text-center">
-                        <i class="fas fa-chart-line fa-lg mb-2 opacity-75"></i>
-                        <div class="stats-number"><?= number_format($conversionRate, 1) ?>%</div>
-                        <div><?= $isAdmin ? 'Tasa de Conversión' : 'Mi Conversión' ?></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pipeline de Cotizaciones + Workflow -->
-        <div class="row mb-4">
-            <!-- Pipeline de estados -->
-            <div class="col-md-7 mb-3">
-                <div class="card h-100">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-list-check"></i> Estados de Cotización</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row text-center">
-                            <div class="col">
-                                <div class="workflow-stat bg-light">
-                                    <div class="number text-secondary"><?= $statusCounts['Draft'] ?? 0 ?></div>
-                                    <div class="label text-muted">Borrador</div>
-                                </div>
                             </div>
-                            <div class="col d-flex align-items-center justify-content-center p-0" style="max-width:20px;">
-                                <i class="fas fa-chevron-right text-muted"></i>
-                            </div>
-                            <div class="col">
-                                <div class="workflow-stat bg-light">
-                                    <div class="number text-primary"><?= $statusCounts['Sent'] ?? 0 ?></div>
-                                    <div class="label text-muted">Enviada</div>
-                                </div>
-                            </div>
-                            <div class="col d-flex align-items-center justify-content-center p-0" style="max-width:20px;">
-                                <i class="fas fa-chevron-right text-muted"></i>
-                            </div>
-                            <div class="col">
-                                <div class="workflow-stat bg-light">
-                                    <div class="number text-success"><?= $statusCounts['Accepted'] ?? 0 ?></div>
-                                    <div class="label text-muted">Aceptada</div>
-                                </div>
-                            </div>
-                            <div class="col d-flex align-items-center justify-content-center p-0" style="max-width:20px;">
-                                <i class="fas fa-chevron-right text-muted"></i>
-                            </div>
-                            <div class="col">
-                                <div class="workflow-stat bg-light">
-                                    <div class="number text-info"><?= $statusCounts['Invoiced'] ?? 0 ?></div>
-                                    <div class="label text-muted">Facturada</div>
-                                </div>
+                            <div class="kpi-value"><?= number_format($totalQuotations) ?></div>
+                            <div class="kpi-footer">
+                                <i class="fas fa-database text-muted"></i>
+                                <span>Registros totales</span>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="col-6 col-lg-3">
+                        <div class="kpi-card h-100">
+                            <div class="kpi-card-header">
+                                <span class="kpi-label"><?= $isAdmin ? 'Clientes' : 'Mis Clientes' ?></span>
+                                <span class="kpi-icon-pill green">
+                                    <i class="fas fa-users"></i>
+                                </span>
+                            </div>
+                            <div class="kpi-value"><?= number_format($totalCustomers) ?></div>
+                            <div class="kpi-footer">
+                                <i class="fas fa-address-book text-muted"></i>
+                                <span>Cartera comercial</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-lg-3">
+                        <div class="kpi-card h-100">
+                            <div class="kpi-card-header">
+                                <span class="kpi-label"><?= $isAdmin ? 'Catálogo' : 'Mis Productos' ?></span>
+                                <span class="kpi-icon-pill blue">
+                                    <i class="fas fa-boxes-stacked"></i>
+                                </span>
+                            </div>
+                            <div class="kpi-value"><?= number_format($totalProducts) ?></div>
+                            <div class="kpi-footer">
+                                <i class="fas fa-cubes text-muted"></i>
+                                <span>Ítems disponibles</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-lg-3">
+                        <div class="kpi-card h-100">
+                            <div class="kpi-card-header">
+                                <span class="kpi-label"><?= $isAdmin ? 'Conversión' : 'Mi Conversión' ?></span>
+                                <span class="kpi-icon-pill slate">
+                                    <i class="fas fa-chart-line"></i>
+                                </span>
+                            </div>
+                            <div class="kpi-value"><?= number_format($conversionRate, 1) ?>%</div>
+                            <div class="kpi-footer">
+                                <i class="fas fa-arrow-trend-up text-muted"></i>
+                                <span>Ratio cotizado / aceptado</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pipeline de Cotizaciones + Funnel Banner -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span class="fw-bold"><i class="fas fa-diagram-project text-warning me-2"></i> Pipeline de Ventas</span>
+                        <span class="badge bg-light text-muted border"><?= number_format($totalQuotations) ?> procesadas</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="notion-pipeline mb-3">
+                            <div class="pipeline-step">
+                                <div class="step-count text-secondary"><?= $statusCounts['Draft'] ?? 0 ?></div>
+                                <div class="step-name">Borrador</div>
+                            </div>
+                            <i class="fas fa-chevron-right pipeline-chevron d-none d-sm-block"></i>
+                            <div class="pipeline-step">
+                                <div class="step-count text-primary"><?= $statusCounts['Sent'] ?? 0 ?></div>
+                                <div class="step-name">Enviada</div>
+                            </div>
+                            <i class="fas fa-chevron-right pipeline-chevron d-none d-sm-block"></i>
+                            <div class="pipeline-step">
+                                <div class="step-count text-success"><?= $statusCounts['Accepted'] ?? 0 ?></div>
+                                <div class="step-name">Aceptada</div>
+                            </div>
+                            <i class="fas fa-chevron-right pipeline-chevron d-none d-sm-block"></i>
+                            <div class="pipeline-step">
+                                <div class="step-count text-info"><?= $statusCounts['Invoiced'] ?? 0 ?></div>
+                                <div class="step-name">Facturada</div>
+                            </div>
+                        </div>
+
                         <?php if (($statusCounts['Rejected'] ?? 0) > 0): ?>
-                        <div class="mt-2 text-center">
-                            <span class="badge bg-danger"><i class="fas fa-times"></i> <?= $statusCounts['Rejected'] ?> rechazada(s)</span>
+                        <div class="text-center mb-2">
+                            <span class="badge bg-danger"><i class="fas fa-circle-xmark me-1"></i> <?= $statusCounts['Rejected'] ?> rechazada(s)</span>
                         </div>
                         <?php endif; ?>
 
                         <?php if ($billingStats['total'] > 0 || $creditStats['total'] > 0): ?>
-                        <hr class="my-3">
-                        <div class="row">
-                            <?php if ($billingStats['total'] > 0 && ($isAdmin || $isBilling || $isSeller)): ?>
-                            <div class="col-md-6 mb-2">
-                                <h6 class="text-muted"><i class="fas fa-file-invoice-dollar"></i> Facturación</h6>
-                                <div class="d-flex gap-2 flex-wrap">
-                                    <?php if ($billingStats['pending'] > 0): ?>
-                                        <span class="badge bg-warning text-dark"><?= $billingStats['pending'] ?> pendiente(s)</span>
-                                    <?php endif; ?>
-                                    <?php if ($billingStats['in_process'] > 0): ?>
-                                        <span class="badge bg-primary"><?= $billingStats['in_process'] ?> en proceso</span>
-                                    <?php endif; ?>
-                                    <?php if ($billingStats['invoiced'] > 0): ?>
-                                        <span class="badge bg-success"><?= $billingStats['invoiced'] ?> facturada(s)</span>
-                                    <?php endif; ?>
-                                    <?php if ($billingStats['rejected'] > 0): ?>
-                                        <span class="badge bg-danger"><?= $billingStats['rejected'] ?> rechazada(s)</span>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                            <?php endif; ?>
-                            <?php if ($creditStats['total'] > 0 && ($isAdmin || $isCredits || $isSeller)): ?>
-                            <div class="col-md-6 mb-2">
-                                <h6 class="text-muted"><i class="fas fa-credit-card"></i> Créditos</h6>
-                                <div class="d-flex gap-2 flex-wrap">
-                                    <?php if ($creditStats['pending'] > 0): ?>
-                                        <span class="badge bg-warning text-dark"><?= $creditStats['pending'] ?> pendiente(s)</span>
-                                    <?php endif; ?>
-                                    <?php if ($creditStats['approved'] > 0): ?>
-                                        <span class="badge bg-success"><?= $creditStats['approved'] ?> aprobado(s)</span>
-                                    <?php endif; ?>
-                                    <?php if ($creditStats['rejected'] > 0): ?>
-                                        <span class="badge bg-danger"><?= $creditStats['rejected'] ?> rechazado(s)</span>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                            <?php endif; ?>
-                        </div>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Cotizaciones recientes -->
-            <div class="col-md-5 mb-3">
-                <div class="card h-100">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0"><i class="fas fa-history"></i> Últimas Cotizaciones</h5>
-                        <a href="<?= BASE_URL ?>/quotations/index.php" class="btn btn-sm btn-outline-primary">Ver todas</a>
-                    </div>
-                    <div class="card-body p-0">
-                        <?php if (empty($recentQuotations)): ?>
-                            <p class="text-muted text-center py-4">No hay cotizaciones aún.</p>
-                        <?php else: ?>
-                            <div class="list-group list-group-flush">
-                                <?php foreach ($recentQuotations as $q): ?>
-                                <a href="<?= BASE_URL ?>/quotations/view.php?id=<?= $q['id'] ?>" class="list-group-item list-group-item-action py-2">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <strong class="small"><?= htmlspecialchars($q['quotation_number']) ?></strong>
-                                            <div class="text-muted small"><?= htmlspecialchars($q['customer_name'] ?? 'Sin cliente') ?></div>
-                                        </div>
-                                        <div class="text-end">
-                                            <?= statusLabel($q['status']) ?>
-                                            <div class="small text-muted"><?= $q['currency'] === 'USD' ? '$' : 'S/' ?> <?= number_format($q['total'], 2) ?></div>
-                                        </div>
+                        <div class="p-3 bg-light rounded border mt-3">
+                            <div class="row g-3">
+                                <?php if ($billingStats['total'] > 0 && ($isAdmin || $isBilling || $isSeller)): ?>
+                                <div class="col-md-6">
+                                    <div class="small fw-bold text-muted mb-2 text-uppercase" style="letter-spacing:0.04em;">
+                                        <i class="fas fa-file-invoice-dollar text-primary me-1"></i> Facturación
                                     </div>
-                                </a>
-                                <?php endforeach; ?>
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <?php if ($billingStats['pending'] > 0): ?>
+                                            <span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i> <?= $billingStats['pending'] ?> pendiente(s)</span>
+                                        <?php endif; ?>
+                                        <?php if ($billingStats['in_process'] > 0): ?>
+                                            <span class="badge bg-primary"><i class="fas fa-spinner fa-spin me-1"></i> <?= $billingStats['in_process'] ?> en proceso</span>
+                                        <?php endif; ?>
+                                        <?php if ($billingStats['invoiced'] > 0): ?>
+                                            <span class="badge bg-success"><i class="fas fa-check me-1"></i> <?= $billingStats['invoiced'] ?> facturada(s)</span>
+                                        <?php endif; ?>
+                                        <?php if ($billingStats['rejected'] > 0): ?>
+                                            <span class="badge bg-danger"><i class="fas fa-times me-1"></i> <?= $billingStats['rejected'] ?> rechazada(s)</span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <?php endif; ?>
+
+                                <?php if ($creditStats['total'] > 0 && ($isAdmin || $isCredits || $isSeller)): ?>
+                                <div class="col-md-6">
+                                    <div class="small fw-bold text-muted mb-2 text-uppercase" style="letter-spacing:0.04em;">
+                                        <i class="fas fa-credit-card text-success me-1"></i> Créditos
+                                    </div>
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <?php if ($creditStats['pending'] > 0): ?>
+                                            <span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i> <?= $creditStats['pending'] ?> pendiente(s)</span>
+                                        <?php endif; ?>
+                                        <?php if ($creditStats['approved'] > 0): ?>
+                                            <span class="badge bg-success"><i class="fas fa-check me-1"></i> <?= $creditStats['approved'] ?> aprobado(s)</span>
+                                        <?php endif; ?>
+                                        <?php if ($creditStats['rejected'] > 0): ?>
+                                            <span class="badge bg-danger"><i class="fas fa-times me-1"></i> <?= $creditStats['rejected'] ?> rechazado(s)</span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <?php endif; ?>
                             </div>
+                        </div>
                         <?php endif; ?>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Quick Actions -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-bolt"></i> Acciones Rápidas</h5>
+                <!-- 2-Column Split: Cotizaciones Recientes (8 cols) + Acciones Rápidas & Alertas (4 cols) -->
+                <div class="row g-3">
+                    <!-- Left: Últimas Cotizaciones -->
+                    <div class="col-lg-8">
+                        <div class="card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span class="fw-bold"><i class="fas fa-history text-warning me-2"></i> Últimas Cotizaciones</span>
+                                <a href="<?= BASE_URL ?>/quotations/index.php" class="btn btn-sm btn-outline-secondary">
+                                    <span>Ver todas</span> <i class="fas fa-arrow-right small ms-1"></i>
+                                </a>
+                            </div>
+                            <div class="card-body p-0">
+                                <?php if (empty($recentQuotations)): ?>
+                                    <div class="empty-state py-5 text-center">
+                                        <i class="fas fa-file-circle-question fa-3x text-muted mb-3"></i>
+                                        <p class="text-muted mb-0">No hay cotizaciones registradas aún.</p>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="table-responsive border-0 rounded-0 shadow-none mb-0">
+                                        <table class="table table-hover align-middle mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Número / Cliente</th>
+                                                    <th class="text-center">Estado</th>
+                                                    <th class="text-end">Total</th>
+                                                    <th class="text-end">Acción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach ($recentQuotations as $q): ?>
+                                                <tr>
+                                                    <td>
+                                                        <a href="<?= BASE_URL ?>/quotations/view.php?id=<?= $q['id'] ?>" class="fw-bold text-decoration-none d-block">
+                                                            <?= htmlspecialchars($q['quotation_number']) ?>
+                                                        </a>
+                                                        <span class="text-muted small text-truncate d-inline-block" style="max-width:240px;">
+                                                            <?= htmlspecialchars($q['customer_name'] ?? 'Sin cliente') ?>
+                                                        </span>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <?= statusLabel($q['status']) ?>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <div class="fw-bold tabular-nums" style="font-family:var(--font-mono);">
+                                                            <?= $q['currency'] === 'USD' ? '$' : 'S/' ?> <?= number_format($q['total'], 2) ?>
+                                                        </div>
+                                                        <div class="text-muted" style="font-size:0.72rem;"><?= date('d/m/Y', strtotime($q['created_at'] ?? 'now')) ?></div>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <a href="<?= BASE_URL ?>/quotations/view.php?id=<?= $q['id'] ?>" class="btn btn-sm btn-light p-1 px-2" title="Ver cotización">
+                                                            <i class="fas fa-arrow-right"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div class="row g-3">
-                            <?php if (Permissions::userCan($auth, 'manage_quotations')): ?>
-                            <div class="col-6 col-sm-4 col-lg-3 col-xl-2">
-                                <a href="<?= BASE_URL ?>/quotations/create.php" class="quick-action">
-                                    <span class="qa-icon"><i class="fas fa-plus"></i></span>
-                                    <span class="qa-label">Nueva Cotización</span>
-                                </a>
+
+                    <!-- Right: Acciones Rápidas & Alertas -->
+                    <div class="col-lg-4">
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <span class="fw-bold"><i class="fas fa-bolt text-warning me-2"></i> Acciones Rápidas</span>
                             </div>
-                            <?php endif; ?>
-                            <?php if (Permissions::userCan($auth, 'manage_customers')): ?>
-                            <div class="col-6 col-sm-4 col-lg-3 col-xl-2">
-                                <a href="<?= BASE_URL ?>/customers/create.php" class="quick-action">
-                                    <span class="qa-icon"><i class="fas fa-user-plus"></i></span>
-                                    <span class="qa-label">Nuevo Cliente</span>
-                                </a>
-                            </div>
-                            <?php endif; ?>
-                            <?php if (Permissions::userCan($auth, 'view_products') || Permissions::userCan($auth, 'manage_products')): ?>
-                            <div class="col-6 col-sm-4 col-lg-3 col-xl-2">
-                                <a href="<?= BASE_URL ?>/products/index.php" class="quick-action">
-                                    <span class="qa-icon"><i class="fas fa-search"></i></span>
-                                    <span class="qa-label">Consultar Stock</span>
-                                </a>
-                            </div>
-                            <?php endif; ?>
-                            <?php if (Permissions::userCan($auth, 'billing_panel') || Permissions::userCan($auth, 'process_billing')): ?>
-                            <div class="col-6 col-sm-4 col-lg-3 col-xl-2">
-                                <a href="<?= BASE_URL ?>/billing/pending.php" class="quick-action">
-                                    <span class="qa-icon"><i class="fas fa-file-invoice-dollar"></i></span>
-                                    <span class="qa-label">Facturación</span>
-                                </a>
-                            </div>
-                            <?php endif; ?>
-                            <?php if (Permissions::userCan($auth, 'credits_panel') || Permissions::userCan($auth, 'process_credits')): ?>
-                            <div class="col-6 col-sm-4 col-lg-3 col-xl-2">
-                                <a href="<?= BASE_URL ?>/credits/pending.php" class="quick-action">
-                                    <span class="qa-icon"><i class="fas fa-credit-card"></i></span>
-                                    <span class="qa-label">Créditos</span>
-                                </a>
-                            </div>
-                            <?php endif; ?>
-                            <?php if (Permissions::canAccessInventoryPanel($auth)): ?>
-                            <div class="col-6 col-sm-4 col-lg-3 col-xl-2">
-                                <a href="<?= BASE_URL ?>/inventario/index.php" class="quick-action">
-                                    <span class="qa-icon"><i class="fas fa-warehouse"></i></span>
-                                    <span class="qa-label">Inventario</span>
-                                </a>
-                            </div>
-                            <?php endif; ?>
-                            <?php if (Permissions::canAccessCostAnalysis($auth)): ?>
-                            <div class="col-6 col-sm-4 col-lg-3 col-xl-2">
-                                <a href="<?= BASE_URL ?>/cost-analysis/index.php" class="quick-action">
-                                    <span class="qa-icon"><i class="fas fa-calculator"></i></span>
-                                    <span class="qa-label">Análisis de Costos</span>
-                                </a>
-                            </div>
-                            <?php endif; ?>
-                            <?php if (Permissions::canAccessAdminPanel($auth)): ?>
-                            <div class="col-6 col-sm-4 col-lg-3 col-xl-2">
-                                <a href="<?= BASE_URL ?>/admin/exchange_rate.php" class="quick-action">
-                                    <span class="qa-icon"><i class="fas fa-money-bill-transfer"></i></span>
-                                    <span class="qa-label">Tipo de Cambio</span>
-                                </a>
-                            </div>
-                            <div class="col-6 col-sm-4 col-lg-3 col-xl-2">
-                                <a href="<?= BASE_URL ?>/admin/index.php" class="quick-action">
-                                    <span class="qa-icon"><i class="fas fa-cog"></i></span>
-                                    <span class="qa-label">Administración</span>
-                                </a>
-                            </div>
-                            <?php endif; ?>
-                            <div class="col-6 col-sm-4 col-lg-3 col-xl-2">
-                                <a href="<?= BASE_URL ?>/reports/index.php" class="quick-action">
-                                    <span class="qa-icon"><i class="fas fa-chart-bar"></i></span>
-                                    <span class="qa-label">Reportes</span>
-                                </a>
+                            <div class="card-body">
+                                <div class="row g-2">
+                                    <?php if (Permissions::userCan($auth, 'manage_quotations')): ?>
+                                    <div class="col-6">
+                                        <a href="<?= BASE_URL ?>/quotations/create.php" class="quick-action">
+                                            <span class="qa-icon"><i class="fas fa-plus"></i></span>
+                                            <span class="qa-label">Cotizar</span>
+                                        </a>
+                                    </div>
+                                    <?php endif; ?>
+
+                                    <?php if (Permissions::userCan($auth, 'manage_customers')): ?>
+                                    <div class="col-6">
+                                        <a href="<?= BASE_URL ?>/customers/create.php" class="quick-action">
+                                            <span class="qa-icon"><i class="fas fa-user-plus"></i></span>
+                                            <span class="qa-label">Cliente</span>
+                                        </a>
+                                    </div>
+                                    <?php endif; ?>
+
+                                    <?php if (Permissions::userCan($auth, 'view_products') || Permissions::userCan($auth, 'manage_products')): ?>
+                                    <div class="col-6">
+                                        <a href="<?= BASE_URL ?>/products/index.php" class="quick-action">
+                                            <span class="qa-icon"><i class="fas fa-search"></i></span>
+                                            <span class="qa-label">Stock</span>
+                                        </a>
+                                    </div>
+                                    <?php endif; ?>
+
+                                    <?php if (Permissions::userCan($auth, 'billing_panel') || Permissions::userCan($auth, 'process_billing')): ?>
+                                    <div class="col-6">
+                                        <a href="<?= BASE_URL ?>/billing/pending.php" class="quick-action">
+                                            <span class="qa-icon"><i class="fas fa-file-invoice-dollar"></i></span>
+                                            <span class="qa-label">Facturas</span>
+                                        </a>
+                                    </div>
+                                    <?php endif; ?>
+
+                                    <?php if (Permissions::userCan($auth, 'credits_panel') || Permissions::userCan($auth, 'process_credits')): ?>
+                                    <div class="col-6">
+                                        <a href="<?= BASE_URL ?>/credits/pending.php" class="quick-action">
+                                            <span class="qa-icon"><i class="fas fa-credit-card"></i></span>
+                                            <span class="qa-label">Créditos</span>
+                                        </a>
+                                    </div>
+                                    <?php endif; ?>
+
+                                    <?php if (Permissions::canAccessInventoryPanel($auth)): ?>
+                                    <div class="col-6">
+                                        <a href="<?= BASE_URL ?>/inventario/index.php" class="quick-action">
+                                            <span class="qa-icon"><i class="fas fa-warehouse"></i></span>
+                                            <span class="qa-label">Inventario</span>
+                                        </a>
+                                    </div>
+                                    <?php endif; ?>
+
+                                    <?php if (Permissions::canAccessCostAnalysis($auth)): ?>
+                                    <div class="col-6">
+                                        <a href="<?= BASE_URL ?>/cost-analysis/index.php" class="quick-action">
+                                            <span class="qa-icon"><i class="fas fa-calculator"></i></span>
+                                            <span class="qa-label">Costos</span>
+                                        </a>
+                                    </div>
+                                    <?php endif; ?>
+
+                                    <div class="col-6">
+                                        <a href="<?= BASE_URL ?>/reports/index.php" class="quick-action">
+                                            <span class="qa-icon"><i class="fas fa-chart-pie"></i></span>
+                                            <span class="qa-label">Reportes</span>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </main>
+            <?php
+ob_start();
+?>
+<script>
+    function getDismissedAlerts() {
+        try { return JSON.parse(localStorage.getItem('dismissed_alerts') || '{}'); }
+        catch(e) { return {}; }
+    }
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // --- Alertas descartables ---
-        function getDismissedAlerts() {
-            try { return JSON.parse(localStorage.getItem('dismissed_alerts') || '{}'); }
-            catch(e) { return {}; }
-        }
+    function dismissAlert(key, btn) {
+        var dismissed = getDismissedAlerts();
+        dismissed[key] = Date.now();
+        localStorage.setItem('dismissed_alerts', JSON.stringify(dismissed));
+        var li = btn.closest('.alert-item');
+        if (li) li.style.display = 'none';
+    }
 
-        function dismissAlert(key, btn) {
-            var dismissed = getDismissedAlerts();
-            dismissed[key] = Date.now();
-            localStorage.setItem('dismissed_alerts', JSON.stringify(dismissed));
-
-            // Ocultar el item
-            var li = btn.closest('.alert-item');
-            if (li) li.style.display = 'none';
-
-            updateAlertCount();
-        }
-
-        function updateAlertCount() {
-            var visible = document.querySelectorAll('.alert-item:not([style*="display: none"])');
-            var countBadge = document.getElementById('alertCountBadge');
-            var bellBadge = document.getElementById('bellBadge');
-            var alertHeader = document.querySelector('.alert-header');
-            var alertDivider = document.querySelector('.alert-divider');
-            var noAlertsMsg = document.querySelector('.no-alerts-msg');
-            var bellIcon = document.querySelector('#notificationDropdown i');
-
-            var alertCount = visible.length;
-
-            // Actualizar badge de alertas
-            if (countBadge) countBadge.textContent = alertCount;
-
-            // Si no quedan alertas, ocultar header y divider, mostrar mensaje
-            if (alertCount === 0) {
-                if (alertHeader) alertHeader.style.display = 'none';
-                if (alertDivider) alertDivider.style.display = 'none';
-                if (noAlertsMsg) noAlertsMsg.classList.remove('d-none');
+    document.addEventListener('DOMContentLoaded', function() {
+        var dismissed = getDismissedAlerts();
+        document.querySelectorAll('.alert-item').forEach(function(li) {
+            if (dismissed[li.dataset.alertKey]) {
+                li.style.display = 'none';
             }
-
-            // Actualizar badge de la campana (alertas + notificaciones no leídas)
-            var unreadNotifs = <?= (int)$unreadNotifications ?>;
-            var total = alertCount + unreadNotifs;
-            if (bellBadge) {
-                if (total > 0) {
-                    bellBadge.textContent = total > 99 ? '99+' : total;
-                    bellBadge.style.display = '';
-                } else {
-                    bellBadge.style.display = 'none';
-                }
-            }
-
-            // Quitar animación de campana si no hay nada
-            if (bellIcon && total === 0) {
-                bellIcon.classList.remove('fa-shake');
-            }
-        }
-
-        // Al cargar, ocultar alertas previamente descartadas
-        document.addEventListener('DOMContentLoaded', function() {
-            var dismissed = getDismissedAlerts();
-            document.querySelectorAll('.alert-item').forEach(function(li) {
-                if (dismissed[li.dataset.alertKey]) {
-                    li.style.display = 'none';
-                }
-            });
-            updateAlertCount();
         });
-
-        // --- Auto-refresh notificaciones ---
-        setInterval(function() {
-            fetch('<?= BASE_URL ?>/api/check_notifications.php')
-                .then(function(response) { return response.json(); })
-                .then(function(data) {
-                    if (data.success) {
-                        var badge = document.getElementById('bellBadge');
-                        var visible = document.querySelectorAll('.alert-item:not([style*="display: none"])');
-                        var total = visible.length + (data.unread_count || 0);
-                        if (badge) {
-                            if (total > 0) {
-                                badge.textContent = total > 99 ? '99+' : total;
-                                badge.style.display = '';
-                            } else {
-                                badge.style.display = 'none';
-                            }
-                        }
-                    }
-                })
-                .catch(function(error) { console.log('Error checking notifications:', error); });
-        }, 30000);
-    </script>
-    <script src="<?= BASE_URL ?>/assets/js/theme-pro.js"></script>
-    <script src="<?= BASE_URL ?>/assets/js/pwa.js"></script>
-
-    <button id="pwa-install-btn" onclick="installPWA()"
-            class="btn btn-success d-none align-items-center gap-2 shadow"
-            style="position:fixed;bottom:20px;right:20px;z-index:9999;border-radius:50px;padding:10px 20px;">
-        <i class="fas fa-download"></i> Instalar app
-    </button>
-</body>
-</html>
+    });
+</script>
+<?php
+$extraScripts = ob_get_clean();
+require_once __DIR__ . '/../includes/app_footer.php';
+?>

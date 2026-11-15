@@ -374,12 +374,22 @@ class Quotation {
                 $finalTotal = $data['total'] * 1.18;
             }
 
+            // Payment condition & credit days
+            $paymentCondition = $data['payment_condition'] ?? 'cash';
+            $creditDays = ($paymentCondition === 'credit') ? ($data['credit_days'] ?? null) : null;
+
             // Update quotation
+            $customerReference = isset($data['customer_reference']) ? trim($data['customer_reference']) : null;
+            if (empty($customerReference)) { $customerReference = null; }
+
             $sql = "UPDATE quotations SET
                     customer_id = :customer_id,
+                    customer_reference = :customer_reference,
                     quotation_date = :quotation_date,
                     valid_until = :valid_until,
                     currency = :currency,
+                    payment_condition = :payment_condition,
+                    credit_days = :credit_days,
                     igv_mode = :igv_mode,
                     subtotal = :subtotal,
                     global_discount_percentage = :global_discount_percentage,
@@ -393,9 +403,12 @@ class Quotation {
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
                 'customer_id' => $data['customer_id'],
+                'customer_reference' => $customerReference,
                 'quotation_date' => $data['quotation_date'],
                 'valid_until' => $data['valid_until'],
                 'currency' => $data['currency'],
+                'payment_condition' => $paymentCondition,
+                'credit_days' => $creditDays,
                 'igv_mode' => $igvMode,
                 'subtotal' => $data['subtotal'],
                 'global_discount_percentage' => $data['global_discount_percentage'],
@@ -413,15 +426,16 @@ class Quotation {
 
             // Insert new items
             $itemSql = "INSERT INTO quotation_items
-                       (quotation_id, product_id, description, quantity, unit_price, discount_percentage, line_total, discount_amount)
-                       VALUES (:quotation_id, :product_id, :description, :quantity, :unit_price, :discount_percentage, :line_total, :discount_amount)";
+                       (quotation_id, product_id, description, image_url, quantity, unit_price, discount_percentage, line_total, discount_amount)
+                       VALUES (:quotation_id, :product_id, :description, :image_url, :quantity, :unit_price, :discount_percentage, :line_total, :discount_amount)";
 
             $itemStmt = $this->db->prepare($itemSql);
             foreach ($data['items'] as $item) {
                 $itemStmt->execute([
                     'quotation_id' => $id,
-                    'product_id' => $item['product_id'],
+                    'product_id' => $item['product_id'] ?? null,
                     'description' => $item['description'],
+                    'image_url' => $item['image_url'] ?? null,
                     'quantity' => $item['quantity'],
                     'unit_price' => $item['unit_price'],
                     'discount_percentage' => $item['discount_percentage'] ?? 0,

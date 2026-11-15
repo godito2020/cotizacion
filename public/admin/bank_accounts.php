@@ -9,13 +9,13 @@ if (!$auth->isLoggedIn()) {
 
 if (!$auth->hasRole(['Administrador del Sistema', 'Administrador de Empresa'])) {
     $_SESSION['error_message'] = 'No tienes permisos para acceder a esta sección';
-    $auth->redirect(BASE_URL . '/dashboard_simple.php');
+    $auth->redirect(BASE_URL . '/dashboard.php');
 }
 
 $user = $auth->getUser();
 $isSysAdmin = $auth->hasRole('Administrador del Sistema');
 
-// Get selected company ID from query string or use auth company
+// Get selected company ID
 $selectedCompanyId = isset($_GET['company_id']) ? (int)$_GET['company_id'] : $auth->getCompanyId();
 
 // If not sysadmin, force their own company
@@ -37,7 +37,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = false;
     $targetCompanyId = isset($_POST['company_id']) ? (int)$_POST['company_id'] : $selectedCompanyId;
 
-    // Security check: non-sysadmin can only manage their own company
     if (!$isSysAdmin && $targetCompanyId != $auth->getCompanyId()) {
         $_SESSION['error_message'] = 'No tienes permisos para gestionar cuentas de otras empresas';
         $auth->redirect($_SERVER['REQUEST_URI']);
@@ -47,12 +46,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         switch ($_POST['action']) {
             case 'add_bank_account':
                 $accountData = [
-                    'bank_name' => $_POST['bank_name'],
-                    'account_type' => $_POST['account_type'],
-                    'account_number' => $_POST['account_number'],
-                    'account_holder' => $_POST['account_holder'],
-                    'currency' => $_POST['currency'],
-                    'cci' => $_POST['cci'] ?? null,
+                    'bank_name' => trim($_POST['bank_name'] ?? ''),
+                    'account_type' => trim($_POST['account_type'] ?? ''),
+                    'account_number' => trim($_POST['account_number'] ?? ''),
+                    'account_holder' => trim($_POST['account_holder'] ?? ''),
+                    'currency' => trim($_POST['currency'] ?? 'PEN'),
+                    'cci' => !empty($_POST['cci']) ? trim($_POST['cci']) : null,
                     'is_active' => isset($_POST['is_active']) ? 1 : 0,
                     'is_default' => isset($_POST['is_default']) ? 1 : 0
                 ];
@@ -60,14 +59,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 break;
 
             case 'update_bank_account':
-                $accountId = $_POST['account_id'];
+                $accountId = (int)($_POST['account_id'] ?? 0);
                 $accountData = [
-                    'bank_name' => $_POST['bank_name'],
-                    'account_type' => $_POST['account_type'],
-                    'account_number' => $_POST['account_number'],
-                    'account_holder' => $_POST['account_holder'],
-                    'currency' => $_POST['currency'],
-                    'cci' => $_POST['cci'] ?? null,
+                    'bank_name' => trim($_POST['bank_name'] ?? ''),
+                    'account_type' => trim($_POST['account_type'] ?? ''),
+                    'account_number' => trim($_POST['account_number'] ?? ''),
+                    'account_holder' => trim($_POST['account_holder'] ?? ''),
+                    'currency' => trim($_POST['currency'] ?? 'PEN'),
+                    'cci' => !empty($_POST['cci']) ? trim($_POST['cci']) : null,
                     'is_active' => isset($_POST['is_active']) ? 1 : 0,
                     'is_default' => isset($_POST['is_default']) ? 1 : 0
                 ];
@@ -75,15 +74,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 break;
 
             case 'delete_bank_account':
-                $accountId = $_POST['account_id'];
+                $accountId = (int)($_POST['account_id'] ?? 0);
                 $result = $companySettings->deleteBankAccount($targetCompanyId, $accountId);
                 break;
         }
 
         if ($result) {
-            $_SESSION['success_message'] = 'Cuenta bancaria actualizada correctamente';
+            $_SESSION['success_message'] = 'Cuenta bancaria guardada correctamente';
         } else {
-            $_SESSION['error_message'] = 'Error al actualizar la cuenta bancaria';
+            $_SESSION['error_message'] = 'Error al procesar la cuenta bancaria';
         }
         $auth->redirect('?company_id=' . $targetCompanyId);
     }
@@ -92,401 +91,433 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Get bank accounts for selected company
 $bankAccounts = $companySettings->getBankAccounts($selectedCompanyId);
 
-// Debug: Log the count
-error_log("bank_accounts.php - Company ID: $selectedCompanyId, Accounts found: " . count($bankAccounts));
-
 // Get company name
 $companyRepo = new Company();
 $selectedCompany = $companyRepo->getById($selectedCompanyId);
 $companyName = $selectedCompany['name'] ?? 'Empresa';
 
 $pageTitle = 'Cuentas Bancarias';
+$activePage = 'admin';
+require_once __DIR__ . '/../../includes/app_header.php';
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $pageTitle ?></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Tema profesional COTI (no-flash + marca) -->
-    <script>(function(){var t=localStorage.getItem('coti-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-bs-theme',t);})();</script>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/theme-pro.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/theme-pro.css") ?>">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css?v=<?= @filemtime(APP_ROOT . "/public/assets/css/style.css") ?>">
 
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg bg-primary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="<?= BASE_URL ?>/dashboard_simple.php">
-                <i class="fas fa-chart-line"></i> Sistema de Cotizaciones
-            </a>
-            <div class="navbar-nav ms-auto">
-                <button class="theme-toggle me-3" id="themeToggle" title="Cambiar tema">
-                    <i class="fas fa-moon" id="themeIcon"></i>
-                </button>
+<div class="container-fluid px-2 px-md-3 py-3" style="max-width: 1200px; margin: 0 auto;">
 
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user"></i> <?= htmlspecialchars($user['username']) ?>
+    <!-- =========================================================
+         1. BREADCRUMB & HEADER
+         ========================================================= -->
+    <div class="d-flex flex-column gap-2 mb-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1 small">
+                <li class="breadcrumb-item">
+                    <a href="<?= BASE_URL ?>/dashboard.php" class="text-decoration-none text-muted">
+                        <i class="fas fa-home me-1"></i>Inicio
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/dashboard_simple.php">Dashboard</a></li>
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/admin/index.php">Panel Admin</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="<?= BASE_URL ?>/logout.php">Cerrar Sesión</a></li>
-                    </ul>
+                </li>
+                <li class="breadcrumb-item text-muted">Administración</li>
+                <li class="breadcrumb-item active text-body fw-semibold" aria-current="page">Cuentas Bancarias</li>
+            </ol>
+        </nav>
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="status-pulse-dot" style="display:inline-block; width:9px; height:9px; border-radius:50%; background:#F59E0B; box-shadow:0 0 8px rgba(245, 158, 11, 0.6);"></span>
+                    <h1 class="h4 fw-bold mb-0 text-body" style="font-family: var(--font-display); letter-spacing: -0.02em;">
+                        Cuentas Bancarias Registradas
+                    </h1>
+                    <span class="badge rounded-pill bg-body-tertiary text-body border px-2 py-1 small fw-semibold">
+                        <?= count($bankAccounts) ?> <?= count($bankAccounts) === 1 ? 'cuenta' : 'cuentas' ?>
+                    </span>
                 </div>
+                <p class="text-muted small mb-0 mt-0.5" style="font-size: 0.82rem;">
+                    Cuentas de depósito y transferencias que se imprimen al pie de las cotizaciones y facturas.
+                </p>
             </div>
-        </div>
-    </nav>
 
-    <main class="container-fluid py-4">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-3">
-                <?php include __DIR__ . '/../../includes/admin_sidebar.php'; ?>
-            </div>
-
-            <!-- Main Content -->
-            <div class="col-md-9">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h1><i class="fas fa-university"></i> <?= $pageTitle ?></h1>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#bankAccountModal">
-                        <i class="fas fa-plus"></i> Agregar Cuenta
-                    </button>
-                </div>
-
-                <!-- Company Selector (only for sysadmin) -->
-                <?php if ($isSysAdmin && !empty($companies)): ?>
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <div class="row align-items-center">
-                                <div class="col-auto">
-                                    <label class="col-form-label"><strong>Empresa:</strong></label>
-                                </div>
-                                <div class="col-md-6">
-                                    <select class="form-select" id="companySelector" onchange="changeCompany(this.value)">
-                                        <?php foreach ($companies as $company): ?>
-                                            <option value="<?= $company['id'] ?>"
-                                                    <?= $company['id'] == $selectedCompanyId ? 'selected' : '' ?>>
-                                                <?= htmlspecialchars($company['name']) ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                <?php else: ?>
-                    <div class="alert alert-info mb-4">
-                        <i class="fas fa-building"></i> Gestionando cuentas bancarias para: <strong><?= htmlspecialchars($companyName) ?></strong>
-                    </div>
-                <?php endif; ?>
-
-                <!-- Bank Accounts List -->
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Cuentas Registradas (<?= count($bankAccounts) ?>)</h5>
-                    </div>
-                    <div class="card-body">
-                        <!-- DEBUG: Version 1.1 - <?= date('Y-m-d H:i:s') ?> -->
-                        <!-- DEBUG: Selected Company ID = <?= $selectedCompanyId ?> -->
-                        <!-- DEBUG: Bank Accounts Count = <?= count($bankAccounts) ?> -->
-                        <?php if (empty($bankAccounts)): ?>
-                            <div class="text-center text-muted py-4">
-                                <i class="fas fa-university fa-3x mb-3"></i>
-                                <h5>No hay cuentas bancarias registradas</h5>
-                                <p>Agrega una cuenta bancaria para incluirla en las cotizaciones</p>
-                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#bankAccountModal">
-                                    <i class="fas fa-plus"></i> Agregar Primera Cuenta
-                                </button>
-                            </div>
-                        <?php else: ?>
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Banco</th>
-                                            <th>Tipo</th>
-                                            <th>Número de Cuenta</th>
-                                            <th>Titular</th>
-                                            <th>Moneda</th>
-                                            <th>Estado</th>
-                                            <th>Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php foreach ($bankAccounts as $account): ?>
-                                            <tr>
-                                                <td>
-                                                    <strong><?= htmlspecialchars($account['bank_name']) ?></strong>
-                                                    <?php if ($account['is_default']): ?>
-                                                        <span class="badge bg-primary ms-2">Predeterminada</span>
-                                                    <?php endif; ?>
-                                                </td>
-                                                <td><?= ucfirst(htmlspecialchars($account['account_type'])) ?></td>
-                                                <td>
-                                                    <code><?= htmlspecialchars($account['account_number']) ?></code>
-                                                    <?php if ($account['cci']): ?>
-                                                        <br><small class="text-muted">CCI: <?= htmlspecialchars($account['cci']) ?></small>
-                                                    <?php endif; ?>
-                                                </td>
-                                                <td><?= htmlspecialchars($account['account_holder']) ?></td>
-                                                 <td>
-                                                     <?php $symbol = $account['currency'] == 'PEN' ? 'S/' : $account['currency']; ?>
-                                                     <span class="badge bg-info"><?= htmlspecialchars($symbol) ?></span>
-                                                 </td>
-                                                <td>
-                                                    <?php if ($account['is_active']): ?>
-                                                        <span class="badge bg-success">Activa</span>
-                                                    <?php else: ?>
-                                                        <span class="badge bg-secondary">Inactiva</span>
-                                                    <?php endif; ?>
-                                                </td>
-                                                <td>
-                                                    <div class="btn-group btn-group-sm">
-                                                        <button class="btn btn-outline-primary"
-                                                                onclick="editBankAccount(<?= htmlspecialchars(json_encode($account)) ?>)">
-                                                            <i class="fas fa-edit"></i>
-                                                        </button>
-                                                        <button class="btn btn-outline-danger"
-                                                                onclick="deleteBankAccount(<?= $account['id'] ?>)">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                </div>
-
-                <!-- Usage Info -->
-                <div class="card mt-4">
-                    <div class="card-header">
-                        <h5 class="mb-0">¿Cómo se usan las cuentas bancarias?</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h6><i class="fas fa-file-invoice text-primary"></i> En Cotizaciones</h6>
-                                <ul class="small">
-                                    <li>Las cuentas activas aparecen al final de cada cotización</li>
-                                    <li>La cuenta predeterminada se muestra primero</li>
-                                    <li>Se incluye número de cuenta y CCI si está disponible</li>
-                                </ul>
-                            </div>
-                            <div class="col-md-6">
-                                <h6><i class="fas fa-cog text-info"></i> Configuración</h6>
-                                <ul class="small">
-                                    <li>Solo puede haber una cuenta predeterminada por moneda</li>
-                                    <li>Las cuentas inactivas no se muestran en documentos</li>
-                                    <li>Puedes tener múltiples cuentas en diferentes monedas</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Bank Account Modal -->
-    <div class="modal fade" id="bankAccountModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <form id="bankAccountForm" method="POST">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalTitle">Agregar Cuenta Bancaria</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" name="action" id="formAction" value="add_bank_account">
-                        <input type="hidden" name="account_id" id="accountId">
-                        <input type="hidden" name="company_id" id="formCompanyId" value="<?= $selectedCompanyId ?>">
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="bank_name" class="form-label">Banco *</label>
-                                    <select class="form-select" id="bank_name" name="bank_name" required>
-                                        <option value="">Seleccionar banco</option>
-                                        <option value="BCP - Banco de Crédito del Perú">BCP - Banco de Crédito del Perú</option>
-                                        <option value="BBVA - Banco Continental">BBVA - Banco Continental</option>
-                                        <option value="Interbank">Interbank</option>
-                                        <option value="Scotiabank Perú">Scotiabank Perú</option>
-                                        <option value="Banco de la Nación">Banco de la Nación</option>
-                                        <option value="Banbif">Banbif</option>
-                                        <option value="Banco Pichincha">Banco Pichincha</option>
-                                        <option value="Banco Falabella">Banco Falabella</option>
-                                        <option value="Banco Ripley">Banco Ripley</option>
-                                        <option value="Mi Banco">Mi Banco</option>
-                                        <option value="Banco Azteca">Banco Azteca</option>
-                                        <option value="Otro">Otro (especificar)</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="account_type" class="form-label">Tipo de Cuenta *</label>
-                                    <select class="form-select" id="account_type" name="account_type" required>
-                                        <option value="">Seleccionar tipo</option>
-                                        <option value="corriente">Cuenta Corriente</option>
-                                        <option value="ahorros">Cuenta de Ahorros</option>
-                                        <option value="detraccion">Cuenta de Detracción</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="account_number" class="form-label">Número de Cuenta *</label>
-                                    <input type="text" class="form-control" id="account_number" name="account_number"
-                                           placeholder="194-1234567890" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="cci" class="form-label">CCI (Código de Cuenta Interbancaria)</label>
-                                    <input type="text" class="form-control" id="cci" name="cci"
-                                           placeholder="00219400123456789012" maxlength="20">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="mb-3">
-                                    <label for="account_holder" class="form-label">Titular de la Cuenta *</label>
-                                    <input type="text" class="form-control" id="account_holder" name="account_holder"
-                                           placeholder="EMPRESA EJEMPLO S.A.C." required>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="currency" class="form-label">Moneda *</label>
-                                    <select class="form-select" id="currency" name="currency" required>
-                                        <option value="">Seleccionar</option>
-                                         <option value="PEN">Soles (S/)</option>
-                                         <option value="USD">Dólares ($)</option>
-                                         <option value="EUR">Euros (€)</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="is_active" name="is_active" checked>
-                                    <label class="form-check-label" for="is_active">
-                                        Cuenta activa
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="is_default" name="is_default">
-                                    <label class="form-check-label" for="is_default">
-                                        Cuenta predeterminada para esta moneda
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Guardar Cuenta
-                        </button>
-                    </div>
-                </form>
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-warning btn-sm fw-bold text-dark shadow-sm px-3" data-bs-toggle="modal" data-bs-target="#bankAccountModal">
+                    <i class="fas fa-plus me-1"></i> + Nueva Cuenta
+                </button>
+                <a href="<?= BASE_URL ?>/admin/index.php" class="btn btn-outline-secondary btn-sm px-3">
+                    <i class="fas fa-arrow-left me-1"></i> Panel Admin
+                </a>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function changeCompany(companyId) {
-            window.location.href = '?company_id=' + companyId;
+    <!-- Feedback Alerts -->
+    <?php if (isset($_SESSION['success_message'])): ?>
+        <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2 py-2 px-3 small mb-3" role="alert">
+            <i class="fas fa-check-circle"></i>
+            <div><?= htmlspecialchars($_SESSION['success_message']) ?></div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <?php unset($_SESSION['success_message']); ?>
+    <?php endif; ?>
+
+    <?php if (isset($_SESSION['error_message'])): ?>
+        <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2 py-2 px-3 small mb-3" role="alert">
+            <i class="fas fa-exclamation-circle"></i>
+            <div><?= htmlspecialchars($_SESSION['error_message']) ?></div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <?php unset($_SESSION['error_message']); ?>
+    <?php endif; ?>
+
+    <!-- Company Selector (SysAdmin only) -->
+    <?php if ($isSysAdmin && !empty($companies)): ?>
+        <div class="card mb-3 border-0 shadow-sm" style="background-color: var(--color-panel); border: 1px solid var(--color-rule) !important; border-radius: 10px;">
+            <div class="card-body p-2 px-3">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fas fa-building text-warning"></i>
+                        <span class="small fw-semibold text-body">Gestionar Empresa:</span>
+                    </div>
+                    <div style="min-width: 280px;">
+                        <select class="form-select form-select-sm" id="companySelector" onchange="window.location.href='?company_id=' + this.value">
+                            <?php foreach ($companies as $comp): ?>
+                                <option value="<?= $comp['id'] ?>" <?= $comp['id'] == $selectedCompanyId ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($comp['name']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php else: ?>
+        <div class="card mb-3 border-0 shadow-sm" style="background-color: var(--color-panel); border: 1px solid var(--color-rule) !important; border-radius: 10px;">
+            <div class="card-body p-2 px-3 d-flex align-items-center gap-2 small text-muted">
+                <i class="fas fa-building text-primary"></i>
+                <span>Cuentas vinculadas a: <strong class="text-body"><?= htmlspecialchars($companyName) ?></strong></span>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <!-- =========================================================
+         2. BANK ACCOUNTS LIST TABLE
+         ========================================================= -->
+    <div class="card border-0 shadow-sm mb-4" style="background-color: var(--color-panel); border: 1px solid var(--color-rule) !important; border-radius: 12px; overflow: hidden;">
+        <div class="card-header bg-body-tertiary border-bottom py-2.5 px-3 d-flex justify-content-between align-items-center">
+            <span class="fw-bold small text-body">
+                <i class="fas fa-university text-warning me-2"></i>Cuentas Bancarias Activas e Inactivas
+            </span>
+            <span class="badge bg-body-secondary text-body border">
+                <?= count($bankAccounts) ?> registradas
+            </span>
+        </div>
+
+        <div class="card-body p-0">
+            <?php if (!empty($bankAccounts)): ?>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" style="width: 100%;">
+                        <thead style="background-color: var(--color-canvas); font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase;">
+                            <tr>
+                                <th class="ps-3 py-2 text-muted">Banco & Tipo</th>
+                                <th class="py-2 text-muted">Número de Cuenta & CCI</th>
+                                <th class="py-2 text-muted">Titular</th>
+                                <th class="py-2 text-muted">Moneda</th>
+                                <th class="py-2 text-muted text-center">Estado</th>
+                                <th class="pe-3 py-2 text-end text-muted" style="width: 100px;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y">
+                            <?php foreach ($bankAccounts as $account): ?>
+                                <?php
+                                $isPen = ($account['currency'] === 'PEN');
+                                ?>
+                                <tr class="transition-hover">
+                                    <!-- Banco & Tipo -->
+                                    <td class="ps-3 py-2.5">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center text-primary flex-shrink-0"
+                                                 style="width: 32px; height: 32px; background: rgba(59, 130, 246, 0.12);">
+                                                <i class="fas fa-building-columns" style="font-size: 0.85rem;"></i>
+                                            </div>
+                                            <div>
+                                                <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                                                    <strong class="text-body" style="font-size: 0.85rem;"><?= htmlspecialchars($account['bank_name']) ?></strong>
+                                                    <?php if (!empty($account['is_default'])): ?>
+                                                        <span class="badge bg-warning-subtle text-dark border border-warning px-1.5 py-0.5" style="font-size: 0.65rem;">
+                                                            <i class="fas fa-star text-warning me-1"></i>Predeterminada
+                                                        </span>
+                                                    <?php endif; ?>
+                                                </div>
+                                                <div class="small text-muted" style="font-size: 0.72rem;">
+                                                    Cuenta <?= ucfirst(htmlspecialchars($account['account_type'])) ?>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <!-- Número & CCI -->
+                                    <td class="py-2.5">
+                                        <div class="font-monospace fw-bold text-body" style="font-size: 0.83rem;">
+                                            <?= htmlspecialchars($account['account_number']) ?>
+                                        </div>
+                                        <?php if (!empty($account['cci'])): ?>
+                                            <div class="small text-muted font-monospace" style="font-size: 0.72rem;">
+                                                CCI: <?= htmlspecialchars($account['cci']) ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </td>
+
+                                    <!-- Titular -->
+                                    <td class="py-2.5">
+                                        <span class="small fw-semibold text-body" style="font-size: 0.8rem;">
+                                            <?= htmlspecialchars($account['account_holder']) ?>
+                                        </span>
+                                    </td>
+
+                                    <!-- Moneda -->
+                                    <td class="py-2.5">
+                                        <span class="badge <?= $isPen ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-primary-subtle text-primary border border-primary-subtle' ?> font-monospace px-2 py-1" style="font-size: 0.75rem;">
+                                            <?= $isPen ? 'S/ Soles (PEN)' : '$ Dólares (USD)' ?>
+                                        </span>
+                                    </td>
+
+                                    <!-- Estado -->
+                                    <td class="py-2.5 text-center">
+                                        <?php if (!empty($account['is_active'])): ?>
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-0.5" style="font-size: 0.7rem;">
+                                                <i class="fas fa-check-circle me-1"></i>Activa
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="badge bg-body-secondary text-muted border px-2 py-0.5" style="font-size: 0.7rem;">
+                                                Inactiva
+                                            </span>
+                                        <?php endif; ?>
+                                    </td>
+
+                                    <!-- Acciones -->
+                                    <td class="pe-3 py-2.5 text-end text-nowrap">
+                                        <div class="d-inline-flex align-items-center gap-1">
+                                            <button type="button" class="btn btn-sm btn-outline-primary px-2 py-1"
+                                                    style="font-size: 0.75rem;"
+                                                    onclick="editBankAccount(<?= htmlspecialchars(json_encode($account)) ?>)"
+                                                    title="Editar Cuenta">
+                                                <i class="fas fa-pen"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger px-2 py-1"
+                                                    style="font-size: 0.75rem;"
+                                                    onclick="deleteBankAccount(<?= $account['id'] ?>)"
+                                                    title="Eliminar Cuenta">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php else: ?>
+                <div class="text-center py-5 px-3">
+                    <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 56px; height: 56px; background: rgba(245, 158, 11, 0.1); color: #F59E0B;">
+                        <i class="fas fa-university fa-2x"></i>
+                    </div>
+                    <h6 class="fw-bold text-body mb-1">No hay cuentas bancarias registradas</h6>
+                    <p class="text-muted small mb-3">Agregue las cuentas bancarias para que se muestren automáticamente al final de las cotizaciones.</p>
+                    <button type="button" class="btn btn-warning btn-sm fw-bold text-dark px-3" data-bs-toggle="modal" data-bs-target="#bankAccountModal">
+                        <i class="fas fa-plus me-1"></i> Registrar Primera Cuenta
+                    </button>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <!-- Usage Guide Card -->
+    <div class="card border-0 shadow-sm" style="background-color: var(--color-panel); border: 1px solid var(--color-rule) !important; border-radius: 12px;">
+        <div class="card-body p-3">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-start gap-2">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center text-primary mt-1" style="width: 24px; height: 24px; background: rgba(59, 130, 246, 0.12); flex-shrink: 0;">
+                            <i class="fas fa-file-invoice" style="font-size: 0.7rem;"></i>
+                        </div>
+                        <div class="small text-muted" style="font-size: 0.78rem;">
+                            <strong class="text-body d-block">Aparición en Cotizaciones:</strong>
+                            Las cuentas bancarias activas se listan ordenadamente en el cuadro final de las cotizaciones web y en el pie de página del PDF oficial.
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex align-items-start gap-2">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center text-warning mt-1" style="width: 24px; height: 24px; background: rgba(245, 158, 11, 0.12); flex-shrink: 0;">
+                            <i class="fas fa-star" style="font-size: 0.7rem;"></i>
+                        </div>
+                        <div class="small text-muted" style="font-size: 0.78rem;">
+                            <strong class="text-body d-block">Cuentas Predeterminadas:</strong>
+                            Puede marcar una cuenta por defecto en Soles y otra en Dólares para priorizarlas en la presentación al cliente.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================
+     MODAL: AGREGAR / EDITAR CUENTA BANCARIA
+     ========================================================= -->
+<div class="modal fade" id="bankAccountModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="background-color: var(--color-panel); border: 1px solid var(--color-rule); border-radius: 14px;">
+            <form id="bankAccountForm" method="POST">
+                <div class="modal-header border-bottom py-2.5 px-3">
+                    <h6 class="modal-title fw-bold text-body mb-0" id="modalTitle">
+                        <i class="fas fa-university text-warning me-2"></i>Agregar Cuenta Bancaria
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body p-3 p-md-4">
+                    <input type="hidden" name="action" id="formAction" value="add_bank_account">
+                    <input type="hidden" name="account_id" id="accountId">
+                    <input type="hidden" name="company_id" id="formCompanyId" value="<?= $selectedCompanyId ?>">
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="bank_name" class="form-label small fw-semibold text-body mb-1">Entidad Bancaria *</label>
+                            <select class="form-select form-select-sm" id="bank_name" name="bank_name" required>
+                                <option value="">Seleccionar banco...</option>
+                                <option value="BCP - Banco de Crédito del Perú">BCP - Banco de Crédito del Perú</option>
+                                <option value="BBVA - Banco Continental">BBVA - Banco Continental</option>
+                                <option value="Interbank">Interbank</option>
+                                <option value="Scotiabank Perú">Scotiabank Perú</option>
+                                <option value="Banco de la Nación">Banco de la Nación</option>
+                                <option value="Banbif">Banbif</option>
+                                <option value="Banco Pichincha">Banco Pichincha</option>
+                                <option value="Banco Falabella">Banco Falabella</option>
+                                <option value="Banco Ripley">Banco Ripley</option>
+                                <option value="Mi Banco">Mi Banco</option>
+                                <option value="Banco Azteca">Banco Azteca</option>
+                                <option value="Otro">Otro (especificar)</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="account_type" class="form-label small fw-semibold text-body mb-1">Tipo de Cuenta *</label>
+                            <select class="form-select form-select-sm" id="account_type" name="account_type" required>
+                                <option value="">Seleccionar tipo...</option>
+                                <option value="corriente">Cuenta Corriente</option>
+                                <option value="ahorros">Cuenta de Ahorros</option>
+                                <option value="detraccion">Cuenta de Detracciones</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="account_number" class="form-label small fw-semibold text-body mb-1">Número de Cuenta *</label>
+                            <input type="text" class="form-control form-control-sm font-monospace" id="account_number" name="account_number"
+                                   placeholder="194-1234567890" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="cci" class="form-label small fw-semibold text-body mb-1">Código Interbancario (CCI)</label>
+                            <input type="text" class="form-control form-control-sm font-monospace" id="cci" name="cci"
+                                   placeholder="00219400123456789012" maxlength="20">
+                        </div>
+
+                        <div class="col-md-8">
+                            <label for="account_holder" class="form-label small fw-semibold text-body mb-1">Titular de la Cuenta *</label>
+                            <input type="text" class="form-control form-control-sm" id="account_holder" name="account_holder"
+                                   placeholder="Razón Social o Nombre Completo" required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="currency" class="form-label small fw-semibold text-body mb-1">Moneda *</label>
+                            <select class="form-select form-select-sm" id="currency" name="currency" required>
+                                <option value="PEN">Soles (S/)</option>
+                                <option value="USD">Dólares ($)</option>
+                                <option value="EUR">Euros (€)</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-check form-switch mt-2">
+                                <input class="form-check-input" type="checkbox" role="switch" id="is_active" name="is_active" checked>
+                                <label class="form-check-label small fw-semibold text-body" for="is_active">
+                                    Cuenta Activa (visible en cotizaciones)
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-check form-switch mt-2">
+                                <input class="form-check-input" type="checkbox" role="switch" id="is_default" name="is_default">
+                                <label class="form-check-label small fw-semibold text-body" for="is_default">
+                                    Cuenta Predeterminada para esta moneda
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top py-2 px-3 d-flex justify-content-between">
+                    <button type="button" class="btn btn-outline-secondary btn-sm px-3" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary btn-sm px-4 fw-semibold">
+                        <i class="fas fa-save me-1"></i> Guardar Cuenta
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function editBankAccount(account) {
+    document.getElementById('modalTitle').innerHTML = '<i class="fas fa-pen text-warning me-2"></i>Editar Cuenta Bancaria';
+    document.getElementById('formAction').value = 'update_bank_account';
+    document.getElementById('accountId').value = account.id;
+
+    document.getElementById('bank_name').value = account.bank_name;
+    document.getElementById('account_type').value = account.account_type;
+    document.getElementById('account_number').value = account.account_number;
+    document.getElementById('account_holder').value = account.account_holder;
+    document.getElementById('currency').value = account.currency;
+    document.getElementById('cci').value = account.cci || '';
+    document.getElementById('is_active').checked = (account.is_active == 1);
+    document.getElementById('is_default').checked = (account.is_default == 1);
+
+    new bootstrap.Modal(document.getElementById('bankAccountModal')).show();
+}
+
+function deleteBankAccount(accountId) {
+    if (confirm('¿Está seguro de que desea eliminar esta cuenta bancaria?')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.innerHTML = `
+            <input type="hidden" name="action" value="delete_bank_account">
+            <input type="hidden" name="account_id" value="${accountId}">
+            <input type="hidden" name="company_id" value="<?= $selectedCompanyId ?>">
+        `;
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+document.getElementById('bankAccountModal').addEventListener('hidden.bs.modal', function() {
+    document.getElementById('modalTitle').innerHTML = '<i class="fas fa-university text-warning me-2"></i>Agregar Cuenta Bancaria';
+    document.getElementById('formAction').value = 'add_bank_account';
+    document.getElementById('accountId').value = '';
+    document.getElementById('bankAccountForm').reset();
+    document.getElementById('is_active').checked = true;
+});
+
+// Handle 'Otro' bank
+document.getElementById('bank_name').addEventListener('change', function() {
+    if (this.value === 'Otro') {
+        const custom = prompt('Ingrese el nombre del banco o caja:');
+        if (custom) {
+            this.value = custom;
+        } else {
+            this.value = '';
         }
+    }
+});
+</script>
 
-        function editBankAccount(account) {
-            document.getElementById('modalTitle').textContent = 'Editar Cuenta Bancaria';
-            document.getElementById('formAction').value = 'update_bank_account';
-            document.getElementById('accountId').value = account.id;
-
-            // Fill form fields
-            document.getElementById('bank_name').value = account.bank_name;
-            document.getElementById('account_type').value = account.account_type;
-            document.getElementById('account_number').value = account.account_number;
-            document.getElementById('account_holder').value = account.account_holder;
-            document.getElementById('currency').value = account.currency;
-            document.getElementById('cci').value = account.cci || '';
-            document.getElementById('is_active').checked = account.is_active == 1;
-            document.getElementById('is_default').checked = account.is_default == 1;
-
-            // Show modal
-            const modal = new bootstrap.Modal(document.getElementById('bankAccountModal'));
-            modal.show();
-        }
-
-        function deleteBankAccount(accountId) {
-            if (confirm('¿Estás seguro de que deseas eliminar esta cuenta bancaria?')) {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.innerHTML = `
-                    <input type="hidden" name="action" value="delete_bank_account">
-                    <input type="hidden" name="account_id" value="${accountId}">
-                `;
-                document.body.appendChild(form);
-                form.submit();
-            }
-        }
-
-        // Reset form when modal is hidden
-        document.getElementById('bankAccountModal').addEventListener('hidden.bs.modal', function() {
-            document.getElementById('modalTitle').textContent = 'Agregar Cuenta Bancaria';
-            document.getElementById('formAction').value = 'add_bank_account';
-            document.getElementById('accountId').value = '';
-            document.getElementById('bankAccountForm').reset();
-            document.getElementById('is_active').checked = true;
-        });
-
-        // Handle "Otro" bank selection
-        document.getElementById('bank_name').addEventListener('change', function() {
-            if (this.value === 'Otro') {
-                const customBank = prompt('Ingresa el nombre del banco:');
-                if (customBank) {
-                    this.value = customBank;
-                } else {
-                    this.value = '';
-                }
-            }
-        });
-
-        // CCI validation
-        document.getElementById('cci').addEventListener('input', function() {
-            this.value = this.value.replace(/\D/g, ''); // Only numbers
-            if (this.value.length > 20) {
-                this.value = this.value.substring(0, 20);
-            }
-        });
-
-        // Account number formatting
-        document.getElementById('account_number').addEventListener('input', function() {
-            // Remove any non-digit or dash characters
-            let value = this.value.replace(/[^\d-]/g, '');
-            this.value = value;
-        });
-    </script>
-    <script src="<?= BASE_URL ?>/assets/js/theme-pro.js"></script>
-</body>
-</html>
+<?php
+require_once __DIR__ . '/../../includes/app_footer.php';
+?>
